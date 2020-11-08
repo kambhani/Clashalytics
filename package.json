@@ -1,0 +1,26 @@
+{
+  "name": "cr-website",
+  "version": "1.0.0",
+  "description": "Website for Clash Royale Info",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kambhani/CR-Website.git"
+  },
+  "author": "Anish Kambhampati",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kambhani/CR-Website/issues"
+  },
+  "homepage": "https://github.com/kambhani/CR-Website#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
+    "mongoose": "^5.10.13",
+    "node-fetch": "^2.6.1"
+  }
+}

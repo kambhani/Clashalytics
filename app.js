@@ -79,20 +79,75 @@ app.post("/players", (req, res) => {
 // Player Stat Pages
 app.get("/players/:tag", (req, res) => {
   let tag = req.params.tag.toUpperCase();
-  let url = "https://api.clashroyale.com/v1/players/%23" + tag;
-  fetch(url, {
+  let url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  let url2 = url1 + "/battlelog";
+  let url3 = url1 + "/upcomingchests";
+  let playerInfo = [];
+  let errors = [];
+  let auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImRiNjM2NzZkLWUwZjUtNGJkNy1hZTlkLTQ4YzYwZmYzZmEwMiIsImlhdCI6MTYwNDU0MDg1Mywic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzciXSwidHlwZSI6ImNsaWVudCJ9XX0.--1G_piVVajh6AR4S_DU2mu7TrIQ7HKx7kf9xLpiWUTjuruJNDMeKv3NAJb4q-cWiRniVKdyKzliEWjSYn2-jA";
+
+  fetch(url1, {
     headers: {
       Accept: "application/json",
-      Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImRiNjM2NzZkLWUwZjUtNGJkNy1hZTlkLTQ4YzYwZmYzZmEwMiIsImlhdCI6MTYwNDU0MDg1Mywic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzciXSwidHlwZSI6ImNsaWVudCJ9XX0.--1G_piVVajh6AR4S_DU2mu7TrIQ7HKx7kf9xLpiWUTjuruJNDMeKv3NAJb4q-cWiRniVKdyKzliEWjSYn2-jA"
+      Authorization: auth
     }
   })
     .then(res => res.json())
     .then((json) => {
-      res.send(json);
+      playerInfo.push(json);
+      console.log("1 " + playerInfo.length);
+      if (playerInfo.length === 3) {
+        res.send(playerInfo);
+      }
+      //res.send(json);
     })
     .catch((err) => {
-      res.send(err);
+      errors.push(err);
     });
+
+  fetch(url2, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      //res.send(json);
+      playerInfo.push(json);
+      console.log("2 " + playerInfo.length);
+      if (playerInfo.length === 3) {
+        res.send(playerInfo);
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+    });
+
+  fetch(url3, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      //res.send(json);
+      //console.log("here");
+      playerInfo.push(json);
+      console.log("3 " + playerInfo.length);
+      if (playerInfo.length === 3) {
+        res.send(playerInfo);
+      }
+      //console.log("here1");
+    })
+    .catch((err) => {
+      errors.push(err);
+    });
+
+    if(errors.length > 0) {
+      res.send("ERROR");
+    }
 });
 
 const port = 5000;

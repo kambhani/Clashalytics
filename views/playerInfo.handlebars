@@ -1,0 +1,162 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
+    <li class="breadcrumb-item"><a href="/players" style="text-decoration: none;">Players</a></li>
+    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">{{playerStats.tag}}</li>
+  </ol>
+</nav>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general"
+      aria-selected="true">GENERAL</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="battles-tab" data-toggle="tab" href="#battles" role="tab" aria-controls="battles"
+      aria-selected="false">BATTLES</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="cards-tab" data-toggle="tab" href="#cards" role="tab" aria-controls="cards"
+      aria-selected="false">CARDS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="chests-tab" data-toggle="tab" href="#chests" role="tab" aria-controls="chests"
+      aria-selected="false">CHESTS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="analysis-tab" data-toggle="tab" href="#analysis" role="tab" aria-controls="analysis"
+      aria-selected="false">ANALYSIS</a>
+  </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content mx-2">
+  <div class="tab-pane active mx-4 my-4" id="general" role="tabpanel" aria-labelledby="general-tab">
+    <h1>{{playerStats.name}}</h1>
+    <div class="card" style="width: 18em; margin: 10px;">
+      <img src="https://www.backpacker.com/.image/t_share/MTU2Mzk0NDU5ODQ2NjgxOTAz/23158166954_7643010070_k.jpg"
+        class="card-img-top" alt="dog">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">
+          Some quick example text to build on the card title and make up the bulk of the card's content.
+        </p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane mx-2 my-4 px-1" id="battles" role="tabpanel" aria-labelledby="battles-tab">
+    {{#each playerBattles}}
+      {{#if (compare @index "<" 25)}}
+        <div class="card my-4 container-fluid">
+          <div class="container-fluid">
+            <h1 class="my-4">{{gameMode.name}}</h1>
+            <h2 class="mt-4 mb-3">Team</h2>
+            <div>
+              <h3>
+                <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">
+                  {{team.0.name}} [{{team.0.tag}}]
+                </a>
+              </h3>
+              <div class="container-fluid mx-0 px-0 mt-0">
+                <div class="row">
+                  {{#each team.0.cards}}
+                    <div class="mx-1">
+                      <img src={{iconUrls.medium}} class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                      <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+            <div>
+              {{#if team.1.tag}}
+                <h3 class="mt-3 mb-2">
+                  <a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">
+                    {{team.1.name}} [{{team.1.tag}}]
+                  </a>
+                </h3>
+                <div class="container-fluid mx-0 px-0">
+                  <div class="row">
+                    {{#each team.1.cards}}
+                      <div class="mx-1">
+                        <img src={{iconUrls.medium}} class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                        <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                      </div>
+                    {{/each}}
+                  </div>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+          <div class="container-fluid">
+            <h2 class="mt-4 mb-3">Opposition</h2>
+            <div>
+              <h3>
+                <a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none">
+                  {{opponent.0.name}} [{{opponent.0.tag}}]
+                </a>
+              </h3>
+              <div class="container-fluid mx-0 px-0">
+                <div class="row">
+                  {{#each opponent.0.cards}}
+                    <div class="mx-1">
+                      <img src={{iconUrls.medium}} class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                      <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+            <div>
+              {{#if opponent.1.tag}}
+                <h3 class="mt-3 mb-2">
+                  <a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">
+                    {{opponent.1.name}} [{{opponent.1.tag}}]
+                  </a>
+                </h3>
+                <div class="container-fluid mx-0 px-0">
+                  <div class="row">
+                    {{#each opponent.1.cards}}
+                      <div class="mx-1">
+                        <img src={{iconUrls.medium}} class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                        <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                      </div>
+                    {{/each}}
+                  </div>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">{{dateDifference battleTime}}</h5>
+            <p class="card-text">
+              Some quick example text to build on the card title and make up the bulk of the card's content.
+            </p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+  <div class="tab-pane mx-4 my-4" id="cards" role="tabpanel" aria-labelledby="cards-tab">3</div>
+  <div class="tab-pane mx-4 my-4" id="chests" role="tabpanel" aria-labelledby="chests-tab">4</div>
+  <div class="tab-pane mx-4 my-4" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">5</div>
+</div>
+
+<ul>
+  <li>{{playerStats.tag}}</li>
+  <li>{{playerBattles.0.type}}</li>
+  <li>{{playerChests.items.0.name}}</li>
+</ul>
+
+<script>
+  // player Stats, playerBattles, and playerChests are the three info pieces sent here
+  $(".battle-cards").css("width", (0.075 * (window.innerWidth - 500) + 75));
+  window.onresize = function () {
+    $(".battle-cards").css("width", (0.075 * (window.innerWidth - 500) + 75));
+  }
+</script>

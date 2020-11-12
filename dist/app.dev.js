@@ -10,6 +10,8 @@ var mongoose = require("mongoose");
 
 var fetch = require("node-fetch");
 
+var Handlebars = require("handlebars");
+
 var app = express(); // Map global Promises
 
 mongoose.Promise = global.Promise; // Mongoose Connection
@@ -30,12 +32,37 @@ var DeckWinRate = mongoose.model("DeckWinRate"); // How middleware works
 app.use(function (req, res, next) {
   //req.name = "Anish";
   next();
-}); // Handlebars Middleware
+}); // Handlebars Middleware and Custom Helpers
 
 app.engine("handlebars", exphbs({
   defaultLayout: "main"
 }));
-app.set("view engine", "handlebars"); // Body Parser Middleware
+app.set("view engine", "handlebars");
+Handlebars.registerHelper("removeFirstCharacter", function (text) {
+  return text.substring(1);
+});
+Handlebars.registerHelper("compare", function (a, comparator, b) {
+  switch (comparator) {
+    case "<":
+      if (a < b) {
+        return true;
+      } else {
+        return false;
+      }
+
+  }
+});
+Handlebars.registerHelper("calculateCardLevel", function (oldLevel, oldMaxLevel) {
+  return 13 - oldMaxLevel + oldLevel;
+});
+Handlebars.registerHelper("dateDifference", function (pastDate) {
+  // Date is processed like it is given in the Clash Royale API
+  // The format is: YYYYMMDDTHHMMSS.000Z
+  var oldDate = new Date(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)); //console.log(pastDate);
+
+  var newDate = Date.now();
+  return oldDate;
+}); // Body Parser Middleware
 
 app.use(bodyParser.urlencoded({
   extended: false
@@ -50,6 +77,7 @@ app.get("/", function (req, res) {
 }); // Players Page
 
 app.get("/players", function (req, res) {
+  console.log(req.originalUrl);
   res.render("players");
 });
 app.post("/players", function (req, res) {
@@ -83,10 +111,18 @@ app.post("/players", function (req, res) {
 
 app.get("/players/:tag", function (req, res) {
   var tag = req.params.tag.toUpperCase();
+  /*if (tag.charAt(0) === '#') {
+    const withoutHashtag = req.params.tag.substring(1);
+    app.redirect(`/players/${withoutHashtag}`);
+    console.log(1);
+  }*/
+
   var url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
   var url2 = url1 + "/battlelog";
-  var url3 = url1 + "/upcomingchests";
-  var playerInfo = [];
+  var url3 = url1 + "/upcomingchests"; //let playerInfo = [];
+
+  var playerInfo = [0, 0, 0];
+  var playerInfoLogicalSize = 0;
   var errors = [];
   var auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImRiNjM2NzZkLWUwZjUtNGJkNy1hZTlkLTQ4YzYwZmYzZmEwMiIsImlhdCI6MTYwNDU0MDg1Mywic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzciXSwidHlwZSI6ImNsaWVudCJ9XX0.--1G_piVVajh6AR4S_DU2mu7TrIQ7HKx7kf9xLpiWUTjuruJNDMeKv3NAJb4q-cWiRniVKdyKzliEWjSYn2-jA";
   fetch(url1, {
@@ -97,13 +133,17 @@ app.get("/players/:tag", function (req, res) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    playerInfo.push(json);
-    console.log("1 " + playerInfo.length);
+    //playerInfo.push(json);
+    playerInfo[0] = json;
+    playerInfoLogicalSize++; //console.log("1 " + playerInfo.length);
 
-    if (playerInfo.length === 3) {
-      res.send(playerInfo);
-    } //res.send(json);
-
+    if (playerInfoLogicalSize === 3) {
+      res.render("playerInfo", {
+        playerStats: playerInfo[0],
+        playerBattles: playerInfo[1],
+        playerChests: playerInfo[2]
+      }); //res.send(playerInfo);
+    }
   })["catch"](function (err) {
     errors.push(err);
   });
@@ -116,11 +156,17 @@ app.get("/players/:tag", function (req, res) {
     return res.json();
   }).then(function (json) {
     //res.send(json);
-    playerInfo.push(json);
-    console.log("2 " + playerInfo.length);
+    //playerInfo.push(json);
+    playerInfo[1] = json;
+    playerInfoLogicalSize++; //console.log("2 " + playerInfo.length);
+    //res.send(playerInfo);
 
-    if (playerInfo.length === 3) {
-      res.send(playerInfo);
+    if (playerInfoLogicalSize === 3) {
+      res.render("playerInfo", {
+        playerStats: playerInfo[0],
+        playerBattles: playerInfo[1],
+        playerChests: playerInfo[2]
+      }); //res.send(playerInfo);
     }
   })["catch"](function (err) {
     errors.push(err);
@@ -135,11 +181,16 @@ app.get("/players/:tag", function (req, res) {
   }).then(function (json) {
     //res.send(json);
     //console.log("here");
-    playerInfo.push(json);
-    console.log("3 " + playerInfo.length);
+    //playerInfo.push(json);
+    playerInfo[2] = json;
+    playerInfoLogicalSize++; //console.log("3 " + playerInfo.length);
 
-    if (playerInfo.length === 3) {
-      res.send(playerInfo);
+    if (playerInfoLogicalSize === 3) {
+      res.render("playerInfo", {
+        playerStats: playerInfo[0],
+        playerBattles: playerInfo[1],
+        playerChests: playerInfo[2]
+      }); //res.send(playerInfo);
     } //console.log("here1");
 
   })["catch"](function (err) {

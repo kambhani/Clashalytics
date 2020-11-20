@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const fetch = require("node-fetch")
 const Handlebars = require("handlebars");
+const serveStatic = require("serve-static");
+
 
 const app = express();
 
@@ -23,8 +25,8 @@ mongoose.connect("mongodb://localhost/clashalytics-dev", {
   });
 
 // Load Deck Win Rate Model
-require("./models/DeckWinRate");
-const DeckWinRate = mongoose.model("DeckWinRate")
+require("./models/Battles");
+const Battles = mongoose.model("Battles");
 
 // How middleware works
 app.use((req, res, next) => {
@@ -32,43 +34,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Handlebars Middleware and Custom Helpers
+// Handlebars Middleware and Embedded Custom Helpers
 app.engine("handlebars", exphbs({
-  defaultLayout: "main"
+  defaultLayout: "main",
+  helpers: require("./views/helpers/handlebars.js").helpers
 }));
 app.set("view engine", "handlebars");
-
-Handlebars.registerHelper("removeFirstCharacter", function (text) {
-  return text.substring(1);
-});
-
-Handlebars.registerHelper("compare", function(a, comparator, b) {
-  switch(comparator) {
-    case "<":
-      if (a < b) {
-        return true;
-      } else {
-        return false;
-      }
-  }
-});
-
-Handlebars.registerHelper("calculateCardLevel", function(oldLevel, oldMaxLevel) {
-  return (13 - oldMaxLevel + oldLevel);
-});
-
-Handlebars.registerHelper("dateDifference", function(pastDate) {
-  // Date is processed like it is given in the Clash Royale API
-  // The format is: YYYYMMDDTHHMMSS.000Z
-  let oldDate = new Date(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11),pastDate.substring(11, 13), pastDate.substring(13, 15));
-  //console.log(pastDate);
-  let newDate = Date.now();
-  return (oldDate);
-});
 
 // Body Parser Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Serving static files
+app.use(express.static("static_files"));
 
 // Root Index
 app.get("/", (req, res) => {

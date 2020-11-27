@@ -1,0 +1,5 @@
+I got the league pictures off of RoyaleAPI. For example, the picture for Challenger II was taken from https://cdn.royaleapi.com/static/img/arenas-fs8/league2-fs8.png?3
+I'm still following the Fan Content Policy
+
+I got the Arena images from the RoyaleAPI Github: https://github.com/RoyaleAPI/cr-api-assets/tree/master/arenas
+

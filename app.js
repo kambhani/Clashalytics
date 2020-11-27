@@ -58,7 +58,6 @@ app.get("/", (req, res) => {
 
 // Players Page
 app.get("/players", (req, res) => {
-  console.log(req.originalUrl);
   res.render("players");
 });
 
@@ -87,19 +86,13 @@ app.post("/players", (req, res) => {
 // Player Stat Pages
 app.get("/players/:tag", (req, res) => {
   const tag = req.params.tag.toUpperCase();
-  /*if (tag.charAt(0) === '#') {
-    const withoutHashtag = req.params.tag.substring(1);
-    app.redirect(`/players/${withoutHashtag}`);
-    console.log(1);
-  }*/
   const url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
   const url2 = url1 + "/battlelog";
   const url3 = url1 + "/upcomingchests";
-  //let playerInfo = [];
   let playerInfo = [0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
-  const auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImRiNjM2NzZkLWUwZjUtNGJkNy1hZTlkLTQ4YzYwZmYzZmEwMiIsImlhdCI6MTYwNDU0MDg1Mywic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzciXSwidHlwZSI6ImNsaWVudCJ9XX0.--1G_piVVajh6AR4S_DU2mu7TrIQ7HKx7kf9xLpiWUTjuruJNDMeKv3NAJb4q-cWiRniVKdyKzliEWjSYn2-jA";
+  const auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjFhMDI4NjAzLWY2OTUtNGUxMC04N2MxLTc1ZjFmMGZkMzUwMiIsImlhdCI6MTYwNjE1NTY5Miwic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzMiXSwidHlwZSI6ImNsaWVudCJ9XX0.itwXBlkJmcVuB3dZm-FPXrHMNgpy5o75t9mJZha3Sn8rFpObsj2YTXZLlX5IkCQ7r_LoRm-SkTz2mXBwrPcbLQ";
 
   fetch(url1, {
     headers: {
@@ -109,17 +102,20 @@ app.get("/players/:tag", (req, res) => {
   })
     .then(res => res.json())
     .then((json) => {
-      //playerInfo.push(json);
       playerInfo[0] = json;
       playerInfoLogicalSize++;
-      //console.log("1 " + playerInfo.length);
       if (playerInfoLogicalSize === 3) {
-        res.render("playerInfo", {
-          playerStats: playerInfo[0],
-          playerBattles: playerInfo[1],
-          playerChests: playerInfo[2]
-        });
-        //res.send(playerInfo);
+        if (playerInfo[2].reason) {
+          res.render("playerNotFound", {
+            tag: tag
+          });
+        } else {
+          res.render("playerInfo", {
+            playerStats: playerInfo[0],
+            playerBattles: playerInfo[1],
+            playerChests: playerInfo[2]
+          });
+        }
       }
     })
     .catch((err) => {
@@ -134,19 +130,20 @@ app.get("/players/:tag", (req, res) => {
   })
     .then(res => res.json())
     .then((json) => {
-      //res.send(json);
-      //playerInfo.push(json);
       playerInfo[1] = json;
       playerInfoLogicalSize++;
-      //console.log("2 " + playerInfo.length);
-      //res.send(playerInfo);
       if (playerInfoLogicalSize === 3) {
-        res.render("playerInfo", {
-          playerStats: playerInfo[0],
-          playerBattles: playerInfo[1],
-          playerChests: playerInfo[2]
-        });
-        //res.send(playerInfo);
+        if (playerInfo[2].reason) {
+          res.render("playerNotFound", {
+            tag: tag
+          });
+        } else {
+          res.render("playerInfo", {
+            playerStats: playerInfo[0],
+            playerBattles: playerInfo[1],
+            playerChests: playerInfo[2]
+          });
+        }
       }
     })
     .catch((err) => {
@@ -161,21 +158,21 @@ app.get("/players/:tag", (req, res) => {
   })
     .then(res => res.json())
     .then((json) => {
-      //res.send(json);
-      //console.log("here");
-      //playerInfo.push(json);
       playerInfo[2] = json;
       playerInfoLogicalSize++;
-      //console.log("3 " + playerInfo.length);
       if (playerInfoLogicalSize === 3) {
-        res.render("playerInfo", {
-          playerStats: playerInfo[0],
-          playerBattles: playerInfo[1],
-          playerChests: playerInfo[2]
-        });
-        //res.send(playerInfo);
+        if (playerInfo[2].reason) {
+          res.render("playerNotFound", {
+            tag: tag
+          });
+        } else {
+          res.render("playerInfo", {
+            playerStats: playerInfo[0],
+            playerBattles: playerInfo[1],
+            playerChests: playerInfo[2]
+          });
+        }
       }
-      //console.log("here1");
     })
     .catch((err) => {
       errors.push(err);

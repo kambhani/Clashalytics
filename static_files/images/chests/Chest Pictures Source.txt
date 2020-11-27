@@ -3,3 +3,6 @@ Got the pics from this website (except for the Mega Lightning Chest): https://ww
 Got the Mega Lightning Chest from here: https://static.wikia.nocookie.net/clashroyale/images/3/3a/MegaLightningChest.png/revision/latest/scale-to-width-down/120?cb=20181205194051
 
 License is to follow the Supercell Fan Content Policy, which I believe I'm doing.
+
+UPDATE (11/22/2020):
+Disregard the above info. I am now using v2 chests which were copied off the RoyaleAPI Website. I'm still following the Fan Content Policy.

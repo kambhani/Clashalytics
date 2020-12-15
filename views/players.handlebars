@@ -11,7 +11,17 @@
 
 {{/each}}
 
-<form class="form-inline my-2" action="/players" method="POST">
-  <input class="form-control mx-2" type="text" name="tag" placeholder="Search" aria-label="Search" required>
-  <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
-</form>
+<div class="container-fluid d-none d-sm-block">
+  <form class="form-inline my-2" action="/players" method="POST">
+    <input class="form-control mx-2" type="text" name="tag" placeholder="Search" aria-label="Search" required>
+    <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="container-fluid d-block d-sm-none">
+  <form class="my-2 text-center" action="/players" method="POST">
+    <input class="form-control" type="text" name="tag" placeholder="ENTER PLAYER TAG" aria-label="Search" required>
+    <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+  </form>
+</div>
+

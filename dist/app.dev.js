@@ -109,7 +109,7 @@ app.get("/players/:tag", function (req, res) {
     playerInfoLogicalSize++;
 
     if (playerInfoLogicalSize === 3) {
-      if (playerInfo[2].reason) {
+      if (playerInfo[2].reason === "notFound") {
         res.render("playerNotFound", {
           tag: tag
         });
@@ -136,7 +136,7 @@ app.get("/players/:tag", function (req, res) {
     playerInfoLogicalSize++;
 
     if (playerInfoLogicalSize === 3) {
-      if (playerInfo[2].reason) {
+      if (playerInfo[2].reason === "notFound") {
         res.render("playerNotFound", {
           tag: tag
         });
@@ -163,7 +163,7 @@ app.get("/players/:tag", function (req, res) {
     playerInfoLogicalSize++;
 
     if (playerInfoLogicalSize === 3) {
-      if (playerInfo[2].reason) {
+      if (playerInfo[2].reason === "notFound") {
         res.render("playerNotFound", {
           tag: tag
         });

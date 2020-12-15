@@ -717,7 +717,7 @@ var register = function register(Handlebars) {
 
         case "Challenge Streak":
           {
-            return "Max Challenge Wins: ".concat(value, "*");
+            return "Max Challenge Wins: ".concat(value);
           }
 
         case "Practice with Friends":

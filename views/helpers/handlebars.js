@@ -490,7 +490,7 @@ var register = function(Handlebars) {
           return (`Tournaments Joined: ${value}`);
         }
         case "Challenge Streak": {
-          return (`Max Challenge Wins: ${value}*`);
+          return (`Max Challenge Wins: ${value}`);
         }
         case "Practice with Friends": {
           return (`Friendly Battles Won: ${value}`);

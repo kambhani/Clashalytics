@@ -131,7 +131,7 @@
                     <img src="/images/challenges/CRL Logo.png" class="card-img-top" alt="CRL Logo">
                     <div class="card-body">
                       <h5 class="card-title text-center font-weight-bold">Challenge Stats</h5>
-                      <p class="card-text">Max Challenge Wins: {{challengeMaxWins}}*</p>
+                      <p class="card-text"><a data-bs-toggle="tooltip" data-bs-placement="top" title="Without Continues">Max Challenge Wins: {{challengeMaxWins}}*</a></p>
                       <p class="card-text">Challenge Cards Won: {{challengeCardsWon}}</p>
                     </div>
                   </div>
@@ -306,7 +306,11 @@
                             {{{loopHTML stars "<img src=\"/images/misc/star v2.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"cartoon_star\">"}}}
                           </div>
                         </div>
-                        <p class="card-text text-center" style="height: 50px;">{{displayAchievementValue name value}}</p>
+                        {{#if (compare name "===" "Challenge Streak")}}
+                          <p class="card-text text-center" style="height: 50px;"><a data-bs-toggle="tooltip" data-bs-placement="top" title="With or Without Continues">{{displayAchievementValue name value}}*</a></p>
+                        {{else}}
+                          <p class="card-text text-center" style="height: 50px;">{{displayAchievementValue name value}}</p>
+                        {{/if}}
                       </div>
                       <div class="card-footer" style="background-color: mintcream;">
                         {{{achievementLevels name}}}
@@ -374,7 +378,6 @@
         </div>
       </div>
     {{/with}}
-    <small class="text-muted">*The Max Challenge Wins in the Challenge Royale tab may differ from the Max Challenge Wins in the Achievement Royale Tab. This is because the Achievement Royale Max Challenge Wins allows for continues in a challenge whereas the Challenge Royale Max Challenge Wins does not.</small>
   </div>
 
   <div class="tab-pane mx-2 my-4 px-1" id="battles" role="tabpanel" aria-labelledby="battles-tab">
@@ -660,12 +663,13 @@
   const commons = ["Archers", "Arrows", "Barbarians", "Bats", "Bomber", "Cannon", "Electro Spirit", "Elite Barbarians", "Fire Spirits", "Firecracker", "Giant Snowball", "Goblin Gang", "Goblins", "Ice Spirit", "Knight", "Minion Horde", "Minions", "Mortar", "Rascals", "Royal Delivery", "Royal Giant", "Royal Recruits", "Skeleton Barrel", "Skeleton Dragons", "Skeletons", "Spear Goblins", "Tesla", "Zap"];
   const rares = ["Barbarian Hut", "Battle Healer", "Battle Ram", "Bomb Tower", "Dart Goblin", "Earthquake", "Elixir Collector", "Elixir Golem", "Fireball", "Flying Machine", "Furnace", "Giant", "Goblin Cage", "Goblin Hut", "Heal Spirit", "Hog Rider", "Ice Golem", "Inferno Tower", "Mega Minion", "Mini P.E.K.K.A", "Musketeer", "Rocket", "Royal Hogs", "Three Musketeers", "Tombstone", "Valkyrie", "Wizard", "Zappies"];
   const epics = ["Baby Dragon", "Balloon", "Barbarian Barrel", "Bowler", "Cannon Cart", "Clone", "Dark Prince", "Electro Dragon", "Electro Giant", "Executioner", "Freeze", "Giant Skeleton", "Goblin Barrel", "Goblin Giant", "Golem", "Guards", "Hunter", "Lightning", "Mirror", "P.E.K.K.A", "Poison", "Prince", "Rage", "Skeleton Army", "Tornado", "Wall Breakers", "Witch", "X-Bow"];
-  const legendarys = ["Bandit", "Electro Wizard", "Fisherman", "Graveyard", "Ice Wizard", "Inferno Dragon", "Lava Hound", "Lumberjack", "Magic Archer", "Mega Knight", "Miner", "Night Witch", "Princess", "Ram Rider", "Royal Ghost", "Sparky", "The Log"];
+  const legendarys = ["Bandit", "Electro Wizard", "Fisherman", "Graveyard", "Ice Wizard", "Inferno Dragon", "Lava Hound", "Lumberjack", "Magic Archer", "Mega Knight", "Miner", "Mother Witch", "Night Witch", "Princess", "Ram Rider", "Royal Ghost", "Sparky", "The Log"];
 
-  const oneElixir = ["Electro Spirit", "Heal Spirit", "Ice Spirit", "Mirror", "Skeletons"];
+  const zeroElixir = ["Mirror"];
+  const oneElixir = ["Electro Spirit", "Heal Spirit", "Ice Spirit", "Skeletons"];
   const twoElixir = ["Barbarian Barrel", "Bats", "Fire Spirits", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
   const threeElixir = ["Archers", "Arrows", "Bandit", "Bomber", "Cannon", "Clone", "Dart Goblin", "Earthquake", "Elixir Golem", "Firecracker", "Fisherman", "Goblin Barrel", "Goblin Gang", "Guards", "Ice Wizard", "Knight", "Mega Minion", "Miner", "Minions", "Princess", "Royal Delivery", "Royal Ghost", "Skeleton Army", "Skeleton Barrel", "Tombstone", "Tornado"];
-  const fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
+  const fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
   const fiveElixir = ["Balloon", "Barbarians", "Bowler", "Cannon Cart", "Electro Dragon", "Executioner", "Giant", "Goblin Hut", "Graveyard", "Inferno Tower", "Lightning", "Minion Horde", "Prince", "Ram Rider", "Rascals", "Rocket", "Royal Hogs", "Witch", "Wizard"];
   const sixElixir = ["Elite Barbarians", "Elixir Collector", "Giant Skeleton", "Goblin Giant", "Royal Giant", "Sparky", "X-Bow"];
   const sevenElixir = ["Barbarian Hut", "Lava Hound", "Mega Knight", "P.E.K.K.A", "Royal Recruits"];
@@ -693,6 +697,12 @@
     $(".badgeRoyaleCardStyle").css({"width": "10rem"});
     $(".badge-royale-image").css({"height": "140px"});
   }
+
+  // This code is used to initialize the tooltips (code taken from: https://getbootstrap.com/docs/5.0/components/tooltips/)
+  let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  });
 
   // playerStats, playerBattles, and playerChests are the three info pieces sent to the HTML document
   $(".battle-cards").css("width", (0.075 * (window.innerWidth - 500) + 75));
@@ -1040,6 +1050,9 @@
   // These are useful helper functions
   function getElixirCost(cardName) {
     switch (true) {
+      case ($.inArray(cardName, zeroElixir) > -1): {
+        return 0;
+      }
       case ($.inArray(cardName, oneElixir) > -1): {
         return 1;
       }

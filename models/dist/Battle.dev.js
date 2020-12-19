@@ -3,7 +3,7 @@
 var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema;
-var Battles = new Schema({
+var Battle = new Schema({
   player_tag: {
     type: String,
     required: true
@@ -20,18 +20,21 @@ var Battles = new Schema({
     type: Number,
     required: true
   },
-  opp_tag: {
+  opponent_tag: {
     type: String,
     required: true
   },
-  victory_status: {
-    // 1 is victory, 0 is draw, -1 is loss
-    type: Number,
+  battle_outcome: {
+    type: String,
     required: true
   },
   time: {
     type: Date,
     required: true
+  },
+  battle_type: {
+    type: String,
+    required: true
   }
 });
-mongoose.model("Battles", Battles);
+mongoose.model("Battle", Battle);

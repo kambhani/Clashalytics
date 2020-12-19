@@ -860,7 +860,7 @@ var register = function register(Handlebars) {
           var playedMs = badges[i].progress * 24 * 3600 * 1000;
           var originalStartMs = curMs - playedMs;
           var toReturn = new Date(originalStartMs);
-          return "".concat(toReturn.getFullYear(), "-").concat(toReturn.getMonth() + 1, "-").concat(toReturn.getDate());
+          return new Intl.DateTimeFormat([]).format(toReturn);
         }
       }
 
@@ -894,6 +894,58 @@ var register = function register(Handlebars) {
             return "Server Error";
           }
       }
+    },
+    // This function returns the battle type, given the API game mode id
+    // This function will likely never be complete
+    // Name is also taken so if the id is not logged, then I simply return the name
+    gameModeName: function gameModeName(id, name) {
+      switch (id) {
+        case 72000006:
+          {
+            return "Ladder";
+          }
+
+        case 72000010:
+          {
+            return "Challenge";
+          }
+
+        case 72000023:
+          {
+            return "2v2 Battle";
+          }
+
+        case 72000062:
+          {
+            return "Triple Elixir Battle";
+          }
+
+        case 72000009:
+          {
+            return "Tournament";
+          }
+
+        case 72000268:
+          {
+            return "River Race 1v1";
+          }
+
+        default:
+          {
+            return name;
+          }
+      }
+    },
+    // This function returns a readable date
+    readableDate: function readableDate(date) {
+      return new Intl.DateTimeFormat([]).format(date);
+    },
+    // This function space separates API game names
+    // Regex line came from: https://stackoverflow.com/a/7888303
+    spaceSeparate: function spaceSeparate(name) {
+      name = name.replace("_", "");
+      name = name.split(/(?=[A-Z])/);
+      return name.join(" ");
     }
   };
 

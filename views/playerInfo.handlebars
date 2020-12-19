@@ -393,8 +393,7 @@
       {{#if (compare type "!==" "boatBattle")}}
         <div class="card my-4 container-fluid" style="background-color:beige;">
           <div class="container-fluid">
-            <h1 class="my-4">{{gameMode.name}}</h1>
-            <h2 class="mt-4 mb-3">Team</h2>
+            <h2 class="mt-4 mb-3">{{gameModeName gameMode.id gameMode.name}}</h2>
             <div>
               <h3>
                 <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">
@@ -655,7 +654,67 @@
       </div>
     </div>
   </div>
-  <div class="tab-pane mx-4 my-4" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">5</div>
+  <div class="tab-pane mx-4 my-4" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+    {{#if isTracked}}
+      <div class="alert alert-info text-center">This player is being tracked</div>
+      {{#if trackedBattles}}
+        <div class="alert alert-warning d-block d-lg-none text-center">
+          Analysis tab for a small screen is not supported
+        </div>
+        <table id="analysisTable" class="table bg-light d-none d-lg-table table-bordered justify-content-center" style="width: 100%">
+          <thead>
+            <tr class="thead-dark text-center" style="">
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Deck Used<input id="analysisTableSearch0" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(0)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Opponent<input id="analysisTableSearch1" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(1)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Deck Faced<input id="analysisTableSearch2" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(2)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Level Difference<input id="analysisTableSearch3" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(3)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Battle Type<input id="analysisTableSearch4" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(4)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Battle Outcome<input id="analysisTableSearch5" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(5)"></th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">Time<input id="analysisTableSearch6" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(6)"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each trackedBattles}}
+              <tr>
+                <td class="analysisTableDeckUsed" id="">
+                  <div class="container-fluid">
+                    <div class="row justify-content-center">
+                      {{#each deck_used}}
+                        <img src="/images/cards/{{this}}.png" style="width: 60px;" alt="{{this}}">
+                      {{/each}}
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-center"><a href="/players/{{opponent_tag}}" class="text-decoration-none">{{opponent_tag}}</a></td>
+                <td class="analysisTableDeckFaced" id="">
+                  <div class="container-fluid">
+                    <div class="row justify-content-center">
+                      {{#each deck_faced}}
+                        <img src="/images/cards/{{this}}.png" style="width: 60px;" alt="{{this}}">
+                      {{/each}}
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-center level-difference">{{level_difference}}</td>
+                <td class="align-middle text-center">{{spaceSeparate battle_type}}</td>
+                <td class="align-middle text-center">{{battle_outcome}}</td>
+                <td class="align-middle text-center">{{readableDate time}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <h1>No Tracked Battles</h1>
+      {{/if}}
+    {{else}}
+      <div class="alert alert-info text-center">This player is not being tracked</div>
+      <form class="container-fluid mx-0 px-0" action="/players/{{removeFirstCharacter playerStats.tag}}" method="POST">
+        <div class="row justify-content-center">
+          <button class="btn btn-lg btn-primary" type="submit">Start Tracking Player</button>
+        </div>
+      </form>
+    {{/if}}
+  </div>
 </div>
 
 <script>
@@ -1043,6 +1102,109 @@
           }
         }));
         break;
+      }
+    }
+  }
+
+  // This function filters the data from the table in the Analysis Tab
+  // Implementation is taken from: https://www.w3schools.com/howto/howto_js_filter_table.asp
+  /*function filterAnalysisTable(col) {
+    if (col !== 0 && col !== 2) {
+      // Column is not a deck (no pictures to worry about)
+      let filterID = "analysisTableSearch" + col;
+      let filter = document.getElementById(filterID).value.toUpperCase();
+      let tableRows = document.getElementById("analysisTable").rows;
+      for (let i = 1; i < tableRows.length; i++) {
+        let tableData = tableRows[i].getElementsByTagName("td")[col].innerText;
+        if (tableData.toUpperCase().includes(filter)) {
+          tableRows[i].style.display = "";
+        } else {
+          tableRows[i].style.display = "none";
+        }
+      }
+    } else {
+      // Column is a deck and will be filtered using the pictures' alt text
+      let filterID = "analysisTableSearch" + col;
+      let filter = document.getElementById(filterID).value.toUpperCase().split(" ");
+      let tableRows = document.getElementById("analysisTable").rows;
+      let toSearch = "";
+      toSearch = (col === 0) ? (".analysisTableDeckUsed") : (".analysisTableDeckFaced");
+      $(toSearch).each(function () {
+        let tableData = "";
+        $(this).find("div div img").each(function () {
+          tableData += $(this).attr("alt") + " ";
+        });
+        let toShow = true;
+        for (let i = 0; i < filter.length; i++) {
+          if (!tableData.toUpperCase().includes(filter[i])) {
+            toShow = false;
+            break;
+          }
+        }
+        if (toShow) {
+          $(this).parent().css("display", "");
+        } else {
+          $(this).parent().css("display", "none");
+        }
+      });
+    }
+  }*/
+
+  // Reworked filter function for analysis table
+  function filterAnalysisTable(notNeeded) {
+    let filters = [];
+    let tableRows = document.getElementById("analysisTable").rows;
+    for (let i = 1; i < tableRows.length; i++) {
+      tableRows[i].style.display = "";
+    }
+    for (let i = 0; i < 7; i++) {
+      let tmp = document.getElementById("analysisTableSearch" + i).value.toUpperCase();
+      filters.push((i === 0 || i === 2) ? tmp.split(" ") : tmp);
+    }
+    /*for (let i = 1; i < tableRows.length; i++) {
+      console.log(tableRows[i].style.display);
+    }*/
+    for (let i = 0; i < filters.length; i++) {
+      if (i === 0 || i === 2) {
+        let toSearch = (i === 0) ? (".analysisTableDeckUsed") : (".analysisTableDeckFaced");
+        $(toSearch).each(function () {
+          let tableData = "";
+          $(this).find("div div img").each(function () {
+            tableData += $(this).attr("alt") + " ";
+          });
+          let toShow = true;
+          for (let j = 0; j < filters[i].length; j++) {
+            //console.log(filters[i][j]);
+            if (!tableData.toUpperCase().includes(filters[i][j])) {
+              toShow = false;
+              break;
+            }
+          }
+          //console.log(tableData + " " + toShow);
+          //console.log($(this).parent());
+          //console.log($(this).parent().css("display"));
+          /*if (toShow && $(this).parent().css("display") !== "none") {
+            $(this).parent().css("display", "");
+          } else {
+            $(this).parent().css("display", "none");
+          }*/
+          if (!toShow) {
+            $(this).parent().css("display", "none");
+          }
+        });
+      } else {
+        //let tableRows = document.getElementById("analysisTable").rows;
+        for (let j = 1; j < tableRows.length; j++) {
+          let tableData = tableRows[j].getElementsByTagName("td")[i].innerText;
+          /*if (tableData.toUpperCase().includes(filters[i]) && tableRows[i].style.display !== "none") {
+            tableRows[i].style.display = "";
+          } else {
+            tableRows[i].style.display = "none";
+          }*/
+          if (!tableData.toUpperCase().includes(filters[i])) {
+            tableRows[j].style.display = "none";
+          }
+        }
       }
     }
   }

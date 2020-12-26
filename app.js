@@ -72,7 +72,6 @@ app.post("/players", (req, res) => {
   if (!req.body.tag) {
     errors.push({text: "Please enter a tag"});
   } else {
-    // Pound sign (#) is not removed because that will be cleared on server end
     let pattern = new RegExp(/[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/);
     if (pattern.test(req.body.tag)) {
       errors.push({text: "Please remove special characters from the search string, including the initial pound (#) sign"});
@@ -208,19 +207,248 @@ app.get("/players/:tag", (req, res) => {
 });
 
 app.post("/players/:tag", (req, res) => {
-  const tag = req.params.tag.toUpperCase();
-  const toAdd = {
-    player: tag
+  if ("addPlayer" in req.body) {
+    const tag = req.params.tag.toUpperCase();
+    const toAdd = {
+      player: tag
+    }
+    new Tracked_Player(toAdd)
+      .save()
+      .then(idea => {
+        //console.log(idea);
+        res.redirect("/players/" + tag);
+      });
   }
-  new Tracked_Player(toAdd)
-    .save()
-    .then(idea => {
-      //console.log(idea);
-      res.redirect("/players/" + tag);
-    });
-  
+  const tag = req.params.tag.toUpperCase();
+  res.redirect("/players/" + tag);
 });
 
+app.get("/players/:tag/data", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  const url2 = url1 + "/battlelog";
+  const url3 = url1 + "/upcomingchests";
+  let playerInfo = [0, 0, 0, 0];
+  let playerInfoLogicalSize = 0;
+  let errors = [];
+
+  let playerIsTracked;
+  let trackedBattles;
+  // Check if player is being tracked with my system
+  (async function () {
+    playerIsTracked = await Tracked_Player.exists({player: tag});
+    if (playerIsTracked) {
+      (async function () {
+        trackedBattles = await Battle.find({player_tag: tag}).lean();
+        playerInfo[3] = trackedBattles;
+      }) ();
+    }
+  }) ();
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      playerInfo[0] = json;
+      playerInfoLogicalSize++;
+      if (playerInfoLogicalSize === 3) {
+        res.send(playerInfo);
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+    });
+
+  fetch(url2, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      playerInfo[1] = json;
+      playerInfoLogicalSize++;
+      if (playerInfoLogicalSize === 3) {
+        res.send(playerInfo);
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+    });
+
+  fetch(url3, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      playerInfo[2] = json;
+      playerInfoLogicalSize++;
+      if (playerInfoLogicalSize === 3) {
+        res.send(playerInfo);
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+    });
+
+  if(errors.length > 0) {
+    res.send("ERROR");
+  }
+});
+
+app.get("/about", (req, res) => {
+  res.render("about");
+});
+
+app.get("/tos", (req, res) => {
+  res.render("tos");
+});
+
+app.get("/privacy", (req, res) => {
+  res.render("privacy");
+});
+
+app.get("/disclaimers", (req, res) => {
+  res.render("disclaimers");
+});
+
+app.get("/help", (req, res) => {
+  res.render("help");
+});
+
+app.get("/clans", (req, res) => {
+  console.log(req.query.locationId);
+  fetch("https://api.clashroyale.com/v1/locations", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      res.render("clans", {
+        locations: json,
+        results: []
+      });
+    })
+})
+
+app.post("/clans", (req, res) => {
+  //console.log(req.body);
+  let errors = [];
+  if ("tag" in req.body) {
+    // User searched by tag
+    let pattern = new RegExp(/[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/);
+    if (pattern.test(req.body.tag)) {
+      errors.push("Please remove special characters from the tag, including the initial pound (#) sign");
+    }
+    if (errors.length === 0) {
+      res.redirect(`/clans/${req.body.tag.toUpperCase()}`);
+    } else {
+      fetch("https://api.clashroyale.com/v1/locations", {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      })
+        .then(res => res.json())
+        .then((json) => {
+          res.render("clans", {
+            errors: errors,
+            locations: json,
+            results: []
+          });
+        })
+    }
+  } else {
+    const name = req.body.name;
+    let location = req.body.location;
+    const minMembers = req.body.minMembers;
+    const maxMembers = req.body.maxMembers;
+    const minScore = req.body.minScore;
+    const limit = req.body.limit;
+    if (name === "" && location === "" && minMembers === "" && maxMembers === "" && minScore === "" && limit === "") {
+      errors.push("Must specify at least one filtering parameter");
+    }
+    fetch("https://api.clashroyale.com/v1/locations", {
+      headers: {
+        Accept: "application/json",
+        Authorization: auth
+      }
+    })
+      .then(res => res.json())
+      .then((json) => {
+        let validLocation = false;
+        for (let i = 0; i < json.items.length; i++) {
+          if (location === json.items[i].name) {
+            validLocation = true;
+            location = json.items[i].id;
+          }
+        }
+        if (!validLocation && location !== "") {
+          errors.push("Entered location is not valid");
+        }
+        if (errors.length > 0) {
+          res.render("clans", {
+            errors: errors,
+            locations: json,
+          });
+        } else {
+          let url = "https://api.clashroyale.com/v1/clans?";
+          if (name !== "") {
+            url = url + "&name=" + encodeURIComponent(name);
+          }
+          if (location !== "") {
+            url = url + "&locationId=" + location;
+          }
+          if (minMembers !== "") {
+            url = url + "&minMembers=" + minMembers;
+          }
+          if (maxMembers !== "") {
+            url = url + "&maxMembers=" + maxMembers;
+          }
+          if (minScore !== "") {
+            url = url + "&minScore=" + minScore;
+          }
+          if (limit !== "") {
+            url = url + "&limit=" + limit;
+          }
+          console.log(url);
+          fetch(url, {
+            headers: {
+              Accept: "application/json",
+              Authorization: auth
+            }
+          })
+            .then(res => res.json())
+            .then((json2) => {
+              res.render("clans", {
+                locations: json,
+                results: json2
+              });
+            })
+          .catch((err) => {
+            console.log(err);
+          })
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+});
+
+app.get("/clans/:tag", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  res.send("Get clan with tag: " + tag);
+});
 
 // This area is where I try to keep track of player battles and update the db every ~hour
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632

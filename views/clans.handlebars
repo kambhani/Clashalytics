@@ -1,0 +1,81 @@
+<title>Player Search</title>
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Players</li>
+  </ol>
+</nav>
+
+{{#each errors}}
+  <div class="alert alert-danger mx-4 text-center">{{this}}</div>
+{{/each}}
+
+{{#if results}}
+  <!--Displaying Results-->
+  {{#each results.items}}
+    <p>{{tag}}</p>
+  {{/each}}
+{{else}}
+  <!--Displaying the Form-->
+  <h1 class="mx-4 text-center mb-4">Clan Search</h1>
+
+  <h3 class="mx-4 font-weight-light">Search by Clan Tag</h3>
+
+  <div class="container-fluid d-none d-md-block">
+    <form class="form-inline my-2" action="/clans" method="POST">
+      <input class="form-control mx-2" type="text" name="tag" placeholder="ENTER CLAN TAG" aria-label="Search" required>
+      <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="container-fluid d-block d-md-none">
+    <form class="my-2 text-center" action="/clans" method="POST">
+      <input class="form-control" type="text" name="tag" placeholder="ENTER CLAN TAG" aria-label="Search" required>
+      <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+    </form>
+  </div>
+
+  <h3 class="mx-4 my-3">OR</h3>
+
+  <h3 class="mx-4 font-weight-light">Search by Filters</h3>
+
+  <div class="container-fluid" style="background-color: white;">
+    <form class="my-2 ml-3" actions="/clans" method="POST">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input class="form-control" type="text" id="name" name="name" placeholder="ENTER CLAN NAME" aria-describedby="nameInfo" minlength="3">
+        <small id="nameInfo" class="form-text text-muted">Entered name must be at least three characters</small>
+      </div>
+      <div class="form-group">
+        <label class="" for="location">Location</label>
+        <input class="form-control" list="locationInfo" type="text" name="location" id="location">
+        <datalist class="" id="locationInfo">
+          {{#each locations.items}}
+            <option class="" value="{{name}}">
+          {{/each}}
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label for="minMembers">Minimum Members</label>
+        <input class="form-control" type="number" name="minMembers" id="minMembers" placeholder="Minimum Member Count" min=2 max=50>
+      </div>
+      <div class="form-group">
+        <label for="maxMembers">Maximum Members</label>
+        <input class="form-control" type="number" name="maxMembers" id="maxMembers" placeholder="Maximum Member Count" min=2 max=50>
+      </div>
+      <div class="form-group">
+        <label for="minScore">Minimum Clan Score</label>
+        <input class="form-control" type="number" name="minScore" id="minScore" placeholder="Minimum Clan Score" min=1 max=100000>
+      </div>
+      <div class="form-group">
+        <label for="resultsReturned">Results Returned</label>
+        <input class="form-control" type="number" name="limit" id="resultsReturned" placeholder="Results Returned" min=0 aria-describedby="resultsReturnedInfo">
+        <small id="resultsReturnedInfo" class="form-text text-muted">Leave blank to return all results</small>
+      </div>
+      <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+    </form>
+  </div>
+{{/if}}
+
+

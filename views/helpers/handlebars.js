@@ -165,6 +165,11 @@ var register = function(Handlebars) {
             return true;
           }
           return false;
+        case ">":
+          if (a > b) {
+            return true;
+          }
+          return false;
       }
     },
     // Does basic math
@@ -628,31 +633,69 @@ var register = function(Handlebars) {
         }
       }
     },
-    // This function returns the battle type, given the API game mode id
+    // This function returns the battle type, given the API game mode id or API game mode name (for analysis tab)
     // This function will likely never be complete
     // Name is also taken so if the id is not logged, then I simply return the name
     gameModeName(id, name) {
       switch (id) {
+        case ("Ladder"):
         case (72000006): {
           return "Ladder";
         }
+        case ("Challenge"):
         case (72000010): {
           return "Challenge";
         }
+        case ("TeamVsTeamLadder"):
         case (72000023): {
           return "2v2 Battle";
         }
+        case ("TripleElixir_Ladder"):
         case (72000062): {
           return "Triple Elixir Battle";
         }
+        case ("Tournament"):
         case (72000009): {
           return "Tournament";
         }
+        case ("CW_Battle_1v1"):
         case (72000268): {
           return "River Race 1v1";
         }
+        case ("MortarCapture_Ladder"):
+        case (72000264): {
+          return "Capture the Mortar";
+        }
+        case ("Ladder_CrownRush"):
+        case (72000201): {
+          return "Ladder Crown Rush";
+        }
+        case ("RampUpElixirSpawnPigsMode_2v2_Ladder"):
+        case (72000196): {
+          return "Hog Race 2v2";
+        }
+        case ("RampUpElixirRageJacksMode_Ladder"):
+        case (72000197): {
+          return "Lumberjack Rush";
+        }
+        case ("CW_Duel_1v1"):
+        case (72000267): {
+          return "Clan War Duel";
+        }
+        case ("RampUpElixirSpawnPigsMode_WithMotherWitch_Tournament"):
+        case (72000281): {
+          return "Hog Race with Mother Witch";
+        }
         default: {
-          return name;
+          if (id === name) {
+            // This code snippet space separates API game names
+            // Regex line came from: https://stackoverflow.com/a/7888303
+            name = name.replace("_", "");
+            name = name.split(/(?=[A-Z])/);
+            return name.join(" ");
+          } else {
+            return name;
+          }
         }
       }
     },
@@ -660,12 +703,16 @@ var register = function(Handlebars) {
     readableDate(date) {
       return (new Intl.DateTimeFormat([]).format(date));
     },
-    // This function space separates API game names
-    // Regex line came from: https://stackoverflow.com/a/7888303
-    spaceSeparate(name) {
-      name = name.replace("_", "");
-      name = name.split(/(?=[A-Z])/);
-      return name.join(" ");
+    // This function performs a single OR or AND
+    booleanOperator(boolean1, operation, boolean2) {
+      switch (operation) {
+        case ("AND"): {
+          return (boolean1 && boolean2);
+        }
+        case ("OR"): {
+          return (boolean1 || boolean2);
+        }
+      }
     }
   }
 

@@ -1,0 +1,23 @@
+/*This is for the cards tab on small screens*/
+#cards_table > thead{
+  background-color: #343a40;
+  color: #ffffff;
+}
+
+#cards_table > thead > tr > th {
+  border-right-color:#454d55;
+  border-left-color:#454d55;
+}
+
+.sortable-column:hover {
+  cursor: pointer;
+  background-color: #232930;
+}
+
+/*This is for the analysis tab table on small screens*/
+@media (max-width: 991.98px) {
+  #analysisTableDiv {
+    overflow-y: auto;
+    height: 100vh;
+  }
+}

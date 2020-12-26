@@ -1,9 +1,13 @@
-<nav aria-label="breadcrumb">
+<link rel="stylesheet" href="/css/playerInfo.css">
+<title>Player Stats | {{playerStats.tag}}</title>
+
+<nav aria-label="breadcrumb" class="justify-content-between d-flex mb-3" style="background-color: #e9ecef; height: 48px;">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
     <li class="breadcrumb-item"><a href="/players" style="text-decoration: none;">Players</a></li>
     <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">{{playerStats.tag}}</li>
   </ol>
+  <a href="/players/{{removeFirstCharacter playerStats.tag}}/data" class="text-decoration-none text-right mx-3 align-middle" style="line-height: 48px;">RAW DATA</a>
 </nav>
 
 <!-- Tabs -->
@@ -270,7 +274,7 @@
                   {{#each badges}}
                     <div class="badgeRoyaleCardStyle">
                       <h6 class="font-weight-bold text-center mb-4" style="height: 45px;">{{getBadgeName name progress}}</h6>
-                      <img src="{{getBadgeImage name progress}}" class="card-img-top badge-royale-image" alt={{name}}>
+                      <img src="{{getBadgeImage name progress}}" class="card-img-top badge-royale-image" alt="{{name}}">
                       <div class="card-body">
                         <h2 class="font-weight-light text-center">{{displayBadgeValue name level progress}}</h2>
                       </div>
@@ -299,7 +303,7 @@
                   {{#each achievements}}
                     <div class="achievementRoyaleCardStyle">
                       <h5 class="font-weight-bold text-center mb-3" style="height: 40px;">{{name}}</h5>
-                      <img src="{{getAchievementImage name value}}" class="card-img-top" alt={{name}} style="height: 200px;">
+                      <img src="{{getAchievementImage name value}}" class="card-img-top" alt="{{name}}" style="height: 200px;">
                       <div class="card-body">
                         <div class="container-fluid mx-0 px-0 mb-2" style="height: 40px;">
                           <div class="row justify-content-center">
@@ -381,19 +385,16 @@
   </div>
 
   <div class="tab-pane mx-2 my-4 px-1" id="battles" role="tabpanel" aria-labelledby="battles-tab">
-    {{#if playerBattles}}
-    {{else}}
-      <!--Idk how to do a "NOT" with handlebars, so I just use the else part of an if-->
-      <!--This code should really only apply to inactive players-->
+    {{#unless playerBattles}}
       <div class="alert alert-primary text-center" role="alert">
         No battles are available for this player
       </div>
-    {{/if}}
+    {{/unless}}
     {{#each playerBattles}}
       {{#if (compare type "!==" "boatBattle")}}
         <div class="card my-4 container-fluid" style="background-color:beige;">
           <div class="container-fluid">
-            <h2 class="mt-4 mb-3">{{gameModeName gameMode.id gameMode.name}}</h2>
+            <h2 class="mt-4 mb-3 font-weight-bold">{{gameModeName gameMode.id gameMode.name}}</h2>
             <div>
               <h3>
                 <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">
@@ -401,14 +402,54 @@
                 </a>
               </h3>
               <div class="container-fluid mx-0 px-0 mt-0">
-                <div class="row">
-                  {{#each team.0.cards}}
-                    <div class="mx-1">
-                      <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
-                      <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                {{#if (compare (objectLength team.0.cards) ">" 8)}}
+                  <!--This means that the battle is a duel (best of 3)-->
+                  <h4 class="mt-3 mb-0">Battle 1</h4>
+                  <div class="row">
+                    {{#each team.0.cards}}
+                      {{#if (compare @index "<" 8)}}
+                        <div class="mx-1">
+                          <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                          <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                        </div>
+                      {{/if}}
+                    {{/each}}
+                  </div>
+                  <h4 class="mt-3 mb-0">Battle 2</h4>
+                  <div class="row">
+                    {{#each team.0.cards}}
+                      {{#if (booleanOperator (compare @index ">" 7) "AND" (compare @index "<" 16))}}
+                        <div class="mx-1">
+                          <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                          <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                        </div>
+                      {{/if}}
+                    {{/each}}
+                  </div>
+                  {{#if (compare (objectLength team.0.cards) ">" 16)}}
+                    <!--This means that the duel had three battles, not two-->
+                    <h4 class="mt-3 mb-0">Battle 3</h4>
+                    <div class="row">
+                      {{#each team.0.cards}}
+                        {{#if (compare @index ">" 15)}}
+                          <div class="mx-1">
+                            <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                            <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                          </div>
+                        {{/if}}
+                      {{/each}}
                     </div>
-                  {{/each}}
-                </div>
+                  {{/if}}
+                {{else}}
+                  <div class="row">
+                    {{#each team.0.cards}}
+                      <div class="mx-1">
+                        <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                        <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                      </div>
+                    {{/each}}
+                  </div>
+                {{/if}}
               </div>
             </div>
             <div>
@@ -440,14 +481,54 @@
                 </a>
               </h3>
               <div class="container-fluid mx-0 px-0">
-                <div class="row">
-                  {{#each opponent.0.cards}}
-                    <div class="mx-1">
-                      <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
-                      <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                {{#if (compare (objectLength opponent.0.cards) ">" 8)}}
+                  <!--This means that the battle is a duel (best of 3)-->
+                  <h4 class="mt-3 mb-0">Battle 1</h4>
+                  <div class="row">
+                    {{#each opponent.0.cards}}
+                      {{#if (compare @index "<" 8)}}
+                        <div class="mx-1">
+                          <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                          <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                        </div>
+                      {{/if}}
+                    {{/each}}
+                  </div>
+                  <h4 class="mt-3 mb-0">Battle 2</h4>
+                  <div class="row">
+                    {{#each opponent.0.cards}}
+                      {{#if (booleanOperator (compare @index ">" 7) "AND" (compare @index "<" 16))}}
+                        <div class="mx-1">
+                          <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                          <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                        </div>
+                      {{/if}}
+                    {{/each}}
+                  </div>
+                  {{#if (compare (objectLength opponent.0.cards) ">" 16)}}
+                    <!--This means that the duel had three battles, not two-->
+                    <h4 class="mt-3 mb-0">Battle 3</h4>
+                    <div class="row">
+                      {{#each opponent.0.cards}}
+                        {{#if (compare @index ">" 15)}}
+                          <div class="mx-1">
+                            <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                            <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                          </div>
+                        {{/if}}
+                      {{/each}}
                     </div>
-                  {{/each}}
-                </div>
+                  {{/if}}
+                {{else}}
+                  <div class="row">
+                    {{#each opponent.0.cards}}
+                      <div class="mx-1">
+                        <img src="/images/cards/{{name}}.png" class="my-2 battle-cards" alt="{{name}}" width="100" style="">
+                        <p class="my-0" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
+                      </div>
+                    {{/each}}
+                  </div>
+                {{/if}}
               </div>
             </div>
             <div>
@@ -565,7 +646,7 @@
       </div>
       <table class="table table-bordered table-striped table-sm" style="width: 100%" id="cards_table">
         <thead class="">
-          <tr class="thead-dark text-center">
+          <tr class="text-center">
             <th class="align-middle sortable-column" onclick="sortTable(0)">
               Card Name
               <div>
@@ -654,55 +735,79 @@
       </div>
     </div>
   </div>
-  <div class="tab-pane mx-4 my-4" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+  <div class="tab-pane mx-0 mx-md-2 mx-lg-4 my-4 px-0" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
     {{#if isTracked}}
-      <div class="alert alert-info text-center">This player is being tracked</div>
+      <div class="alert alert-primary text-center">This player is being tracked</div>
       {{#if trackedBattles}}
         <div class="alert alert-warning d-block d-lg-none text-center">
-          Analysis tab for a small screen is not supported
+          Analysis tab for a small screen is suboptimal; viewing on a bigger screen is recommended
         </div>
-        <table id="analysisTable" class="table bg-light d-none d-lg-table table-bordered justify-content-center" style="width: 100%">
-          <thead>
-            <tr class="thead-dark text-center" style="">
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Deck Used<input id="analysisTableSearch0" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(0)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Opponent<input id="analysisTableSearch1" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(1)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Deck Faced<input id="analysisTableSearch2" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(2)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Level Difference<input id="analysisTableSearch3" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(3)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Battle Type<input id="analysisTableSearch4" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(4)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Battle Outcome<input id="analysisTableSearch5" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(5)"></th>
-              <th class="align-middle border-dark" style="position: sticky; top: 0;">Time<input id="analysisTableSearch6" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(6)"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each trackedBattles}}
-              <tr>
-                <td class="analysisTableDeckUsed" id="">
-                  <div class="container-fluid">
-                    <div class="row justify-content-center">
-                      {{#each deck_used}}
-                        <img src="/images/cards/{{this}}.png" style="width: 60px;" alt="{{this}}">
-                      {{/each}}
-                    </div>
-                  </div>
-                </td>
-                <td class="align-middle text-center"><a href="/players/{{opponent_tag}}" class="text-decoration-none">{{opponent_tag}}</a></td>
-                <td class="analysisTableDeckFaced" id="">
-                  <div class="container-fluid">
-                    <div class="row justify-content-center">
-                      {{#each deck_faced}}
-                        <img src="/images/cards/{{this}}.png" style="width: 60px;" alt="{{this}}">
-                      {{/each}}
-                    </div>
-                  </div>
-                </td>
-                <td class="align-middle text-center level-difference">{{level_difference}}</td>
-                <td class="align-middle text-center">{{spaceSeparate battle_type}}</td>
-                <td class="align-middle text-center">{{battle_outcome}}</td>
-                <td class="align-middle text-center">{{readableDate time}}</td>
+        <div id="analysisTableNumEntries" class="alert alert-info text-center">Showing All Entries</div>
+        <div id="analysisTableDiv" style="">
+          <table id="analysisTable" class="table bg-light table-bordered justify-content-center mb-4" style="width: 100%;">
+            <thead>
+              <tr class="thead-dark text-center" style="">
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Deck Used</p>
+                  <input id="analysisTableSearch0" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(0)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Opponent</p>
+                  <input id="analysisTableSearch1" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(1)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Deck Faced</p>
+                  <input id="analysisTableSearch2" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(2)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Level Difference</p>
+                  <input id="analysisTableSearch3" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(3)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Battle Type</p>
+                  <input id="analysisTableSearch4" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(4)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Battle Outcome</p>
+                  <input id="analysisTableSearch5" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(5)">
+                </th>
+                <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                  <p class="my-0" style="height: 50px;">Time</p>
+                  <input id="analysisTableSearch6" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(6)">
+                </th>
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {{#each trackedBattles}}
+                <tr>
+                  <td class="analysisTableDeckUsed" id="" style="min-width: 212px;">
+                    <div class="container-fluid">
+                      <div class="row justify-content-center">
+                        {{#each deck_used}}
+                          <img src="/images/cards/{{this}}.png" class="analysisTablePicture" style="" alt="{{this}}">
+                        {{/each}}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="align-middle text-center"><a href="/players/{{opponent_tag}}" class="text-decoration-none">{{opponent_tag}}</a></td>
+                  <td class="analysisTableDeckFaced" id="" style="min-width: 212px;">
+                    <div class="container-fluid">
+                      <div class="row justify-content-center">
+                        {{#each deck_faced}}
+                          <img src="/images/cards/{{this}}.png" class="analysisTablePicture" style="" alt="{{this}}">
+                        {{/each}}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="align-middle text-center level-difference">{{level_difference}}</td>
+                  <td class="align-middle text-center">{{gameModeName battle_type battle_type}}</td>
+                  <td class="align-middle text-center battle-outcome">{{battle_outcome}}</td>
+                  <td class="align-middle text-center">{{readableDate time}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
       {{else}}
         <h1>No Tracked Battles</h1>
       {{/if}}
@@ -710,7 +815,7 @@
       <div class="alert alert-info text-center">This player is not being tracked</div>
       <form class="container-fluid mx-0 px-0" action="/players/{{removeFirstCharacter playerStats.tag}}" method="POST">
         <div class="row justify-content-center">
-          <button class="btn btn-lg btn-primary" type="submit">Start Tracking Player</button>
+          <input class="btn btn-lg btn-primary" name="addPlayer" value="Start Tracking Player" type="submit">
         </div>
       </form>
     {{/if}}
@@ -765,8 +870,13 @@
 
   // playerStats, playerBattles, and playerChests are the three info pieces sent to the HTML document
   $(".battle-cards").css("width", (0.075 * (window.innerWidth - 500) + 75));
+  $(".analysisTablePicture").css("width", (0.02 * (window.innerWidth) + 29));
+  if (window.innerWidth < 1200) {
+    $("#analysisTable").addClass("table-sm");
+  }
   window.onresize = function () {
     $(".battle-cards").css("width", (0.075 * (window.innerWidth - 500) + 75));
+    $(".analysisTablePicture").css("width", (0.02 * (window.innerWidth) + 29));
     if (window.innerWidth > 768) {
       $(".badgeRoyaleCardStyle").removeClass("mx-1 px-2").addClass("mx-2 px-3");
       $(".badgeRoyaleCardStyle").css({"width": "10rem"});
@@ -775,6 +885,11 @@
       $(".badgeRoyaleCardStyle").removeClass("mx-2 px-3").addClass("mx-1 px-2");
       $(".badgeRoyaleCardStyle").css({"width": "8rem"});
       $(".badge-royale-image").css({"height": "112px"});
+    }
+    if (window.innerWidth < 1200) {
+      $("#analysisTable").addClass("table-sm");
+    } else {
+      $("#analysisTable").removeClass("table-sm");
     }
   }
   $(".battle-outcome").css("color", function() {
@@ -804,8 +919,17 @@
     }
     return ("green");
   });
-
-  // This code is for the sort feature on the table
+  // This code is for the table (hopefully it works)
+  // Pagination is to be implemented later — too many issues with my custom filters
+  /*$(document).ready(function () {
+    $('#analysisTable').DataTable({
+      "searching": false,
+      "paging": false,
+      "info": false
+    });
+  });*/
+  
+  // This code is for the sort feature on the cards table
   let directions = [1, Number.NEGATIVE_INFINITY, 1, 1, 1];
   function sortTable(n) {
     directions[n] = (directions[n] + 1) % 2;
@@ -1108,49 +1232,6 @@
 
   // This function filters the data from the table in the Analysis Tab
   // Implementation is taken from: https://www.w3schools.com/howto/howto_js_filter_table.asp
-  /*function filterAnalysisTable(col) {
-    if (col !== 0 && col !== 2) {
-      // Column is not a deck (no pictures to worry about)
-      let filterID = "analysisTableSearch" + col;
-      let filter = document.getElementById(filterID).value.toUpperCase();
-      let tableRows = document.getElementById("analysisTable").rows;
-      for (let i = 1; i < tableRows.length; i++) {
-        let tableData = tableRows[i].getElementsByTagName("td")[col].innerText;
-        if (tableData.toUpperCase().includes(filter)) {
-          tableRows[i].style.display = "";
-        } else {
-          tableRows[i].style.display = "none";
-        }
-      }
-    } else {
-      // Column is a deck and will be filtered using the pictures' alt text
-      let filterID = "analysisTableSearch" + col;
-      let filter = document.getElementById(filterID).value.toUpperCase().split(" ");
-      let tableRows = document.getElementById("analysisTable").rows;
-      let toSearch = "";
-      toSearch = (col === 0) ? (".analysisTableDeckUsed") : (".analysisTableDeckFaced");
-      $(toSearch).each(function () {
-        let tableData = "";
-        $(this).find("div div img").each(function () {
-          tableData += $(this).attr("alt") + " ";
-        });
-        let toShow = true;
-        for (let i = 0; i < filter.length; i++) {
-          if (!tableData.toUpperCase().includes(filter[i])) {
-            toShow = false;
-            break;
-          }
-        }
-        if (toShow) {
-          $(this).parent().css("display", "");
-        } else {
-          $(this).parent().css("display", "none");
-        }
-      });
-    }
-  }*/
-
-  // Reworked filter function for analysis table
   function filterAnalysisTable(notNeeded) {
     let filters = [];
     let tableRows = document.getElementById("analysisTable").rows;
@@ -1161,9 +1242,6 @@
       let tmp = document.getElementById("analysisTableSearch" + i).value.toUpperCase();
       filters.push((i === 0 || i === 2) ? tmp.split(" ") : tmp);
     }
-    /*for (let i = 1; i < tableRows.length; i++) {
-      console.log(tableRows[i].style.display);
-    }*/
     for (let i = 0; i < filters.length; i++) {
       if (i === 0 || i === 2) {
         let toSearch = (i === 0) ? (".analysisTableDeckUsed") : (".analysisTableDeckFaced");
@@ -1174,38 +1252,41 @@
           });
           let toShow = true;
           for (let j = 0; j < filters[i].length; j++) {
-            //console.log(filters[i][j]);
             if (!tableData.toUpperCase().includes(filters[i][j])) {
               toShow = false;
               break;
             }
           }
-          //console.log(tableData + " " + toShow);
-          //console.log($(this).parent());
-          //console.log($(this).parent().css("display"));
-          /*if (toShow && $(this).parent().css("display") !== "none") {
-            $(this).parent().css("display", "");
-          } else {
-            $(this).parent().css("display", "none");
-          }*/
           if (!toShow) {
             $(this).parent().css("display", "none");
           }
         });
       } else {
-        //let tableRows = document.getElementById("analysisTable").rows;
         for (let j = 1; j < tableRows.length; j++) {
           let tableData = tableRows[j].getElementsByTagName("td")[i].innerText;
-          /*if (tableData.toUpperCase().includes(filters[i]) && tableRows[i].style.display !== "none") {
-            tableRows[i].style.display = "";
-          } else {
-            tableRows[i].style.display = "none";
-          }*/
           if (!tableData.toUpperCase().includes(filters[i])) {
             tableRows[j].style.display = "none";
           }
         }
       }
+    }
+    let numEntriesShown = 0;
+    let percentVictories = 0;
+    for (let i = 1; i < tableRows.length; i++) {
+      if (tableRows[i].style.display !== "none") {
+        numEntriesShown++;
+        if (tableRows[i].getElementsByTagName("td")[5].innerText === "Victory") {
+          percentVictories++;
+        }
+      }
+    }
+    percentVictories /= numEntriesShown;
+    percentVictories = Math.round(percentVictories * Math.pow(10, 3));
+    percentVictories = (percentVictories / Math.pow(10, 1));
+    if (isNaN(percentVictories)) {
+      $("#analysisTableNumEntries").text(`Showing ${numEntriesShown} of ${tableRows.length - 1} Entries`);
+    } else {
+      $("#analysisTableNumEntries").text(`Showing ${numEntriesShown} of ${tableRows.length - 1} Entries with ${percentVictories}% Win Rate`);
     }
   }
 

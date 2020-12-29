@@ -10,6 +10,9 @@ const { template } = require("handlebars");
 const app = express();
 //Database Configuration
 const db = require("./config/database");
+// API Token (importing from local file)
+// When reusing, make sure to use your own token
+const token = require("./config/apiKeys");
 
 // Map global Promises
 mongoose.Promise = global.Promise;
@@ -52,10 +55,11 @@ app.use(bodyParser.json());
 // Serving static files
 app.use(express.static("static_files"));
 
-// Global Variables that I declarded
-// Might need to put my Clash Royale API Token somewhere safer
-//const auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjFhMDI4NjAzLWY2OTUtNGUxMC04N2MxLTc1ZjFmMGZkMzUwMiIsImlhdCI6MTYwNjE1NTY5Miwic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzMiXSwidHlwZSI6ImNsaWVudCJ9XX0.itwXBlkJmcVuB3dZm-FPXrHMNgpy5o75t9mJZha3Sn8rFpObsj2YTXZLlX5IkCQ7r_LoRm-SkTz2mXBwrPcbLQ";
-const auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjkwNTQ0YzZhLWUzM2YtNGYxOS1iY2YzLTY2OGQ2M2M0ZjQzOCIsImlhdCI6MTYwOTI3NTMwMiwic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIzNC4yMzMuMTI2LjQyIiwiMTg0LjE3MC4xNjYuMTczIl0sInR5cGUiOiJjbGllbnQifV19.A7NA6d_6lyhf6I78X3YVvdTw5DuBOoYNoGTDIfK1WJL9hh2dxuFc3r5B5uWvds5ZdlgBQeu2sHKFOrWVL1pKMQ";
+// Global Variables that I declared
+// Previous API Token are exposed publicly on my commit history
+// However, since I deleted those tokens, they no longer work
+// The only working token is hidden since I gitignored the file with the token
+const auth = token.CR_API_TOKEN;
 
 // Root Index
 app.get("/", (req, res) => {

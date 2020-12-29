@@ -1,1 +1,1 @@
-The card images were taken from the official API. For example, the image for Skeleton Barrel was taken from https://api-assets.clashroyale.com/cards/300/vCB4DWCcrGbTkarjcOiVz4aNDx6GWLm0yUepg9E1MGo.png.
+The card images were taken from the official API. For example, the image for Skeleton Barrel was taken from https://api-assets.clashroyale.com/cards/300/vCB4DWCcrGbTkarjcOiVz4aNDx6GWLm0yUepg9E1MGo.png

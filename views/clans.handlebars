@@ -3,7 +3,7 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Players</li>
+    <li class="breadcrumb-item active" aria-current="page">Clans</li>
   </ol>
 </nav>
 
@@ -13,9 +13,130 @@
 
 {{#if results}}
   <!--Displaying Results-->
-  {{#each results.items}}
-    <p>{{tag}}</p>
-  {{/each}}
+
+  <!--This is a toggle that lets the user select between card view and table view-->
+  <!--Default is table view-->
+  <div class="container-fluid d-flex justify-content-center">
+    <input id="searchDisplayFormat" style="mx-auto" type="checkbox" data-toggle="toggle" data-onstyle="outline-info" data-offstyle="outline-dark" data-on="Table" data-off="Cards" data-size="lg" checked>
+    <button type="button" class="btn btn-primary ml-5" data-toggle="modal" data-target="#viewSettings">
+      Change Viewable Data
+    </button>
+  </div>
+
+  <!--This is for the modal that lets the user select what info they want visible-->
+  <div class="modal fade" id="viewSettings" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="viewSettingsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="viewSettingsLabel">Data View Settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-toggle-div">
+            <h5>Display Clan Badge: </h5>
+            <input class="display-toggle" data-column="0" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Name: </h5>
+            <input class="display-toggle" data-column="1" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Tag: </h5>
+            <input class="display-toggle" data-column="2" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Type: </h5>
+            <input class="display-toggle" data-column="3" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Location: </h5>
+            <input class="display-toggle" data-column="4" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Required Trophies: </h5>
+            <input class="display-toggle" data-column="5" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Donations Per Week: </h5>
+            <input class="display-toggle" data-column="6" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Clan Score: </h5>
+            <input class="display-toggle" data-column="7" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Clan War Trophies: </h5>
+            <input class="display-toggle" data-column="8" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Members: </h5>
+            <input class="display-toggle" data-column="9" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info" data-dismiss="modal">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cards" class="container-fluid mt-3 d-none">
+    <div class="row justify-content-center">
+      {{#each results.items}}
+        <div class="card" style="width: 12em; margin: 10px;">
+          <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge">
+          <div class="card-body">
+            <h4 class="card-title mb-2 font-weight-bold card-data-1">{{name}}</h4>
+            <h6 class="font-weight-light font-italic mb-3 card-data-2">{{tag}}</h6>
+            <p class="card-text card-data-3">Type: {{correctCapitalization type}}</p>
+            <p class="card-text card-data-4">Location: {{location.name}}</p>
+            <p class="card-text card-data-5">Required Trophies: {{requiredTrophies}}</p>
+            <p class="card-text card-data-6">Donations Per Week: {{donationsPerWeek}}</p>
+            <p class="card-text card-data-7">Clan Score: {{clanScore}}</p>
+            <p class="card-text card-data-8">Clan War Trophies: {{clanWarTrophies}}</p>
+            <p class="card-text card-data-9">Members: {{members}} / 50</p>
+            <a href="/clans/{{removeFirstCharacter tag}}" class="btn btn-primary">View Clan</a>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  <div id="tableDiv" class="container-fluid mt-3 px-0 py-2 px-lg-4 mb-5 table-responsive" style="">
+    <table id="table" class="table table-bordered table-striped justify-content-center" style="width: 100%;">
+      <thead>
+        <tr class="thead-dark text-center">
+          <th>Badge</th>
+          <th>Name</th>
+          <th>Tag</th>
+          <th>Type</th>
+          <th>Location</th>
+          <th>Required Trophies</th>
+          <th>Donations Per Week</th>
+          <th>Clan Score</th>
+          <th>Clan War Trophies</th>
+          <th>Members</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results.items}}
+          <tr class="text-center">
+            <td class="align-middle"><img src="{{getClanBadge badgeId clanWarTrophies}}" class="" alt="Clan Badge" style="width: 50px;"></td>
+            <td class="align-middle"><a href="/clans/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
+            <td class="align-middle">{{tag}}</td>
+            <td class="align-middle">{{correctCapitalization type}}</td>
+            <td class="align-middle">{{location.name}}</td>
+            <td class="align-middle">{{requiredTrophies}}</td>
+            <td class="align-middle">{{donationsPerWeek}}</td>
+            <td class="align-middle">{{clanScore}}</td>
+            <td class="align-middle">{{clanWarTrophies}}</td>
+            <td class="align-middle">{{members}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 {{else}}
   <!--Displaying the Form-->
   <h1 class="mx-4 text-center mb-4">Clan Search</h1>
@@ -71,11 +192,62 @@
       <div class="form-group">
         <label for="resultsReturned">Results Returned</label>
         <input class="form-control" type="number" name="limit" id="resultsReturned" placeholder="Results Returned" min=0 aria-describedby="resultsReturnedInfo">
-        <small id="resultsReturnedInfo" class="form-text text-muted">Leave blank to return all results</small>
+        <small id="resultsReturnedInfo" class="form-text text-muted">Leave blank to return maximum results</small>
       </div>
       <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
     </form>
   </div>
 {{/if}}
+
+<script>
+  $(".modal-toggle-div").addClass("d-flex my-2 justify-content-between");
+  $(".modal-toggle-div").css({"height": "34.4px"});
+  $(".modal-toggle-div h5").addClass("mr-4");
+  $(".modal-toggle-div h5").css({"line-height": "30.0px"});
+  if (window.innerWidth < 768) {
+    $("#table").addClass("table-sm");
+  }
+  window.onresize = function () {
+    if (window.innerWidth < 768) {
+      $("#table").addClass("table-sm");
+    } else {
+      $("#table").removeClass("table-sm");
+    }
+  }
+  $(document).ready(function () {
+    let table = $("#table").DataTable();
+    // Initializes all display toggles and the view format toggle to on
+    // This code is necessary; otherwise, the page would break if the user refreshes
+    $(".display-toggle").each(function() {
+      $(this).bootstrapToggle("on");
+    });
+    $("#searchDisplayFormat").bootstrapToggle("on");
+    // Event handler for the display toggles
+    $(function() {
+      $(".display-toggle").change(function() {
+        let cardClass = ".card-data-" + $(this).attr("data-column");
+        if($(this).prop("checked")) {
+          $(cardClass).removeClass("d-none").addClass("d-block");
+        } else {
+          $(cardClass).removeClass("d-block").addClass("d-none");
+        }
+        let column = table.column($(this).attr("data-column"));
+        column.visible(!column.visible());
+      });
+    });
+  });
+  // Event handler for the card/table toggle
+  $(function() {
+    $("#searchDisplayFormat").change(function() {
+      if($(this).prop("checked")) {
+        $("#cards").removeClass("d-block").addClass("d-none");
+        $("#tableDiv").removeClass("d-none").addClass("d-block");
+      } else {
+        $("#cards").removeClass("d-none").addClass("d-block");
+        $("#tableDiv").removeClass("d-block").addClass("d-none");
+      }
+    });
+  });
+</script>
 
 

@@ -17,11 +17,14 @@ var serveStatic = require("serve-static");
 var _require = require("handlebars"),
     template = _require.template;
 
-var app = express(); // Map global Promises
+var app = express(); //Database Configuration
+
+var db = require("./config/database"); // Map global Promises
+
 
 mongoose.Promise = global.Promise; // Mongoose Connection
 
-mongoose.connect("mongodb://localhost/clashalytics-dev", {
+mongoose.connect(db.mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(function () {
@@ -55,6 +58,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json()); // Serving static files
 
 app.use(express["static"]("static_files")); // Global Variables that I declarded
+// Might need to put my Clash Royale API Token somewhere safer
 
 var auth = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjFhMDI4NjAzLWY2OTUtNGUxMC04N2MxLTc1ZjFmMGZkMzUwMiIsImlhdCI6MTYwNjE1NTY5Miwic3ViIjoiZGV2ZWxvcGVyLzZmMDliMjM1LWViMDUtMzhjOS04ZTEyLTMxYjViMjJkM2VkNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIxODQuMTcwLjE2Ni4xNzMiXSwidHlwZSI6ImNsaWVudCJ9XX0.itwXBlkJmcVuB3dZm-FPXrHMNgpy5o75t9mJZha3Sn8rFpObsj2YTXZLlX5IkCQ7r_LoRm-SkTz2mXBwrPcbLQ"; // Root Index
 
@@ -179,6 +183,7 @@ app.get("/players/:tag", function (req, res) {
     }
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
   fetch(url2, {
     headers: {
@@ -209,6 +214,7 @@ app.get("/players/:tag", function (req, res) {
     }
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
   fetch(url3, {
     headers: {
@@ -238,6 +244,7 @@ app.get("/players/:tag", function (req, res) {
     }
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
 
   if (errors.length > 0) {
@@ -388,7 +395,6 @@ app.get("/help", function (req, res) {
   res.render("help");
 });
 app.get("/clans", function (req, res) {
-  console.log(req.query.locationId);
   fetch("https://api.clashroyale.com/v1/locations", {
     headers: {
       Accept: "application/json",
@@ -397,14 +403,166 @@ app.get("/clans", function (req, res) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    res.render("clans", {
-      locations: json,
-      results: []
-    });
+    if (Object.keys(req.query).length === 0) {
+      res.render("clans", {
+        locations: json,
+        results: []
+      });
+    } else {
+      var name = req.query.name;
+      var locationId = decodeURIComponent(req.query.locationId);
+      var minMembers = req.query.minMembers;
+      var maxMembers = req.query.maxMembers;
+      var minScore = req.query.minScore;
+      var limit = req.query.limit;
+      var errors = [];
+      var validKeys = ["name", "locationId", "minMembers", "maxMembers", "minScore", "limit"];
+      var validSearch = true;
+
+      if (typeof name === "undefined" && locationId === "undefined" && typeof minMembers === "undefined" && typeof maxMembers === "undefined" && typeof minScore === "undefined") {
+        errors.push("Must specify at least one filtering parameter (limit does not count)");
+      }
+
+      Object.keys(req.query).forEach(function (key, index) {
+        if (!validKeys.includes(key)) {
+          validSearch = false;
+        }
+      });
+
+      if (!validSearch) {
+        errors.push("Invalid Search Parameters");
+      }
+
+      if (typeof name !== "undefined" && name.length < 3) {
+        errors.push("Name must be at least three characters long");
+      }
+
+      if (typeof locationId !== "undefined" && locationId !== "undefined") {
+        var validLocation = false;
+
+        for (var i = 0; i < json.items.length; i++) {
+          if (locationId === json.items[i].name) {
+            validLocation = true;
+            locationId = json.items[i].id;
+          }
+        }
+
+        if (!validLocation && locationId !== "") {
+          errors.push("Entered location is not valid");
+        }
+      }
+
+      if (typeof minMembers !== "undefined") {
+        if (minMembers < 2) {
+          errors.push("Minimum members must be at least 2");
+        }
+
+        if (minMembers > 50) {
+          errors.push("Minimum members must be no more than 50");
+        }
+
+        if (!Number.isInteger(Number(minMembers))) {
+          errors.push("Minimum members must be an integer");
+        }
+      }
+
+      if (typeof maxMembers !== "undefined") {
+        if (maxMembers < 1) {
+          errors.push("Maximum members must be at least 1");
+        }
+
+        if (maxMembers > 50) {
+          errors.push("Maximum members must be no more than 50");
+        }
+
+        if (!Number.isInteger(Number(maxMembers))) {
+          errors.push("Maximum members must be an integer");
+        }
+      }
+
+      if (typeof maxMembers !== "undefined" && typeof minMembers !== "undefined") {
+        if (Number(maxMembers) < Number(minMembers)) {
+          errors.push("Maximum members must be equal to or greater than minimum members");
+        }
+      }
+
+      if (typeof minScore !== "undefined") {
+        if (minScore < 1) {
+          errors.push("Minimum clan score must be at least 1");
+        }
+
+        if (!Number.isInteger(Number(minScore))) {
+          errors.push("Minimum clan score must be an integer");
+        }
+      }
+
+      if (typeof limit !== "undefined") {
+        if (limit < 0) {
+          errors.push("Limit must be at least 0");
+        }
+
+        if (!Number.isInteger(Number(limit))) {
+          errors.push("Limit must be an integer");
+        }
+      }
+
+      if (errors.length > 0) {
+        res.render("clans", {
+          errors: errors,
+          locations: json,
+          results: []
+        });
+      } else {
+        var url = "https://api.clashroyale.com/v1/clans?";
+
+        if (typeof name !== "undefined") {
+          url = url + "&name=" + encodeURIComponent(name);
+        }
+
+        if (locationId !== "undefined") {
+          url = url + "&locationId=" + locationId;
+        }
+
+        if (typeof minMembers !== "undefined") {
+          url = url + "&minMembers=" + minMembers;
+        }
+
+        if (typeof maxMembers !== "undefined") {
+          url = url + "&maxMembers=" + maxMembers;
+        }
+
+        if (typeof minScore !== "undefined") {
+          url = url + "&minScore=" + minScore;
+        }
+
+        if (typeof limit !== "undefined") {
+          url = url + "&limit=" + limit;
+        } //console.log(url);
+
+
+        fetch(url, {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (json2) {
+          res.render("clans", {
+            locations: json,
+            results: json2
+          });
+        })["catch"](function (err) {
+          console.log(err);
+        });
+      }
+    }
+  })["catch"](function (err) {
+    console.log(err);
+    res.send("Server Error");
   });
 });
 app.post("/clans", function (req, res) {
-  //console.log(req.body);
   var errors = [];
 
   if ("tag" in req.body) {
@@ -434,95 +592,57 @@ app.post("/clans", function (req, res) {
       });
     }
   } else {
+    // User searched by filters
     var name = req.body.name;
     var location = req.body.location;
     var minMembers = req.body.minMembers;
     var maxMembers = req.body.maxMembers;
     var minScore = req.body.minScore;
     var limit = req.body.limit;
+    var url2 = "/clans?";
 
-    if (name === "" && location === "" && minMembers === "" && maxMembers === "" && minScore === "" && limit === "") {
-      errors.push("Must specify at least one filtering parameter");
+    if (name !== "") {
+      url2 = url2 + "&name=" + encodeURIComponent(name);
     }
 
-    fetch("https://api.clashroyale.com/v1/locations", {
-      headers: {
-        Accept: "application/json",
-        Authorization: auth
-      }
-    }).then(function (res) {
-      return res.json();
-    }).then(function (json) {
-      var validLocation = false;
+    if (location !== "") {
+      url2 = url2 + "&locationId=" + encodeURIComponent(location);
+    }
 
-      for (var i = 0; i < json.items.length; i++) {
-        if (location === json.items[i].name) {
-          validLocation = true;
-          location = json.items[i].id;
-        }
-      }
+    if (minMembers !== "") {
+      url2 = url2 + "&minMembers=" + minMembers;
+    }
 
-      if (!validLocation && location !== "") {
-        errors.push("Entered location is not valid");
-      }
+    if (maxMembers !== "") {
+      url2 = url2 + "&maxMembers=" + maxMembers;
+    }
 
-      if (errors.length > 0) {
-        res.render("clans", {
-          errors: errors,
-          locations: json
-        });
-      } else {
-        var url = "https://api.clashroyale.com/v1/clans?";
+    if (minScore !== "") {
+      url2 = url2 + "&minScore=" + minScore;
+    }
 
-        if (name !== "") {
-          url = url + "&name=" + encodeURIComponent(name);
-        }
+    if (limit !== "") {
+      url2 = url2 + "&limit=" + limit;
+    }
 
-        if (location !== "") {
-          url = url + "&locationId=" + location;
-        }
-
-        if (minMembers !== "") {
-          url = url + "&minMembers=" + minMembers;
-        }
-
-        if (maxMembers !== "") {
-          url = url + "&maxMembers=" + maxMembers;
-        }
-
-        if (minScore !== "") {
-          url = url + "&minScore=" + minScore;
-        }
-
-        if (limit !== "") {
-          url = url + "&limit=" + limit;
-        }
-
-        console.log(url);
-        fetch(url, {
-          headers: {
-            Accept: "application/json",
-            Authorization: auth
-          }
-        }).then(function (res) {
-          return res.json();
-        }).then(function (json2) {
-          res.render("clans", {
-            locations: json,
-            results: json2
-          });
-        })["catch"](function (err) {
-          console.log(err);
-        });
-      }
-    })["catch"](function (err) {
-      console.log(err);
-    });
+    res.redirect(url2);
   }
 });
 app.get("/clans/:tag", function (req, res) {
   var tag = req.params.tag.toUpperCase();
-  res.send("Get clan with tag: " + tag);
+  res.render("construction", {
+    page: "Clan " + tag
+  }); //res.send("Get clan with tag: " + tag);
+});
+app.get("/cards", function (req, res) {
+  res.render("construction", {
+    page: "Cards"
+  });
+});
+app.get("/guides", function (req, res) {
+  res.render("construction", {
+    page: "Guides"
+  });
 }); // This area is where I try to keep track of player battles and update the db every ~hour
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
 
@@ -585,7 +705,7 @@ var updateBattleLog = function updateBattleLog() {
                             case 2:
                               battleExists = _context5.sent;
 
-                              if (!battleExists) {
+                              if (!battleExists && json[i].team[0].cards.length == 8) {
                                 new Battle(toAdd).save().then(function (idea) {//console.log(idea);
                                 });
                               }
@@ -644,11 +764,9 @@ var updateBattleLog = function updateBattleLog() {
 
                 if (_ret === "break|jsonLoop") break jsonLoop;
               }
-            });
-            /*.catch((err) => {
-              errors.push(err);
-            });*/
-            //console.log(player);
+            })["catch"](function (err) {
+              console.log(err);
+            }); //console.log(player);
           });
 
         case 5:
@@ -692,9 +810,9 @@ var doEveryHour = function doEveryHour(something) {
   };
 };
 
-var updatingBattleLog = doEveryHour(updateBattleLog);
-updatingBattleLog.exec();
-var port = 5000;
+var updatingBattleLog = doEveryHour(updateBattleLog); //updatingBattleLog.exec();
+
+var port = process.env.PORT || 5000;
 app.listen(port, function () {
   console.log("Server started on port ".concat(port));
 });

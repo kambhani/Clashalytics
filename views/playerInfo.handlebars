@@ -44,7 +44,7 @@
         {{bestTrophies}} PB
       </h2>
       {{#if role}}
-        <h3><a class="text-decoration-none" href="/clans/{{removeFirstCharacter clan.tag}}">{{clan.name}}</a> [{{correctClanRoleCapitalization role}}]</h3>
+        <h3><a class="text-decoration-none" href="/clans/{{removeFirstCharacter clan.tag}}">{{clan.name}}</a> [{{correctCapitalization role}}]</h3>
       {{else}}
         <h3 class="font-italic">Not in Clan</h3>
       {{/if}}
@@ -179,14 +179,14 @@
               <div class="container-fluid pt-4">
                 <div class="row justify-content-center">
                   <div class="clanRoyaleCardStyle">
-                    <img src="/images/misc/cards.png" class="card-img-top" alt="Donation Cards" style="margin-bottom: 19.169px;">
+                    <img src="/images/achievements/Donations.png" class="card-img-top" alt="Donation Cards" style="margin-bottom: 63.233px;">
                     <div class="card-body">
                       <h5 class="card-title text-center font-weight-bold">Total Donations</h5>
                       <h1 class="font-weight-light text-center">{{totalDonations}}</h1>
                     </div>
                   </div>
                   <div class="clanRoyaleCardStyle">
-                    <img src="/images/clans/War Shield v4.png" class="card-img-top" alt="War Shield" style="margin-bottom: 0px;">
+                    <img src="/images/clans/War Shield v4.png" class="card-img-top" alt="War Shield" style="">
                     <div class="card-body">
                       <h5 class="card-title text-center font-weight-bold">War Day Wins</h5>
                       <h1 class="font-weight-light text-center">{{warDayWins}}</h1>
@@ -196,7 +196,7 @@
                     </div>
                   </div>
                   <div class="clanRoyaleCardStyle">
-                    <img src="/images/clans/Clan Cards.png" class="card-img-top" alt="Clan Cards" style="margin-bottom: 29.9px;">
+                    <img src="/images/misc/cards.png" class="card-img-top" alt="Clan Cards" style="margin-bottom: 19.167px;">
                     <div class="card-body">
                       <h5 class="card-title text-center font-weight-bold">Clan Cards Collected</h5>
                       <h1 class="font-weight-light text-center">{{clanCardsCollected}}</h1>

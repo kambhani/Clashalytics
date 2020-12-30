@@ -347,7 +347,7 @@ app.get("/help", (req, res) => {
 });
 
 app.get("/clans", (req, res) => {
-  fetch("https://api.clashroyale.com/v1/locations", {
+  fetch(baseUrl + "v1/locations", {
     headers: {
       Accept: "application/json",
       Authorization: auth
@@ -502,7 +502,7 @@ app.post("/clans", (req, res) => {
     if (errors.length === 0) {
       res.redirect(`/clans/${req.body.tag.toUpperCase()}`);
     } else {
-      fetch("https://api.clashroyale.com/v1/locations", {
+      fetch(baseUrl + "v1/locations", {
         headers: {
           Accept: "application/json",
           Authorization: auth

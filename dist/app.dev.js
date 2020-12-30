@@ -24,7 +24,17 @@ var db = require("./config/database"); // Confidential Info (MongoDB Atlas user 
 // For obvious reasons, you won't find this file on Github
 
 
-var confidentialInfo = require("./config/confidentialInfo"); // Map global Promises
+var confidentialInfo = require("./config/confidentialInfo"); // Use RoyaleAPI proxy in prod
+// Use direct API Link in dev
+
+
+var baseUrl;
+
+if (process.env.NODE_ENV === "production") {
+  baseUrl = "https://proxy.royaleapi.dev/";
+} else {
+  baseUrl = "https://api.clashroyale.com/";
+} // Map global Promises
 
 
 mongoose.Promise = global.Promise; // Mongoose Connection
@@ -109,7 +119,7 @@ app.post("/players", function (req, res) {
 
 app.get("/players/:tag", function (req, res) {
   var tag = req.params.tag.toUpperCase();
-  var url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  var url1 = baseUrl + "v1/players/%23" + tag;
   var url2 = url1 + "/battlelog";
   var url3 = url1 + "/upcomingchests";
   var playerInfo = [0, 0, 0];
@@ -276,7 +286,7 @@ app.post("/players/:tag", function (req, res) {
 });
 app.get("/players/:tag/data", function (req, res) {
   var tag = req.params.tag.toUpperCase();
-  var url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  var url1 = baseUrl + "v1/players/%23" + tag;
   var url2 = url1 + "/battlelog";
   var url3 = url1 + "/upcomingchests";
   var playerInfo = [0, 0, 0, 0];
@@ -520,7 +530,7 @@ app.get("/clans", function (req, res) {
           results: []
         });
       } else {
-        var url = "https://api.clashroyale.com/v1/clans?";
+        var url = baseUrl + "v1/clans?";
 
         if (typeof name !== "undefined") {
           url = url + "&name=" + encodeURIComponent(name);
@@ -669,7 +679,7 @@ var updateBattleLog = function updateBattleLog() {
           players.forEach(function (playerObject) {
             var player = playerObject.player; //console.log(player);
 
-            var url = "https://api.clashroyale.com/v1/players/%23" + player + "/battlelog";
+            var url = baseUrl + "v1/players/%23" + player + "/battlelog";
             fetch(url, {
               headers: {
                 Accept: "application/json",

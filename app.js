@@ -17,6 +17,15 @@ const db = require("./config/database");
 // For obvious reasons, you won't find this file on Github
 const confidentialInfo = require("./config/confidentialInfo");
 
+// Use RoyaleAPI proxy in prod
+// Use direct API Link in dev
+let baseUrl;
+if (process.env.NODE_ENV === "production") {
+  baseUrl = "https://proxy.royaleapi.dev/";
+} else {
+  baseUrl = "https://api.clashroyale.com/";
+}
+
 // Map global Promises
 mongoose.Promise = global.Promise;
 
@@ -101,7 +110,7 @@ app.post("/players", (req, res) => {
 // Player Stat Pages
 app.get("/players/:tag", (req, res) => {
   const tag = req.params.tag.toUpperCase();
-  const url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  const url1 = baseUrl + "v1/players/%23" + tag;
   const url2 = url1 + "/battlelog";
   const url3 = url1 + "/upcomingchests";
   let playerInfo = [0, 0, 0];
@@ -239,7 +248,7 @@ app.post("/players/:tag", (req, res) => {
 
 app.get("/players/:tag/data", (req, res) => {
   const tag = req.params.tag.toUpperCase();
-  const url1 = "https://api.clashroyale.com/v1/players/%23" + tag;
+  const url1 = baseUrl + "v1/players/%23" + tag;
   const url2 = url1 + "/battlelog";
   const url3 = url1 + "/upcomingchests";
   let playerInfo = [0, 0, 0, 0];
@@ -437,7 +446,7 @@ app.get("/clans", (req, res) => {
             results: []
           });
         } else {
-          let url = "https://api.clashroyale.com/v1/clans?";
+          let url = baseUrl + "v1/clans?";
           if (typeof name !== "undefined") {
             url = url + "&name=" + encodeURIComponent(name);
           }
@@ -569,7 +578,7 @@ const updateBattleLog = async function () {
   players.forEach(playerObject => {
     let player = playerObject.player;
     //console.log(player);
-    let url = "https://api.clashroyale.com/v1/players/%23" + player + "/battlelog";
+    let url = baseUrl + "v1/players/%23" + player + "/battlelog";
     fetch(url, {
       headers: {
         Accept: "application/json",

@@ -8,8 +8,10 @@ const serveStatic = require("serve-static");
 const { template } = require("handlebars");
 
 const app = express();
+
 //Database Configuration
 const db = require("./config/database");
+
 // Confidential Info (MongoDB Atlas user and password, CR API Token, etc.)
 // When reusing, make sure to use your own stuff
 // For obvious reasons, you won't find this file on Github

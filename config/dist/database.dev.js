@@ -6,10 +6,10 @@ var confidentialInfo = require("./confidentialInfo");
 
 if (process.env.NODE_ENV === "production") {
   module.exports = {
-    mongoURI: confidentialInfo.MongoURI
+    mongoURI: confidentialInfo.mongoURI
   };
 } else {
   module.exports = {
     mongoURI: "mongodb://localhost/clashalytics-dev"
-  };
+  }; //module.exports = {mongoURI: confidentialInfo.mongoURI}
 }

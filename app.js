@@ -39,6 +39,7 @@ mongoose.connect(db.mongoURI, {
   })
   .catch((err) => {
     console.log("Failure");
+    console.log(err);
   });
 
 // Load MongoDB Models
@@ -240,10 +241,11 @@ app.post("/players/:tag", (req, res) => {
       .then(idea => {
         //console.log(idea);
         res.redirect("/players/" + tag);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
-  const tag = req.params.tag.toUpperCase();
-  res.redirect("/players/" + tag);
 });
 
 app.get("/players/:tag/data", (req, res) => {

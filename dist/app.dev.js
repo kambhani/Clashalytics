@@ -46,6 +46,7 @@ mongoose.connect(db.mongoURI, {
   console.log("Connected");
 })["catch"](function (err) {
   console.log("Failure");
+  console.log(err);
 }); // Load MongoDB Models
 
 require("./models/Battle");
@@ -270,19 +271,17 @@ app.get("/players/:tag", function (req, res) {
 });
 app.post("/players/:tag", function (req, res) {
   if ("addPlayer" in req.body) {
-    var _tag = req.params.tag.toUpperCase();
-
+    var tag = req.params.tag.toUpperCase();
     var toAdd = {
-      player: _tag
+      player: tag
     };
     new Tracked_Player(toAdd).save().then(function (idea) {
       //console.log(idea);
-      res.redirect("/players/" + _tag);
+      res.redirect("/players/" + tag);
+    })["catch"](function (err) {
+      console.log(err);
     });
   }
-
-  var tag = req.params.tag.toUpperCase();
-  res.redirect("/players/" + tag);
 });
 app.get("/players/:tag/data", function (req, res) {
   var tag = req.params.tag.toUpperCase();

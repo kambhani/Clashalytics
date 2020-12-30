@@ -10,9 +10,10 @@ const { template } = require("handlebars");
 const app = express();
 //Database Configuration
 const db = require("./config/database");
-// API Token (importing from local file)
-// When reusing, make sure to use your own token
-const token = require("./config/apiKeys");
+// Confidential Info (MongoDB Atlas user and password, CR API Token, etc.)
+// When reusing, make sure to use your own stuff
+// For obvious reasons, you won't find this file on Github
+const confidentialInfo = require("./config/confidentialInfo");
 
 // Map global Promises
 mongoose.Promise = global.Promise;
@@ -59,7 +60,7 @@ app.use(express.static("static_files"));
 // Previous API Token are exposed publicly on my commit history
 // However, since I deleted those tokens, they no longer work
 // The only working token is hidden since I gitignored the file with the token
-const auth = token.CR_API_TOKEN;
+const auth = confidentialInfo.CR_API_TOKEN;
 
 // Root Index
 app.get("/", (req, res) => {

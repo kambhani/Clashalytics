@@ -1,10 +1,12 @@
 "use strict";
 
 // Taking this code straight from Udemy
+// Confidential info is used for the MongoURI when in prod
+var confidentialInfo = require("./confidentialInfo");
+
 if (process.env.NODE_ENV === "production") {
-  // Need to find a better way to hide the password
   module.exports = {
-    mongoURI: "mongodb+srv://anish:VGrSwYg3R4c9r5z@clashalytics-prod.z4uhu.mongodb.net/<dbname>?retryWrites=true&w=majority"
+    mongoURI: confidentialInfo.MongoURI
   };
 } else {
   module.exports = {

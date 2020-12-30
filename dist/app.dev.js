@@ -19,11 +19,12 @@ var _require = require("handlebars"),
 
 var app = express(); //Database Configuration
 
-var db = require("./config/database"); // API Token (importing from local file)
-// When reusing, make sure to use your own token
+var db = require("./config/database"); // Confidential Info (MongoDB Atlas user and password, CR API Token, etc.)
+// When reusing, make sure to use your own stuff
+// For obvious reasons, you won't find this file on Github
 
 
-var token = require("./config/apiKeys"); // Map global Promises
+var confidentialInfo = require("./config/confidentialInfo"); // Map global Promises
 
 
 mongoose.Promise = global.Promise; // Mongoose Connection
@@ -66,7 +67,7 @@ app.use(express["static"]("static_files")); // Global Variables that I declared
 // However, since I deleted those tokens, they no longer work
 // The only working token is hidden since I gitignored the file with the token
 
-var auth = token.CR_API_TOKEN; // Root Index
+var auth = confidentialInfo.CR_API_TOKEN; // Root Index
 
 app.get("/", function (req, res) {
   var title = "Welcome!";

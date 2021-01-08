@@ -1,0 +1,23 @@
+I got star_points.png from this website: https://clashroyale.fandom.com/wiki/Star_Points
+
+I got the card image from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/cards.png
+
+The star images and the clock images were made with Microsoft Word
+
+The Experience Image came from the Clash Royale Fandom: https://static.wikia.nocookie.net/clashroyale/images/9/98/Experience.jpg/revision/latest?cb=20160116213255
+
+The Locations picture came from Pixabay: https://pixabay.com/illustrations/web-map-flat-design-pin-world-3120321/
+
+The person_icon picture came from Pixabay: https://pixabay.com/vectors/person-individually-alone-icon-1824147/
+
+The elixir image came from: https://cdn.statsroyale.com/images/elixir.png
+
+The cycle image came from Pixabay: https://pixabay.com/vectors/arrows-synchronize-update-circular-3717468/
+
+The open_link image came from Pixabay: https://pixabay.com/vectors/click-link-open-symbol-internet-38743/
+
+The crown_blue picture came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/crown-blue.png
+
+The crown_red picture came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/crown-red.png
+
+The hp picture came from a Supercell Dropbox: https://www.dropbox.com/sh/0mdu6zwzlkncu5a/AAAfG-aBNgpf4TbGgwNXgsPka/Misc/ui/icons?dl=0&preview=icons_stats_hp.png&subfolder_nav_tracking=1

@@ -23,6 +23,7 @@
     "handlebars": "^4.7.6",
     "mongoose": "^5.10.13",
     "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.7",
     "serve-static": "^1.14.1"
   }
 }

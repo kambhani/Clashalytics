@@ -1,7 +1,0 @@
-I got star_points.png from this website: https://clashroyale.fandom.com/wiki/Star_Points
-
-I got the card image from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/cards.png
-
-The star images and the clock images were made with Microsoft Word
-
-The Experience Image came from the Clash Royale Fandom: https://static.wikia.nocookie.net/clashroyale/images/9/98/Experience.jpg/revision/latest?cb=20160116213255

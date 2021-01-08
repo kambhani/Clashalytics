@@ -114,13 +114,16 @@ app.get("/players/:tag", (req, res) => {
   const url1 = baseUrl + "v1/players/%23" + tag;
   const url2 = url1 + "/battlelog";
   const url3 = url1 + "/upcomingchests";
-  let playerInfo = [0, 0, 0];
+  let playerInfo = [0, 0, 0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
 
   let playerIsTracked;
   let trackedBattles;
+  //let gameModeJson;
+  //let cardJson;
   // Check if player is being tracked with my system
+  // Also get gameMode Json from RoyaleAPI
   (async function () {
     playerIsTracked = await Tracked_Player.exists({player: tag});
     if (playerIsTracked) {
@@ -129,7 +132,6 @@ app.get("/players/:tag", (req, res) => {
       }) ();
     }
   }) ();
-  
 
   fetch(url1, {
     headers: {
@@ -141,21 +143,7 @@ app.get("/players/:tag", (req, res) => {
     .then((json) => {
       playerInfo[0] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        if (playerInfo[2].reason === "notFound") {
-          res.render("playerNotFound", {
-            tag: tag
-          });
-        } else {
-          res.render("playerInfo", {
-            playerStats: playerInfo[0],
-            playerBattles: playerInfo[1],
-            playerChests: playerInfo[2],
-            isTracked: playerIsTracked,
-            trackedBattles: trackedBattles
-          });
-        }
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
@@ -172,22 +160,7 @@ app.get("/players/:tag", (req, res) => {
     .then((json) => {
       playerInfo[1] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        if (playerInfo[2].reason === "notFound") {
-          res.render("playerNotFound", {
-            tag: tag
-          });
-        } else {
-          //res.send(json);
-          res.render("playerInfo", {
-            playerStats: playerInfo[0],
-            playerBattles: playerInfo[1],
-            playerChests: playerInfo[2],
-            isTracked: playerIsTracked,
-            trackedBattles: trackedBattles
-          });
-        }
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
@@ -204,29 +177,63 @@ app.get("/players/:tag", (req, res) => {
     .then((json) => {
       playerInfo[2] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        if (playerInfo[2].reason === "notFound") {
-          res.render("playerNotFound", {
-            tag: tag
-          });
-        } else {
-          res.render("playerInfo", {
-            playerStats: playerInfo[0],
-            playerBattles: playerInfo[1],
-            playerChests: playerInfo[2],
-            isTracked: playerIsTracked,
-            trackedBattles: trackedBattles
-          });
-        }
-      }
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+  
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
+    .then(res => res.json())
+    .then((json) => {
+      playerInfo[3] = json;
+      playerInfoLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+  
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
+    .then(res => res.json())
+    .then((json) => {
+      playerInfo[4] = json;
+      playerInfoLogicalSize++;
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
       console.log(err);
     });
 
-  if(errors.length > 0) {
-    res.send("ERROR");
+  function checkSend () {
+    if (playerInfoLogicalSize === 5) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      if (playerInfo[2].reason) {
+        if (playerInfo[2].reason === "notFound") {
+          res.render("tagNotFound", {
+            tag: tag,
+            type: "players"
+          });
+        } else {
+          res.send("Server Error");
+        }
+      } else {
+        res.render("playerInfo", {
+          playerStats: playerInfo[0],
+          playerBattles: playerInfo[1],
+          playerChests: playerInfo[2],
+          isTracked: playerIsTracked,
+          trackedBattles: trackedBattles,
+          gameModeJson: playerInfo[3],
+          cardJson: playerInfo[4]
+        });
+      }
+    }
   }
 });
 
@@ -552,11 +559,120 @@ app.post("/clans", (req, res) => {
 
 app.get("/clans/:tag", (req, res) => {
   const tag = req.params.tag.toUpperCase();
-  res.render("construction", {
-    page: "Clan " + tag,
+  const url1 = baseUrl + "v1/clans/%23" + tag;
+  const url2 = url1 + "/currentriverrace";
+  const url3 = url1 + "/riverracelog";
+  let clanInfo = [0, 0, 0];
+  let clanInfoLogicalSize = 0;
+  let errors = [];
 
-  });
-  //res.send("Get clan with tag: " + tag);
+  /*let playerIsTracked;
+  let trackedBattles;
+  // Check if player is being tracked with my system
+  (async function () {
+    playerIsTracked = await Tracked_Player.exists({player: tag});
+    if (playerIsTracked) {
+      (async function () {
+        trackedBattles = await Battle.find({player_tag: tag}).lean();
+      }) ();
+    }
+  }) ();*/
+  
+
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[0] = json;
+      clanInfoLogicalSize++;
+      if (clanInfoLogicalSize === 3) {
+        if (clanInfo[0].reason === "notFound") {
+          res.render("tagNotFound", {
+            tag: tag,
+            type: "clans"
+          });
+        } else {
+          res.render("clanInfo", {
+            clanStats: clanInfo[0],
+            currentRiverRace: clanInfo[1],
+            riverRaceLog: clanInfo[2]
+          });
+        }
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch(url2, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[1] = json;
+      clanInfoLogicalSize++;
+      if (clanInfoLogicalSize === 3) {
+        if (clanInfo[0].reason === "notFound") {
+          res.render("tagNotFound", {
+            tag: tag,
+            type: "clans"
+          });
+        } else {
+          res.render("clanInfo", {
+            clanStats: clanInfo[0],
+            currentRiverRace: clanInfo[1],
+            riverRaceLog: clanInfo[2]
+          });
+        }
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch(url3, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[2] = json;
+      clanInfoLogicalSize++;
+      if (clanInfoLogicalSize === 3) {
+        if (clanInfo[0].reason === "notFound") {
+          res.render("tagNotFound", {
+            tag: tag,
+            type: "clans"
+          });
+        } else {
+          //res.send(clanInfo);
+          res.render("clanInfo", {
+            clanStats: clanInfo[0],
+            currentRiverRace: clanInfo[1],
+            riverRaceLog: clanInfo[2]
+          });
+        }
+      }
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  if(errors.length > 0) {
+    res.send("ERROR");
+  }
 });
 
 app.get("/cards", (req, res) => {
@@ -571,15 +687,18 @@ app.get("/guides", (req, res) => {
   });
 });
 
+// This is for 404 errors
+app.use((req, res, next) => {
+  res.status(404).send("fail");
+});
+
 // This area is where I try to keep track of player battles and update the db every ~hour
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
 const updateBattleLog = async function () {
   let players = await Tracked_Player.find({}, "player -_id").exec();
-  //console.log(players);
   let errors = [];
   players.forEach(playerObject => {
     let player = playerObject.player;
-    //console.log(player);
     let url = baseUrl + "v1/players/%23" + player + "/battlelog";
     fetch(url, {
       headers: {
@@ -636,7 +755,7 @@ const updateBattleLog = async function () {
                 opponent_tag: json[i].opponent[0].tag.substring(1),
                 battle_outcome: victor,
                 time: battleTime,
-                battle_type: json[i].gameMode.name
+                battle_type: json[i].gameMode.id
               }
 
               async function addBattle () {
@@ -689,7 +808,7 @@ const doEveryHour = (something) => {
 }
 
 let updatingBattleLog = doEveryHour(updateBattleLog);
-//updatingBattleLog.exec();
+updatingBattleLog.exec();
 
 const port = process.env.PORT || 5000;
 

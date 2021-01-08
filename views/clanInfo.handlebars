@@ -1,0 +1,74 @@
+<title>Clan Stats | {{clanStats.tag}}</title>
+
+<nav aria-label="breadcrumb" class="justify-content-between d-flex mb-3" style="background-color: #e9ecef; height: 48px;">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
+    <li class="breadcrumb-item"><a href="/clans" style="text-decoration: none;">Clans</a></li>
+    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">{{clanStats.tag}}</li>
+  </ol>
+  <a href="/clans/{{removeFirstCharacter clanStats.tag}}/data" class="text-decoration-none text-right mx-3 align-middle" style="line-height: 48px;">RAW DATA</a>
+</nav>
+
+<ul class="nav nav-tabs" id="tabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description"
+      aria-selected="true">DESCRIPTION</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="members-tab" data-toggle="tab" href="#members" role="tab" aria-controls="members"
+      aria-selected="false">MEMBERS</a>
+  </li>
+</ul>
+
+<div class="tab-content mx-2">
+  <div class="tab-pane active mx-4 my-4" id="description" role="tabpanel" aria-labelledby="home-tab">
+    <div class="card mb-3 border-primary" style="background-color: ghostwhite;">
+      <div class="row no-gutters mb-2 align-items-center">
+        <div class="col-md-4 col-lg-3 col-xl-2 text-center">
+          <img src="{{getClanBadge clanStats.badgeId clanStats.clanWarTrophies}}" class="card-img" alt="Clan Badge" style="max-width: 300px;">
+        </div>
+        <div class="col-md-8 col-lg-9 col-xl-10">
+          <div class="card-body">
+            <h5 class="card-title text-center font-weight-bold">{{clanStats.name}}</h5>
+            <div class="container-fluid">
+              <div class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                  <img src="/images/badges/Tournament.png" class="" alt="Clan Score" style="height: 80px;">
+                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanScore}}</p>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                  <img src="/images/badges/trophy.png" class="" alt="Required Trophies" style="height: 80px;">
+                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.requiredTrophies}}</p>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                  <img src="/images/clans/Clan Trophies.png" class="" alt="Clan Trophies" style="height: 80px;">
+                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanWarTrophies}}</p>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                  <img src="/images/clans/clans.png" class="" alt="Clan Members" style="height: 80px;">
+                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.members}} / 50</p>
+                </div>
+                <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
+                  <img src="/images/misc/locations.png" class="" alt="Locations" style="height: 80px;">
+                  <p class="mx-2 h5" style="line-height: 80px;">{{clanStats.location.name}}</p>
+                </div>
+                <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
+                  <img src="/images/misc/person_icon.png" class="" alt="Clan Type" style="height: 80px;">
+                  <p class="mx-2 h5" style="line-height: 80px;">{{correctCapitalization clanStats.type}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer text-center">
+          <small class="text-muted">{{clanStats.description}}</small>
+        </div>
+    </div>
+  </div>
+  <div class="tab-pane mx-4 my-4" id="members" role="tabpanel" aria-labelledby="members-tab">
+    2
+  </div>
+</div>
+
+

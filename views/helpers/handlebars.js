@@ -90,7 +90,7 @@ var register = function(Handlebars) {
       return (13 - oldMaxLevel + oldLevel);
     },
     // Finds the difference between when a battle was fought and the current time
-    dateDifference (pastDate) {
+    dateDifference (pastDate, isLargeScreen) {
       // Date is processed like it is given in the Clash Royale API
       // The format is: YYYYMMDDTHHMMSS.000Z
       let oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11),pastDate.substring(11, 13), pastDate.substring(13, 15)));
@@ -105,6 +105,23 @@ var register = function(Handlebars) {
       let minuteWord = "minutes";
       let secondWord = "seconds";
       let dayWord = "days";
+
+      // Use abbreviations on a small screen
+      if (isLargeScreen === 0) {
+        if (days === 0) {
+          if (hours === 0) {
+            if (minutes === 0) {
+              return (`${seconds}s`);
+            } else {
+              return (`${minutes}m ${seconds}s`);
+            }
+          } else {
+            return (`${hours}h ${minutes}m ${seconds}s`);
+          }
+        } else {
+          return (`${days}d ${hours}h ${minutes}m ${seconds}s`);
+        }
+      }
       if (hours === 1) {hourWord = "hour";}
       if (minutes === 1) {minuteWord = "minute";}
       if (seconds === 1) {secondWord = "second";}
@@ -127,7 +144,7 @@ var register = function(Handlebars) {
     levelDifference (t0, t1, opp0, opp1) {
       let teamCardSum = 0;
       let oppCardSum = 0;
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < t0.length; i++) {
         teamCardSum += 13 - t0[i].maxLevel + t0[i].level;
         oppCardSum += 13 - opp0[i].maxLevel + opp0[i].level;
         if (t1) {
@@ -138,7 +155,7 @@ var register = function(Handlebars) {
       if (t1) {
         return ((teamCardSum - oppCardSum) / 16);
       }
-      return ((teamCardSum - oppCardSum) / 8);
+      return ((teamCardSum - oppCardSum) / t0.length);
     },
     // Removes the first character from a string
     removeFirstCharacter (text) {
@@ -186,7 +203,13 @@ var register = function(Handlebars) {
       }
     },
     // Finds the winner of a battle
-    findVictor (teamCrowns, opponentCrowns) {
+    // Deck size checks for duels, which then shows that winner is unknown
+    // This is because a game with crowns 3-0, 0-1, and 0-2 would be displayed by the API as 3-3
+    // Though it seems like a draw, it actually is not and I have to check for it
+    findVictor (teamCrowns, opponentCrowns, deckSize) {
+      if (deckSize > 8) {
+        return ("Victor Unknown");
+      }
       if (teamCrowns - opponentCrowns > 0) {
         return ("Victory");
       } else if (teamCrowns - opponentCrowns < 0) {
@@ -613,7 +636,7 @@ var register = function(Handlebars) {
       }
       return "< 1y";
     },
-    // This function corrects the capitalization that the API uses
+    // This function corrects the capitalization of stuff I need to correct
     correctCapitalization (value) {
       switch (value) {
         // Next four are for clan roles: member, elder, co-leader, and leader
@@ -639,81 +662,51 @@ var register = function(Handlebars) {
         case ("closed"): {
           return "Closed";
         }
+        // Next two are for tagNotFound.handlebars
+        case ("players"): {
+          return "Players";
+        }
+        case ("clans"): {
+          return "Clans";
+        }
         // Default is for server error or unknown value
         default: {
           return "Server Error";
         }
       }
     },
-    // This function returns the battle type, given the API game mode id or API game mode name (for analysis tab)
-    // This function will likely never be complete
-    // Name is also taken so if the id is not logged, then I simply return the name
-    gameModeName(id, name) {
+    // This function returns the battle type, given the API game mode id
+    // This function works by taking the id to name json object that RoyaleAPI made
+    // This can be found at: https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/master/docs/json/game_modes.json
+    // The json object is not perfect, so I deal with exceptional cases myself
+    gameModeName(id, json) {
+      // The switch statement is for the exceptional cases
       switch (id) {
-        case ("Ladder"):
-        case (72000006): {
-          return "Ladder";
-        }
-        case ("Challenge"):
-        case (72000010): {
-          return "Challenge";
-        }
-        case ("TeamVsTeamLadder"):
-        case (72000023): {
-          return "2v2 Battle";
-        }
-        case ("TripleElixir_Ladder"):
-        case (72000062): {
-          return "Triple Elixir Battle";
-        }
-        case ("tournament"):
-        case (72000009): {
-          return "Tournament";
-        }
-        case ("CW_Battle_1v1"):
         case (72000268): {
           return "River Race 1v1";
         }
-        case ("MortarCapture_Ladder"):
-        case (72000264): {
-          return "Capture the Mortar";
-        }
-        case ("Ladder_CrownRush"):
-        case (72000201): {
-          return "Ladder Crown Rush";
-        }
-        case ("RampUpElixirSpawnPigsMode_2v2_Ladder"):
-        case (72000196): {
-          return "Hog Race 2v2";
-        }
-        case ("RampUpElixirRageJacksMode_Ladder"):
-        case (72000197): {
-          return "Lumberjack Rush";
-        }
-        case ("CW_Duel_1v1"):
         case (72000267): {
           return "Clan War Duel";
         }
-        case ("RampUpElixirSpawnPigsMode_WithMotherWitch_Tournament"):
         case (72000281): {
           return "Hog Race with Mother Witch";
         }
-        case ("RampUpElixir_Ladder"):
-        case (72000070): {
-          return "Ramp Up Battle";
+        case (72000226):
+        case (72000227):
+        case (72000228):
+        case (72000229):
+        case (72000230): {
+          return "Nery's Elixir Extravaganza";
         }
-
-        default: {
-          if (id === name) {
-            // This code snippet space separates API game names
-            // Regex line came from: https://stackoverflow.com/a/7888303
-            name = name.replace("_", "");
-            name = name.split(/(?=[A-Z])/);
-            return name.join(" ");
-          } else {
-            return name;
-          }
+      }
+      try {
+        if (json[id - 72000000].name_en === "") {
+          return (json[id - 72000000].name);
+        } else {
+          return (json[id - 72000000].name_en);
         }
+      } catch {
+        return ("Battle Type Unknown");
       }
     },
     // This function returns a readable date
@@ -732,8 +725,10 @@ var register = function(Handlebars) {
       }
     },
     // This function gets the right badge image, given the badgeId and the Clan War Trophies
+    // It uses the RoyaleAPI CDN
+    // For future reference, the below link will save a lot of time:
+    // https://github.com/RoyaleAPI/cr-api-data/blob/master/docs/json/alliance_badges.json
     getClanBadge(id, cwTrophies) {
-      // https://cdn.royaleapi.com/static/img/badge/silver-1/Elixir_02.png?t=a99083a2
       let baseUrl = "https://cdn.royaleapi.com/static/img/badge/";
       switch (true) {
         case (cwTrophies < 200): {
@@ -772,8 +767,16 @@ var register = function(Handlebars) {
           baseUrl += "gold-3/";
           break;
         }
+        case (cwTrophies < 4000): {
+          baseUrl += "legendary-1/";
+          break;
+        }
+        case (cwTrophies < 5000): {
+          baseUrl += "legendary-2/";
+          break;
+        }
         default: {
-          baseUrl += "legendary/";
+          baseUrl += "legendary-3/";
           break;
         }
       }
@@ -1504,6 +1507,109 @@ var register = function(Handlebars) {
         }
       }
       return baseUrl;
+    },
+    // This function returns the average elixir cost of a deck
+    // There is a start and end so I can deal with duels as well
+    averageElixirCost(cards, deck, start, end) {
+      let sum = 0;
+      deck:
+      for (let i = start; i < end; i++) {
+        let name = deck[i].name;
+        for (let j = 0; j < cards.length; j++) {
+          if (cards[j].name === name) {
+            sum += cards[j].elixir;
+            continue deck;
+          }
+        }
+      }
+
+      //  Returning and adding a ".0" at the end of an integer
+      let toReturn = Math.round(sum / 8 * 10) / 10;
+      if (Number.isInteger(toReturn)) {
+        return toReturn + ".0";
+      } else {
+        return toReturn;
+      }
+    },
+    // This function gets the 4-card cycle of a deck
+    // There is a start and end so I can deal with duels
+    fourCardCycle(cards, deck, start, end) {
+      let elixirCosts = [];
+      deck:
+      for (let i = start; i < end; i++) {
+        let name = deck[i].name;
+        for (let j = 0; j < cards.length; j++) {
+          if (cards[j].name === name) {
+            elixirCosts.push(cards[j].elixir);
+            continue deck;
+          }
+        }
+      }
+      elixirCosts.sort();
+      return (elixirCosts[0] + elixirCosts[1] + elixirCosts[2] + elixirCosts[3]);
+    },
+    // This function returns the link to copy the deck in-game
+    // There is a start and end so I can deal with duels
+    inGameLink(cards, deck, start, end) {
+      let baseLink = "https://link.clashroyale.com/deck/en?deck=";
+      deck:
+      for (let i = start; i < end; i++) {
+        let name = deck[i].name;
+        for (let j = 0; j < cards.length; j++) {
+          if (cards[j].name === name) {
+            baseLink = baseLink + cards[j].id + ";";
+            continue deck;
+          }
+        }
+      }
+      // Omitting last character because that is an unnecessary semicolon
+      return baseLink.substring(0, baseLink.length - 1);
+    },
+    // This function returns the health of the specified tower
+    // For value, 0 is king tower, 1 is one princess tower, and 2 is the other
+    getTowerHealth (kingHealth, princessHealths, value) {
+      switch (value) {
+        case 0: {
+          if (typeof kingHealth === "undefined") {
+            return 0;
+          } else {
+            return kingHealth
+          }
+        }
+        case 1: {
+          if (typeof princessHealths === "undefined") {
+            return 0;
+          } else {
+            return princessHealths[0];
+          }
+        }
+        case 2: {
+          if (typeof princessHealths === "undefined" || princessHealths.length === 1) {
+            return 0;
+          } else {
+            return princessHealths[1];
+          }
+        }
+        case 3: {
+          // All towers are gone
+          if (typeof kingHealth === "undefined") {
+            return 0;
+          }
+          // Both princess towers are gone
+          if (typeof princessHealths === "undefined") {
+            return kingHealth;
+          }
+          // One princess tower is gone
+          if (princessHealths.length === 1) {
+            return (kingHealth + princessHealths[0]);
+          }
+          // No tower is gone
+          return (kingHealth + princessHealths[0] + princessHealths[1]);
+        }
+        default: {
+          return "Server Error";
+        }
+      }
     }
   }
 

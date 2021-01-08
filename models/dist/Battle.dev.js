@@ -33,7 +33,7 @@ var Battle = new Schema({
     required: true
   },
   battle_type: {
-    type: String,
+    type: Number,
     required: true
   }
 });

@@ -3,3 +3,4 @@ I'm still following the Fan Content Policy
 
 I got the Arena images from the RoyaleAPI Github: https://github.com/RoyaleAPI/cr-api-assets/tree/master/arenas
 
+I got the trophy picture from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/trophy.png

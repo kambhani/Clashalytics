@@ -204,16 +204,7 @@
   $(".modal-toggle-div").css({"height": "34.4px"});
   $(".modal-toggle-div h5").addClass("mr-4");
   $(".modal-toggle-div h5").css({"line-height": "30.0px"});
-  if (window.innerWidth < 768) {
-    $("#table").addClass("table-sm");
-  }
-  window.onresize = function () {
-    if (window.innerWidth < 768) {
-      $("#table").addClass("table-sm");
-    } else {
-      $("#table").removeClass("table-sm");
-    }
-  }
+
   $(document).ready(function () {
     let table = $("#table").DataTable();
     // Initializes all display toggles and the view format toggle to on

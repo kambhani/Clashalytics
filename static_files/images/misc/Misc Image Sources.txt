@@ -21,3 +21,10 @@ The crown_blue picture came from RoyaleAPI: https://cdn.royaleapi.com/static/img
 The crown_red picture came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/crown-red.png
 
 The hp picture came from a Supercell Dropbox: https://www.dropbox.com/sh/0mdu6zwzlkncu5a/AAAfG-aBNgpf4TbGgwNXgsPka/Misc/ui/icons?dl=0&preview=icons_stats_hp.png&subfolder_nav_tracking=1
+
+The exp_icon picture came from Stats Royale: https://cdn.statsroyale.com/images/level-big.png
+
+The white_cards picture came from Stats Royale: https://cdn.statsroyale.com/images/tournament-cards.png
+
+The donations_given and donations_received pictures were made by placing arrows on top of the white_cards image. Microsoft Word was used to do this.
+

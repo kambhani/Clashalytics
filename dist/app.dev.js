@@ -78,7 +78,9 @@ app.use(express["static"]("static_files")); // Global Variables that I declared
 // However, since I deleted those tokens, they no longer work
 // The only working token is hidden since I gitignored the file with the token
 
-var auth = confidentialInfo.CR_API_TOKEN; // Root Index
+var auth = confidentialInfo.CR_API_TOKEN; // Records are deleted after 90 days
+
+var daysToDeletion = 90; // Root Index
 
 app.get("/", function (req, res) {
   var title = "Welcome!";
@@ -127,10 +129,7 @@ app.get("/players/:tag", function (req, res) {
   var playerInfoLogicalSize = 0;
   var errors = [];
   var playerIsTracked;
-  var trackedBattles; //let gameModeJson;
-  //let cardJson;
-  // Check if player is being tracked with my system
-  // Also get gameMode Json from RoyaleAPI
+  var trackedBattles; // Check if player is being tracked with my system
 
   (function _callee2() {
     return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -292,11 +291,10 @@ app.get("/players/:tag/data", function (req, res) {
   var url3 = url1 + "/upcomingchests";
   var playerInfo = [0, 0, 0, 0];
   var playerInfoLogicalSize = 0;
-  var errors = [];
-  var playerIsTracked;
-  var trackedBattles; // Check if player is being tracked with my system
+  var errors = []; // Check if player is being tracked with my system
 
   (function _callee4() {
+    var playerIsTracked;
     return regeneratorRuntime.async(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -321,10 +319,9 @@ app.get("/players/:tag/data", function (req, res) {
                         }).lean());
 
                       case 2:
-                        trackedBattles = _context3.sent;
-                        playerInfo[3] = trackedBattles;
+                        playerInfo[3] = _context3.sent;
 
-                      case 4:
+                      case 3:
                       case "end":
                         return _context3.stop();
                     }
@@ -351,12 +348,10 @@ app.get("/players/:tag/data", function (req, res) {
   }).then(function (json) {
     playerInfo[0] = json;
     playerInfoLogicalSize++;
-
-    if (playerInfoLogicalSize === 3) {
-      res.send(playerInfo);
-    }
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
   fetch(url2, {
     headers: {
@@ -368,12 +363,10 @@ app.get("/players/:tag/data", function (req, res) {
   }).then(function (json) {
     playerInfo[1] = json;
     playerInfoLogicalSize++;
-
-    if (playerInfoLogicalSize === 3) {
-      res.send(playerInfo);
-    }
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
   fetch(url3, {
     headers: {
@@ -385,16 +378,20 @@ app.get("/players/:tag/data", function (req, res) {
   }).then(function (json) {
     playerInfo[2] = json;
     playerInfoLogicalSize++;
-
-    if (playerInfoLogicalSize === 3) {
-      res.send(playerInfo);
-    }
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
+    console.log(err);
   });
 
-  if (errors.length > 0) {
-    res.send("ERROR");
+  function checkSend() {
+    if (playerInfoLogicalSize === 3) {
+      if (errors.length > 0) {
+        res.send("ERROR");
+      }
+
+      res.send(playerInfo);
+    }
   }
 });
 app.get("/about", function (req, res) {
@@ -676,21 +673,7 @@ app.get("/clans/:tag", function (req, res) {
   }).then(function (json) {
     clanInfo[0] = json;
     clanInfoLogicalSize++;
-
-    if (clanInfoLogicalSize === 3) {
-      if (clanInfo[0].reason === "notFound") {
-        res.render("tagNotFound", {
-          tag: tag,
-          type: "clans"
-        });
-      } else {
-        res.render("clanInfo", {
-          clanStats: clanInfo[0],
-          currentRiverRace: clanInfo[1],
-          riverRaceLog: clanInfo[2]
-        });
-      }
-    }
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
     console.log(err);
@@ -705,21 +688,7 @@ app.get("/clans/:tag", function (req, res) {
   }).then(function (json) {
     clanInfo[1] = json;
     clanInfoLogicalSize++;
-
-    if (clanInfoLogicalSize === 3) {
-      if (clanInfo[0].reason === "notFound") {
-        res.render("tagNotFound", {
-          tag: tag,
-          type: "clans"
-        });
-      } else {
-        res.render("clanInfo", {
-          clanStats: clanInfo[0],
-          currentRiverRace: clanInfo[1],
-          riverRaceLog: clanInfo[2]
-        });
-      }
-    }
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
     console.log(err);
@@ -734,15 +703,24 @@ app.get("/clans/:tag", function (req, res) {
   }).then(function (json) {
     clanInfo[2] = json;
     clanInfoLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
 
+  function checkSend() {
     if (clanInfoLogicalSize === 3) {
+      if (errors.length > 0) {
+        res.send("ERROR");
+      }
+
       if (clanInfo[0].reason === "notFound") {
         res.render("tagNotFound", {
           tag: tag,
           type: "clans"
         });
       } else {
-        //res.send(clanInfo);
         res.render("clanInfo", {
           clanStats: clanInfo[0],
           currentRiverRace: clanInfo[1],
@@ -750,13 +728,82 @@ app.get("/clans/:tag", function (req, res) {
         });
       }
     }
+  }
+});
+app.get("/clans/:tag/data", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url1 = baseUrl + "v1/clans/%23" + tag;
+  var url2 = url1 + "/currentriverrace";
+  var url3 = url1 + "/riverracelog";
+  var clanInfo = [0, 0, 0];
+  var clanInfoLogicalSize = 0;
+  var errors = [];
+  /*let playerIsTracked;
+  let trackedBattles;
+  // Check if player is being tracked with my system
+  (async function () {
+    playerIsTracked = await Tracked_Player.exists({player: tag});
+    if (playerIsTracked) {
+      (async function () {
+        trackedBattles = await Battle.find({player_tag: tag}).lean();
+      }) ();
+    }
+  }) ();*/
+
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    clanInfo[0] = json;
+    clanInfoLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+  fetch(url2, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    clanInfo[1] = json;
+    clanInfoLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+  fetch(url3, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    clanInfo[2] = json;
+    clanInfoLogicalSize++;
+    checkSend();
   })["catch"](function (err) {
     errors.push(err);
     console.log(err);
   });
 
-  if (errors.length > 0) {
-    res.send("ERROR");
+  function checkSend() {
+    if (clanInfoLogicalSize === 3) {
+      if (errors.length > 0) {
+        res.send("ERROR");
+      }
+
+      res.send(clanInfo);
+    }
   }
 });
 app.get("/cards", function (req, res) {
@@ -772,19 +819,24 @@ app.get("/guides", function (req, res) {
 
 app.use(function (req, res, next) {
   res.status(404).send("fail");
-}); // This area is where I try to keep track of player battles and update the db every ~hour
+}); // This area is where I try to keep track of player battles and update the db every two hours
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
+// I'm updating every two hours (not one) to lighten server load
+// I also clear old battles every two days
+
+var clearTime = -2;
 
 var updateBattleLog = function updateBattleLog() {
-  var players, errors;
+  var players, errors, deletionDate;
   return regeneratorRuntime.async(function updateBattleLog$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
-          _context6.next = 2;
+          clearTime = (clearTime + 2) % 48;
+          _context6.next = 3;
           return regeneratorRuntime.awrap(Tracked_Player.find({}, "player -_id").exec());
 
-        case 2:
+        case 3:
           players = _context6.sent;
           errors = [];
           players.forEach(function (playerObject) {
@@ -812,7 +864,7 @@ var updateBattleLog = function updateBattleLog() {
                   var battleTime = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
                   var timeDifference = Date.now() - battleTime.getTime();
 
-                  if (timeDifference > 3600000) {
+                  if (timeDifference > 10800000) {
                     return "break|jsonLoop";
                   }
 
@@ -832,7 +884,7 @@ var updateBattleLog = function updateBattleLog() {
                             case 2:
                               battleExists = _context5.sent;
 
-                              if (!battleExists && json[i].team[0].cards.length == 8) {
+                              if (!battleExists && json[i].team[0].cards.length === 8) {
                                 new Battle(toAdd).save().then(function (idea) {//console.log(idea);
                                 });
                               }
@@ -850,8 +902,8 @@ var updateBattleLog = function updateBattleLog() {
                     var levelDifference = 0;
 
                     for (var j = 0; j < 8; j++) {
-                      deckUsed.push(json[i].team[0].cards[j].name);
-                      deckFaced.push(json[i].opponent[0].cards[j].name);
+                      deckUsed.push(json[i].team[0].cards[j].id);
+                      deckFaced.push(json[i].opponent[0].cards[j].id);
                       levelDifference += getRealLevel(json[i].team[0].cards[j].level, json[i].team[0].cards[j].maxLevel);
                       levelDifference -= getRealLevel(json[i].opponent[0].cards[j].level, json[i].opponent[0].cards[j].maxLevel);
                       ;
@@ -863,11 +915,11 @@ var updateBattleLog = function updateBattleLog() {
                     var victor = json[i].team[0].crowns - json[i].opponent[0].crowns;
 
                     if (victor > 0) {
-                      victor = "Victory";
+                      victor = 1;
                     } else if (victor < 0) {
-                      victor = "Defeat";
+                      victor = -1;
                     } else {
-                      victor = "Draw";
+                      victor = 0;
                     }
 
                     var toAdd = {
@@ -885,7 +937,6 @@ var updateBattleLog = function updateBattleLog() {
                 }
               };
 
-              //console.log(json[10]);
               jsonLoop: for (var i = 0; i < json.length; i++) {
                 var _ret = _loop(i);
 
@@ -896,19 +947,33 @@ var updateBattleLog = function updateBattleLog() {
             }); //console.log(player);
           });
 
-        case 5:
+          if (clearTime === 0) {
+            deletionDate = new Date(Date.now() - daysToDeletion * 24 * 60 * 60 * 1000).toISOString();
+            Battle.deleteMany({
+              time: {
+                $lte: deletionDate
+              }
+            }, function (err, result) {
+              if (err) {//console.log(err);
+              } else {//console.log(result.deletedCount);
+                }
+            });
+          }
+
+        case 7:
         case "end":
           return _context6.stop();
       }
     }
   });
-};
+}; // Name is do every hour, but I've changed it so that it only runs onces every two hours
+
 
 var doEveryHour = function doEveryHour(something) {
   var running = true;
 
   var nextHour = function nextHour() {
-    return 3600000 - new Date().getTime() % 3600000;
+    return 7200000 - new Date().getTime() % 7200000;
   };
 
   var nextCall = setTimeout(function () {

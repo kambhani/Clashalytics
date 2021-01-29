@@ -187,6 +187,11 @@ var register = function(Handlebars) {
             return true;
           }
           return false;
+        case ">=":
+          if (a >= b) {
+            return true;
+          }
+          return false;
       }
     },
     // Does basic math
@@ -679,9 +684,15 @@ var register = function(Handlebars) {
     // This function works by taking the id to name json object that RoyaleAPI made
     // This can be found at: https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/master/docs/json/game_modes.json
     // The json object is not perfect, so I deal with exceptional cases myself
-    gameModeName(id, json) {
+    gameModeName(id, json, challengeTitle) {
       // The switch statement is for the exceptional cases
       switch (id) {
+        case (72000009): {
+          return "Tournament";
+        }
+        case (72000010): {
+          return (challengeTitle === "") ? "Challenge" : challengeTitle;
+        }
         case (72000268): {
           return "River Race 1v1";
         }
@@ -1610,7 +1621,44 @@ var register = function(Handlebars) {
           return "Server Error";
         }
       }
+    },
+    // This function returns the card name, given the card id
+    getCardNameFromID(cardJson, id) {
+      for (let i = 0; i < cardJson.length; i++) {
+        if (cardJson[i].id === id) {
+          return cardJson[i].name;
+        }
+      }
+      return "Server Error";
+    },
+    // This function converts the db battle outcome to a readable one
+    // -1 is a loss, 0 is a draw, and 1 is a victory
+    battleOutcomeFromNumber(outcome) {
+      switch (outcome) {
+        case 1: {
+          return "Victory";
+        }
+        case 0: {
+          return "Draw";
+        }
+        case -1: {
+          return "Defeat";
+        }
+        default: {
+          return "Unknown";
+        }
+      }
+    },
+    // This function takes a number and adds a "+" to it if the number is positive (n > 0)
+    // Useful if "+5" is prefered over "5"
+    addPlusToNumber(num) {
+      if (num <= 0) {
+        return num;
+      } else {
+        return "+" + num;
+      }
     }
+
   }
 
   if (Handlebars && typeof Handlebars.registerHelper === "function") {

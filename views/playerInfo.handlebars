@@ -390,781 +390,163 @@
         No battles are available for this player
       </div>
     {{/unless}}
-    {{#each playerBattles}}
-      {{#if (compare type "!==" "boatBattle")}}
-        <div class="card my-4 container-fluid" style="background-color: #e5e0eb;">
-          <h2 class="mt-4 mb-0 font-weight-bold text-center">{{gameModeName gameMode.id ../gameModeJson}}</h2>
-          <h2 class="mb-4 text-center battle-outcome font-weight-light font-italic">{{findVictor team.0.crowns opponent.0.crowns (objectLength team.0.cards)}}</h2>
-          <div class="row justify-content-center mb-2">
-            <img src="/images/misc/crown_blue.png" alt="Blue Crown" width="10%" style="max-width: 50px;">
-            <h4 class="mx-2" style="color:purple;">{{team.0.crowns}}</h4>
-            <h4 class="mx-2" style="color:purple;">—</h4>
-            <h4 class="mx-2" style="color:purple;">{{opponent.0.crowns}}</h4>
-            <img src="/images/misc/crown_red.png" alt="Red Crown" width="10%" style="max-width: 50px;">
-          </div>
-          <div class="row justify-content-between">
-            <!--Player names — smaller screen => smaller font-->
-            <div>
-              <h5 class="ml-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">{{team.0.name}}</a></h5>
-              <h3 class="ml-4 d-none d-lg-inline-block">
-                <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none align-middle">{{team.0.name}}</a>
-                {{> _battleTrophyBadge player = team.[0] type = type}}
-              </h3>
-            </div>
-            <div>
-              <h5 class="mr-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none">{{opponent.0.name}}</a></h5>
-              <h3 class="mr-4 d-none d-lg-inline-block">
-                <a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none align-middle">{{opponent.0.name}}</a>
-                {{> _battleTrophyBadge player = opponent.[0] type = type}}
-              </h3>
-            </div>
-          </div>
-          <div class="row justify-content-between">
-            <!--Clan names — smaller screen => smaller font-->
-            {{#if team.0.clan}}
-              <h5 class="ml-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></h5>
-              <p class="ml-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></p>
-            {{else}}
-              <h5 class="ml-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
-              <p class="ml-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
-            {{/if}}
-            {{#if opponent.0.clan}}
-              <h5 class="mr-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></h5>
-              <p class="mr-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></p>
-            {{else}}
-              <h5 class="mr-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
-              <p class="mr-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
-            {{/if}}
-          </div>
-          <div class="row justify-content-between mx-0 mx-sm-1 d-flex d-lg-none">
-            <div>
-              {{> _battleTrophyBadge player = team.[0] type = type}}
-            </div>
-            <div>
-              {{> _battleTrophyBadge player = opponent.[0] type = type}}
-            </div>
-          </div>
-          {{#if (compare (objectLength team.0.cards) ">" 8)}}
-            <!--Duel-->
-            {{#if (compare (objectLength team.0.cards) ">" 16)}}
-              <!--Third battle in the duel-->
-              <div class="row mb-3">
-                <div class="col-6">
-                  <div class="row no-gutters" style="">
-                    {{#each team.0.cards}}
-                      {{#if (compare @index ">" 15)}}
-                        <div class="col-3">
-                          <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                          <!--Remove lvl label on small screens-->
-                          <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                          <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                        </div>
-                      {{/if}}
-                    {{/each}}
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="row no-gutters" style="">
-                    {{#each opponent.0.cards}}
-                      {{#if (compare @index ">" 15)}}
-                        <div class="col-3">
-                          <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                          <!--Remove lvl label on small screens-->
-                          <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                          <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                        </div>
-                      {{/if}}
-                    {{/each}}
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <!--Third duel battle gets HP info since it is the last battle-->
-                <!--API only gives tower HP info for final battle of the duel-->
-                <div class="col-6">
-                  <div class="row no-gutters mx-md-2 mx-xl-4">
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="list-inline-item"><p>{{averageElixirCost ../cardJson team.0.cards 16 24}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="list-inline-item"><p>{{fourCardCycle ../cardJson team.0.cards 16 24}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall">
-                          <a href="{{inGameLink ../cardJson team.0.cards 16 24}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                        <li class="battleIconLarge">
-                          <a href="{{inGameLink ../cardJson team.0.cards 16 24}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="row no-gutters mx-md-2 mx-xl-4">
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="list-inline-item"><p>{{averageElixirCost ../cardJson opponent.0.cards 16 24}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="list-inline-item"><p>{{fourCardCycle ../cardJson opponent.0.cards 16 24}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall">
-                          <a href="{{inGameLink ../cardJson opponent.0.cards 16 24}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                        <li class="battleIconLarge">
-                          <a href="{{inGameLink ../cardJson opponent.0.cards 16 24}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <hr style="height: 1px; background-color: black;">
-            {{/if}}
-            <!--Second battle in the duel-->
-            <div class="row mb-3">
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each team.0.cards}}
-                    {{#if (booleanOperator (compare @index ">" 7) "AND" (compare @index "<" 16))}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/if}}
-                  {{/each}}
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each opponent.0.cards}}
-                    {{#if (booleanOperator (compare @index ">" 7) "AND" (compare @index "<" 16))}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/if}}
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <!--Second duel battle gets HP info if there is no third-->
-              <!--API only gives tower HP info for final battle of the duel-->
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 {{#unless team.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson team.0.cards 8 16}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 {{#unless team.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson team.0.cards 8 16}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 {{#unless team.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson team.0.cards 8 16}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson team.0.cards 8 16}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  {{#unless team.0.cards.16.name}}
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  {{/unless}}
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 {{#unless opponent.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson opponent.0.cards 8 16}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 {{#unless opponent.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson opponent.0.cards 8 16}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 {{#unless opponent.0.cards.16.name}}col-lg-3{{/unless}} text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 8 16}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 8 16}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  {{#unless opponent.0.cards.16.name}}
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  {{/unless}}
-                </div>
-              </div>
-            </div>
-            <hr style="height: 1px; background-color: black;">
-            <!--First battle in the duel-->
-            <div class="row mb-3">
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each team.0.cards}}
-                    {{#if (compare @index "<" 8)}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/if}}
-                  {{/each}}
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each opponent.0.cards}}
-                    {{#if (compare @index "<" 8)}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/if}}
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <!--First duel battle never gets HP info-->
-              <!--API only gives tower HP info for final battle of the duel-->
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson team.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson team.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson team.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson team.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson opponent.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson opponent.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {{else}}
-            <!--1v1-->
-            <div class="row mb-3">
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each team.0.cards}}
-                    <div class="col-3">
-                      <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                      <!--Remove lvl label on small screens-->
-                      <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                      <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                    </div>
-                  {{/each}}
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters" style="">
-                  {{#each opponent.0.cards}}
-                    <div class="col-3">
-                      <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                      <!--Remove lvl label on small screens-->
-                      <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                      <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                    </div>
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson team.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson team.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson team.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson team.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                    <ul class="list-inline">
-                      <li class="list-inline-item mr-2">
-                        <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                          <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                          <div class='d-flex justify-content-between'>
-                            <p>King: <p>
-                            <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 0}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Princess: <p>
-                            <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 1}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Princess: <p>
-                            <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 2}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Total: <p>
-                            <p>{{getTowerHealth team.0.kingTowerHitPoints team.0.princessTowersHitPoints 3}}</p>
-                          </div>
-                        ">
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="row no-gutters mx-md-2 mx-xl-4">
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                      <li class="list-inline-item"><p>{{averageElixirCost ../cardJson opponent.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                      <li class="list-inline-item"><p>{{fourCardCycle ../cardJson opponent.0.cards 0 8}}</p></li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 text-center">
-                    <ul class="list-inline">
-                      <li class="battleIconSmall">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                      <li class="battleIconLarge">
-                        <a href="{{inGameLink ../cardJson opponent.0.cards 0 8}}">
-                          <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                    <ul class="list-inline">
-                      <li class="list-inline-item mr-2">
-                        <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                          <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                          <div class='d-flex justify-content-between'>
-                            <p>King: <p>
-                            <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 0}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Princess: <p>
-                            <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 1}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Princess: <p>
-                            <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 2}}</p>
-                          </div>
-                          <div class='d-flex justify-content-between'>
-                            <p>Total: <p>
-                            <p>{{getTowerHealth opponent.0.kingTowerHitPoints opponent.0.princessTowersHitPoints 3}}</p>
-                          </div>
-                        ">
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {{#if team.1.tag}}
-              <!--Additional code for 2v2-->
-              <div class="row justify-content-between">
-                <!--Player names — smaller screen => smaller font-->
-                <h3 class="ml-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h3>
-                <h3 class="mr-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h3>
-                <h5 class="ml-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h5>
-                <h5 class="mr-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h5>
-              </div>
-              <div class="row justify-content-between">
-                <!--Clan names — smaller screen => smaller font-->
-                <h5 class="ml-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></h5>
-                <h5 class="mr-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></h5>
-                <p class="ml-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></p>
-                <p class="mr-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></p>
-              </div>
-              <div class="row mb-3">
-                <div class="col-6">
-                  <div class="row no-gutters" style="">
-                    {{#each team.1.cards}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/each}}
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="row no-gutters" style="">
-                    {{#each opponent.1.cards}}
-                      <div class="col-3">
-                        <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
-                        <!--Remove lvl label on small screens-->
-                        <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
-                        <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
-                      </div>
-                    {{/each}}
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <div class="row no-gutters mx-md-2 mx-xl-4">
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="list-inline-item"><p>{{averageElixirCost ../cardJson team.1.cards 0 8}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="list-inline-item"><p>{{fourCardCycle ../cardJson team.1.cards 0 8}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall">
-                          <a href="{{inGameLink ../cardJson team.1.cards 0 8}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                        <li class="battleIconLarge">
-                          <a href="{{inGameLink ../cardJson team.1.cards 0 8}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth team.1.kingTowerHitPoints team.1.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.1.kingTowerHitPoints team.1.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth team.1.kingTowerHitPoints team.1.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth team.1.kingTowerHitPoints team.1.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="row no-gutters mx-md-2 mx-xl-4">
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/elixir.png" class="" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
-                        <li class="list-inline-item"><p>{{averageElixirCost ../cardJson opponent.1.cards 0 8}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="battleIconLarge"><img src="/images/misc/cycle.png" class="" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
-                        <li class="list-inline-item"><p>{{fourCardCycle ../cardJson opponent.1.cards 0 8}}</p></li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 text-center">
-                      <ul class="list-inline">
-                        <li class="battleIconSmall">
-                          <a href="{{inGameLink ../cardJson opponent.1.cards 0 8}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                        <li class="battleIconLarge">
-                          <a href="{{inGameLink ../cardJson opponent.1.cards 0 8}}">
-                            <img src="/images/misc/open_link.png" class="" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="col-4 col-lg-3 d-none d-lg-block text-center">
-                      <ul class="list-inline">
-                        <li class="list-inline-item mr-2">
-                          <img src="/images/misc/hp.png" class="" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
-                            <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
-                            <div class='d-flex justify-content-between'>
-                              <p>King: <p>
-                              <p>{{getTowerHealth opponent.1.kingTowerHitPoints opponent.1.princessTowersHitPoints 0}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.1.kingTowerHitPoints opponent.1.princessTowersHitPoints 1}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Princess: <p>
-                              <p>{{getTowerHealth opponent.1.kingTowerHitPoints opponent.1.princessTowersHitPoints 2}}</p>
-                            </div>
-                            <div class='d-flex justify-content-between'>
-                              <p>Total: <p>
-                              <p>{{getTowerHealth opponent.1.kingTowerHitPoints opponent.1.princessTowersHitPoints 3}}</p>
-                            </div>
-                          ">
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {{/if}}
-          {{/if}}
-          <div class="row justify-content-between px-3 px-lg-4">
-            <p class="text-muted d-block d-lg-none">{{dateDifference battleTime 0}}</p>
-            <p class="text-muted d-none d-lg-block">{{dateDifference battleTime 1}}</p>
-            <p class="text-muted d-block d-lg-none">Δ Lvl: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 3}}</span></p>
-            <p class="text-muted d-none d-lg-block">Average Level Difference: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 5}}</span></p>
+    {{#if playerBattles}}
+      <div class="row my-4 justify-content-center">
+        <div class="dropdown mx-auto">
+          <button class="btn btn-primary dropdown-toggle" type="button" id="battleSortType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Sort Type
+          </button>
+          <div class="dropdown-menu" id="battleSortTypeOptions" aria-labelledby="battleSortType">
+            <p class="dropdown-item">Battle Outcome</p>
+            <p class="dropdown-item">Time</p>
+            <p class="dropdown-item mb-0">Level Difference</p>
           </div>
         </div>
-      {{/if}}
-    {{/each}}
+        <div class="dropdown mx-auto">
+          <button class="btn btn-info dropdown-toggle" type="button" id="battleSortOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Sort Order
+          </button>
+          <div class="dropdown-menu" id="battleSortOrderOptions" aria-labelledby="battleSortOrder">
+            <p class="dropdown-item">Ascending</p>
+            <p class="dropdown-item mb-0">Descending</p>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+    <div id="battleDisplay">
+      {{#each playerBattles}}
+        {{#if (compare type "!==" "boatBattle")}}
+          <div class="card my-4 container-fluid" style="background-color: #e5e0eb;">
+            <h2 class="mt-4 mb-0 font-weight-bold text-center">{{gameModeName gameMode.id ../gameModeJson challengeTitle}}</h2>
+            <h2 class="mb-4 text-center battle-outcome font-weight-light font-italic">{{findVictor team.0.crowns opponent.0.crowns (objectLength team.0.cards)}}</h2>
+            <div class="row justify-content-center mb-2">
+              <img src="/images/misc/crown_blue.png" alt="Blue Crown" width="10%" style="max-width: 50px;">
+              <h4 class="mx-2" style="color:purple;">{{team.0.crowns}}</h4>
+              <h4 class="mx-2" style="color:purple;">—</h4>
+              <h4 class="mx-2" style="color:purple;">{{opponent.0.crowns}}</h4>
+              <img src="/images/misc/crown_red.png" alt="Red Crown" width="10%" style="max-width: 50px;">
+            </div>
+            <div class="row justify-content-between">
+              <!--Player names — smaller screen => smaller font-->
+              <div>
+                <h5 class="ml-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">{{team.0.name}}</a></h5>
+                <h3 class="ml-4 d-none d-lg-inline-block">
+                  <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none align-middle">{{team.0.name}}</a>
+                  {{> _battleTrophyBadge player = team.[0] type = type}}
+                </h3>
+              </div>
+              <div>
+                <h5 class="mr-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none">{{opponent.0.name}}</a></h5>
+                <h3 class="mr-4 d-none d-lg-inline-block">
+                  <a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none align-middle">{{opponent.0.name}}</a>
+                  {{> _battleTrophyBadge player = opponent.[0] type = type}}
+                </h3>
+              </div>
+            </div>
+            <div class="row justify-content-between">
+              <!--Clan names — smaller screen => smaller font-->
+              {{#if team.0.clan}}
+                <h5 class="ml-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></h5>
+                <p class="ml-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></p>
+              {{else}}
+                <h5 class="ml-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
+                <p class="ml-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
+              {{/if}}
+              {{#if opponent.0.clan}}
+                <h5 class="mr-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></h5>
+                <p class="mr-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></p>
+              {{else}}
+                <h5 class="mr-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
+                <p class="mr-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
+              {{/if}}
+            </div>
+            <div class="row justify-content-between mx-0 mx-sm-1 d-flex d-lg-none">
+              <div>
+                {{> _battleTrophyBadge player = team.[0] type = type}}
+              </div>
+              <div>
+                {{> _battleTrophyBadge player = opponent.[0] type = type}}
+              </div>
+            </div>
+            {{#if (compare (objectLength team.0.cards) ">" 8)}}
+              <!--Duel-->
+              {{#if (compare (objectLength team.0.cards) ">" 16)}}
+                <!--Third battle in the duel-->
+                {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 16 end = 24}}
+                <div class="row">
+                  <!--Third duel battle gets HP info since it is the last battle-->
+                  <!--API only gives tower HP info for final battle of the duel-->
+                  {{> _battleInfoDisplay player = team.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
+                  {{> _battleInfoDisplay player = opponent.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
+                </div>
+                <hr style="height: 1px; background-color: black;">
+              {{/if}}
+              <!--Second battle in the duel-->
+              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 8 end = 16}}
+              <div class="row">
+                {{#if team.0.cards.16.name}}
+                  {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
+                  {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
+                {{else}}
+                  <!--Second duel battle only gets HP info if there is no third-->
+                  <!--API only gives tower HP info for final battle of the duel-->
+                  {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
+                  {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
+                {{/if}}
+              </div>
+              <hr style="height: 1px; background-color: black;">
+              <!--First battle in the duel-->
+              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
+              <div class="row">
+                <!--First duel battle never gets HP info-->
+                <!--API only gives tower HP info for final battle of the duel-->
+                {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
+                {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
+              </div>
+            {{else}}
+              <!--1v1-->
+              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
+              <div class="row">
+                {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+                {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+              </div>
+              {{#if team.1.tag}}
+                <!--Additional code for 2v2-->
+                <div class="row justify-content-between">
+                  <!--Player names — smaller screen => smaller font-->
+                  <h3 class="ml-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h3>
+                  <h3 class="mr-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h3>
+                  <h5 class="ml-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h5>
+                  <h5 class="mr-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h5>
+                </div>
+                <div class="row justify-content-between">
+                  <!--Clan names — smaller screen => smaller font-->
+                  <h5 class="ml-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></h5>
+                  <h5 class="mr-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></h5>
+                  <p class="ml-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></p>
+                  <p class="mr-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></p>
+                </div>
+                {{> _battleCardDisplay teamCards = team.[1].cards opponentCards = opponent.[1].cards start = 0 end = 8}}
+                <div class="row">
+                  {{> _battleInfoDisplay player = team.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+                  {{> _battleInfoDisplay player = opponent.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+                </div>
+              {{/if}}
+            {{/if}}
+            <div class="row justify-content-between px-3 px-lg-4">
+              <p class="text-muted d-block d-lg-none">{{dateDifference battleTime 0}}</p>
+              <p class="text-muted d-none d-lg-block">{{dateDifference battleTime 1}}</p>
+              <!--This time (with class battle-time) is not visible to the user; it is here so the user can sort by date-->
+              <p class="battle-time d-none">{{battleTime}}</p>
+              <p class="text-muted d-block d-lg-none">Δ Lvl: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 3}}</span></p>
+              <p class="text-muted d-none d-lg-block">Average Level Difference: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 5}}</span></p>
+            </div>
+          </div>
+        {{/if}}
+      {{/each}}
+    </div>
   </div>
+
   <div class="tab-pane mx-4 my-4" id="cards" role="tabpanel" aria-labelledby="cards-tab">
     <div class="container-fluid mx-0 px-0 d-none d-md-block">
       <!--On large screen, cards will appear as individual parts-->
@@ -1361,7 +743,7 @@
                     <div class="container-fluid">
                       <div class="row justify-content-center">
                         {{#each deck_used}}
-                          <img src="/images/cards/{{this}}.png" class="analysisTablePicture" style="" alt="{{this}}">
+                          <img src="/images/cards/{{getCardNameFromID ../../cardJson this}}.png" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
                         {{/each}}
                       </div>
                     </div>
@@ -1371,14 +753,14 @@
                     <div class="container-fluid">
                       <div class="row justify-content-center">
                         {{#each deck_faced}}
-                          <img src="/images/cards/{{this}}.png" class="analysisTablePicture" style="" alt="{{this}}">
+                          <img src="/images/cards/{{getCardNameFromID ../../cardJson this}}.png" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
                         {{/each}}
                       </div>
                     </div>
                   </td>
                   <td class="align-middle text-center level-difference">{{level_difference}}</td>
-                  <td class="align-middle text-center">{{gameModeName battle_type ../gameModeJson}}</td>
-                  <td class="align-middle text-center battle-outcome">{{battle_outcome}}</td>
+                  <td class="align-middle text-center">{{gameModeName battle_type ../gameModeJson ""}}</td>
+                  <td class="align-middle text-center battle-outcome">{{battleOutcomeFromNumber battle_outcome}}</td>
                   <td class="align-middle text-center">{{readableDate time}}</td>
                 </tr>
               {{/each}}
@@ -1470,6 +852,7 @@
   if (window.innerWidth < 1200) {
     $("#analysisTable").addClass("table-sm");
   }
+
   window.onresize = function () {
     $(".analysisTablePicture").css("width", (0.02 * (window.innerWidth) + 29));
     if (window.innerWidth > 768) {
@@ -1507,6 +890,72 @@
     return ("gray");
   });
   
+  // Dropdown Menu JS (Cards section, large screen)
+  $("#battleSortTypeOptions p").on("click", function (e) {
+    let selectedText = $(this).text();
+    if($("#battleSortType").text() !== selectedText) {
+      $("#battleSortType").text(selectedText);
+      if (!$("#battleSortOrder").text().includes("Sort Order")) {
+        sortBattles();
+      }
+    }
+  });
+  $("#battleSortOrderOptions p").on("click", function (e) {
+    let selectedText = $(this).text();
+    if($("#battleSortOrder").text() !== selectedText) {
+      $("#battleSortOrder").text(selectedText);
+      if (!$("#battleSortType").text().includes("Sort Type")) {
+        sortBattles();
+      }
+    }
+  });
+
+  function sortBattles() {
+    let sortType = $("#battleSortType").text();
+    let sortOrder = $("#battleSortOrder").text();
+    // Got the general sorting code from: http://jsfiddle.net/hibbard_eu/C2heg/
+    switch (sortType) {
+      case ("Battle Outcome"): {
+        if (sortOrder === "Ascending") {
+          $("#battleDisplay").html($("#battleDisplay").children().sort(function (a, b) {
+            return $(a).find(".battle-outcome").text() > $(b).find(".battle-outcome").text();
+          }));
+        } else {
+          $("#battleDisplay").html($("#battleDisplay").children().sort(function (a, b) {
+            return $(a).find(".battle-outcome").text() < $(b).find(".battle-outcome").text();
+          }));
+        }
+        break;
+      }
+      case ("Time"): {
+        if (sortOrder === "Ascending") {
+          $("#battleDisplay").html($("#battleDisplay").children().sort(function (a, b) {
+            return $(a).find(".battle-time").text() > $(b).find(".battle-time").text();
+          }));
+        } else {
+          $("#battleDisplay").html($("#battleDisplay").children().sort(function (a, b) {
+            return $(a).find(".battle-time").text() < $(b).find(".battle-time").text();
+          }));
+        }
+        break;
+      }
+      case ("Level Difference"): {
+        $("#battleDisplay").html($("#battleDisplay").children().sort(function (a, b) {
+          let num1 = parseFloat($(a).find(".level-difference").text());
+          let num2 = parseFloat($(b).find(".level-difference").text());
+          if (num1 < num2) {
+            return (sortOrder === "Ascending") ? -1 : 1;
+          } else if (num1 > num2) {
+            return (sortOrder === "Ascending") ? 1 : -1;
+          } else {
+            return 0;
+          }
+        }));
+        break;
+      }
+    }
+  }
+
   // This code is for the sort feature on the cards table
   let directions = [1, Number.NEGATIVE_INFINITY, 1, 1, 1];
   function sortTable(n) {

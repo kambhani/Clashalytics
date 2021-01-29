@@ -1,0 +1,59 @@
+<div class="col-6">
+  <div class="row no-gutters mx-md-2 mx-xl-4">
+    <div class="col-4 {{#if showHealth}}col-lg-3{{/if}} text-center">
+      <ul class="list-inline">
+        <li class="battleIconSmall"><img src="/images/misc/elixir.png" alt="Elixir Icon" width="15px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
+        <li class="battleIconLarge"><img src="/images/misc/elixir.png" alt="Elixir Icon" width="30px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg Elixir"></li>
+        <li class="list-inline-item"><p>{{averageElixirCost cardJson player.cards start end}}</p></li>
+      </ul>
+    </div>
+    <div class="col-4 {{#if showHealth}}col-lg-3{{/if}} text-center">
+      <ul class="list-inline">
+        <li class="battleIconSmall"><img src="/images/misc/cycle.png" alt="Cycle Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
+        <li class="battleIconLarge"><img src="/images/misc/cycle.png" alt="Cycle Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="4-Card Cycle"></li>
+        <li class="list-inline-item"><p>{{fourCardCycle cardJson player.cards start end}}</p></li>
+      </ul>
+    </div>
+    <div class="col-4 {{#if showHealth}}col-lg-3{{/if}} text-center">
+      <ul class="list-inline">
+        <li class="battleIconSmall">
+          <a href="{{inGameLink cardJson player.cards start end}}">
+            <img src="/images/misc/open_link.png" alt="Open Link Icon" width="20x;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
+          </a>
+        </li>
+        <li class="battleIconLarge">
+          <a href="{{inGameLink cardJson player.cards start end}}">
+            <img src="/images/misc/open_link.png" alt="Open Link Icon" width="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
+          </a>
+        </li>
+      </ul>
+    </div>
+    {{#if showHealth}}
+      <div class="col-4 col-lg-3 d-none d-lg-block text-center">
+        <ul class="list-inline">
+          <li class="list-inline-item mr-2">
+            <img src="/images/misc/hp.png" alt="Open Link Icon" width="40px;" data-bs-toggle="tooltip" data-bs-placement="top" title="
+              <h5 class='mb-3 font-weight-bold'>Final Tower HP</h5>
+              <div class='d-flex justify-content-between'>
+                <p>King: <p>
+                <p>{{getTowerHealth player.kingTowerHitPoints player.princessTowersHitPoints 0}}</p>
+              </div>
+              <div class='d-flex justify-content-between'>
+                <p>Princess: <p>
+                <p>{{getTowerHealth player.kingTowerHitPoints player.princessTowersHitPoints 1}}</p>
+              </div>
+              <div class='d-flex justify-content-between'>
+                <p>Princess: <p>
+                <p>{{getTowerHealth player.kingTowerHitPoints player.princessTowersHitPoints 2}}</p>
+              </div>
+              <div class='d-flex justify-content-between'>
+                <p>Total: <p>
+                <p>{{getTowerHealth player.kingTowerHitPoints player.princessTowersHitPoints 3}}</p>
+              </div>
+            ">
+          </li>
+        </ul>
+      </div>
+    {{/if}}
+  </div>
+</div>

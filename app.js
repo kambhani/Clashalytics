@@ -74,6 +74,9 @@ app.use(express.static("static_files"));
 // The only working token is hidden since I gitignored the file with the token
 const auth = confidentialInfo.CR_API_TOKEN;
 
+// Records are deleted after 90 days
+const daysToDeletion = 90;
+
 // Root Index
 app.get("/", (req, res) => {
   const title = "Welcome!"
@@ -117,13 +120,10 @@ app.get("/players/:tag", (req, res) => {
   let playerInfo = [0, 0, 0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
-
   let playerIsTracked;
   let trackedBattles;
-  //let gameModeJson;
-  //let cardJson;
+
   // Check if player is being tracked with my system
-  // Also get gameMode Json from RoyaleAPI
   (async function () {
     playerIsTracked = await Tracked_Player.exists({player: tag});
     if (playerIsTracked) {
@@ -263,19 +263,17 @@ app.get("/players/:tag/data", (req, res) => {
   let playerInfo = [0, 0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
-
-  let playerIsTracked;
-  let trackedBattles;
+  
   // Check if player is being tracked with my system
   (async function () {
-    playerIsTracked = await Tracked_Player.exists({player: tag});
+    let playerIsTracked = await Tracked_Player.exists({player: tag});
     if (playerIsTracked) {
       (async function () {
-        trackedBattles = await Battle.find({player_tag: tag}).lean();
-        playerInfo[3] = trackedBattles;
+        playerInfo[3] = await Battle.find({player_tag: tag}).lean();
       }) ();
     }
   }) ();
+
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -286,12 +284,11 @@ app.get("/players/:tag/data", (req, res) => {
     .then((json) => {
       playerInfo[0] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        res.send(playerInfo);
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
+      console.log(err);
     });
 
   fetch(url2, {
@@ -304,12 +301,11 @@ app.get("/players/:tag/data", (req, res) => {
     .then((json) => {
       playerInfo[1] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        res.send(playerInfo);
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
+      console.log(err);
     });
 
   fetch(url3, {
@@ -322,16 +318,20 @@ app.get("/players/:tag/data", (req, res) => {
     .then((json) => {
       playerInfo[2] = json;
       playerInfoLogicalSize++;
-      if (playerInfoLogicalSize === 3) {
-        res.send(playerInfo);
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
+      console.log(err);
     });
 
-  if(errors.length > 0) {
-    res.send("ERROR");
+  function checkSend () {
+    if (playerInfoLogicalSize === 3) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      res.send(playerInfo);
+    }
   }
 });
 
@@ -589,20 +589,7 @@ app.get("/clans/:tag", (req, res) => {
     .then((json) => {
       clanInfo[0] = json;
       clanInfoLogicalSize++;
-      if (clanInfoLogicalSize === 3) {
-        if (clanInfo[0].reason === "notFound") {
-          res.render("tagNotFound", {
-            tag: tag,
-            type: "clans"
-          });
-        } else {
-          res.render("clanInfo", {
-            clanStats: clanInfo[0],
-            currentRiverRace: clanInfo[1],
-            riverRaceLog: clanInfo[2]
-          });
-        }
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
@@ -619,20 +606,7 @@ app.get("/clans/:tag", (req, res) => {
     .then((json) => {
       clanInfo[1] = json;
       clanInfoLogicalSize++;
-      if (clanInfoLogicalSize === 3) {
-        if (clanInfo[0].reason === "notFound") {
-          res.render("tagNotFound", {
-            tag: tag,
-            type: "clans"
-          });
-        } else {
-          res.render("clanInfo", {
-            clanStats: clanInfo[0],
-            currentRiverRace: clanInfo[1],
-            riverRaceLog: clanInfo[2]
-          });
-        }
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
@@ -649,29 +623,113 @@ app.get("/clans/:tag", (req, res) => {
     .then((json) => {
       clanInfo[2] = json;
       clanInfoLogicalSize++;
-      if (clanInfoLogicalSize === 3) {
-        if (clanInfo[0].reason === "notFound") {
-          res.render("tagNotFound", {
-            tag: tag,
-            type: "clans"
-          });
-        } else {
-          //res.send(clanInfo);
-          res.render("clanInfo", {
-            clanStats: clanInfo[0],
-            currentRiverRace: clanInfo[1],
-            riverRaceLog: clanInfo[2]
-          });
-        }
-      }
+      checkSend();
     })
     .catch((err) => {
       errors.push(err);
       console.log(err);
     });
 
-  if(errors.length > 0) {
-    res.send("ERROR");
+  function checkSend () {
+    if (clanInfoLogicalSize === 3) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      if (clanInfo[0].reason === "notFound") {
+        res.render("tagNotFound", {
+          tag: tag,
+          type: "clans"
+        });
+      } else {
+        res.render("clanInfo", {
+          clanStats: clanInfo[0],
+          currentRiverRace: clanInfo[1],
+          riverRaceLog: clanInfo[2]
+        });
+      }
+    }
+  }
+});
+app.get("/clans/:tag/data", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url1 = baseUrl + "v1/clans/%23" + tag;
+  const url2 = url1 + "/currentriverrace";
+  const url3 = url1 + "/riverracelog";
+  let clanInfo = [0, 0, 0];
+  let clanInfoLogicalSize = 0;
+  let errors = [];
+
+  /*let playerIsTracked;
+  let trackedBattles;
+  // Check if player is being tracked with my system
+  (async function () {
+    playerIsTracked = await Tracked_Player.exists({player: tag});
+    if (playerIsTracked) {
+      (async function () {
+        trackedBattles = await Battle.find({player_tag: tag}).lean();
+      }) ();
+    }
+  }) ();*/
+  
+
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[0] = json;
+      clanInfoLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch(url2, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[1] = json;
+      clanInfoLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch(url3, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      clanInfo[2] = json;
+      clanInfoLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  function checkSend () {
+    if (clanInfoLogicalSize === 3) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      res.send(clanInfo);
+    }
   }
 });
 
@@ -692,9 +750,13 @@ app.use((req, res, next) => {
   res.status(404).send("fail");
 });
 
-// This area is where I try to keep track of player battles and update the db every ~hour
+// This area is where I try to keep track of player battles and update the db every two hours
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
+// I'm updating every two hours (not one) to lighten server load
+// I also clear old battles every two days
+let clearTime = -2;
 const updateBattleLog = async function () {
+  clearTime = (clearTime + 2) % 48;
   let players = await Tracked_Player.find({}, "player -_id").exec();
   let errors = [];
   players.forEach(playerObject => {
@@ -708,7 +770,6 @@ const updateBattleLog = async function () {
     })
       .then(res => res.json())
       .then((json) => {
-        //console.log(json[10]);
         jsonLoop:
         for (let i = 0; i < json.length; i++) {
           try {
@@ -722,7 +783,7 @@ const updateBattleLog = async function () {
             let pastDate = json[i].battleTime;
             let battleTime = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11),pastDate.substring(11, 13), pastDate.substring(13, 15)));
             let timeDifference = Date.now() - battleTime.getTime();
-            if (timeDifference > 3600000) {
+            if (timeDifference > 10800000) {
               break jsonLoop;
             }
             if (json[i].type !== "boatBattle") {
@@ -730,8 +791,8 @@ const updateBattleLog = async function () {
               let deckFaced = [];
               let levelDifference = 0;
               for (let j = 0; j < 8; j++) {
-                deckUsed.push(json[i].team[0].cards[j].name);
-                deckFaced.push(json[i].opponent[0].cards[j].name);
+                deckUsed.push(json[i].team[0].cards[j].id);
+                deckFaced.push(json[i].opponent[0].cards[j].id);
                 levelDifference += getRealLevel(json[i].team[0].cards[j].level, json[i].team[0].cards[j].maxLevel);
                 levelDifference -= getRealLevel(json[i].opponent[0].cards[j].level, json[i].opponent[0].cards[j].maxLevel);;
               }
@@ -740,11 +801,11 @@ const updateBattleLog = async function () {
               deckFaced.sort();
               let victor = json[i].team[0].crowns - json[i].opponent[0].crowns;
               if (victor > 0) {
-                victor = "Victory";
+                victor = 1;
               } else if (victor < 0) {
-                victor = "Defeat";
+                victor = -1;
               } else {
-                victor = "Draw"
+                victor = 0;
               }
 
               const toAdd = {
@@ -760,7 +821,7 @@ const updateBattleLog = async function () {
 
               async function addBattle () {
                 let battleExists = await Battle.exists({player_tag: json[i].team[0].tag.substring(1), time: battleTime});
-                if (!battleExists && json[i].team[0].cards.length == 8) {
+                if (!battleExists && json[i].team[0].cards.length === 8) {
                   new Battle(toAdd)
                     .save()
                     .then(idea => {
@@ -778,12 +839,23 @@ const updateBattleLog = async function () {
       });
     //console.log(player);
   });
+  if (clearTime === 0) {
+    let deletionDate = new Date(Date.now() - (daysToDeletion * 24 * 60 * 60 * 1000)).toISOString();
+    Battle.deleteMany({time: {$lte: deletionDate}}, function(err, result) {
+      if (err) {
+        //console.log(err);
+      } else {
+        //console.log(result.deletedCount);
+      }
+    });
+  }
 }
 
+// Name is do every hour, but I've changed it so that it only runs onces every two hours
 const doEveryHour = (something) => {
   let running = true;
   let nextHour = () => {
-    return 3600000 - new Date().getTime() % 3600000;
+    return 7200000 - new Date().getTime() % 7200000;
   }
   let nextCall = setTimeout(() => {
     something();

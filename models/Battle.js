@@ -7,11 +7,11 @@ const Battle = new Schema({
     required: true
   },
   deck_used: [{
-    type: String,
+    type: Number,
     required: true
   }],
   deck_faced: [{
-    type: String,
+    type: Number,
     required: true
   }],
   level_difference: {
@@ -23,7 +23,7 @@ const Battle = new Schema({
     required: true
   },
   battle_outcome: {
-    type: String,
+    type: Number,
     required: true
   },
   time: {

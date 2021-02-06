@@ -1,0 +1,16 @@
+// This file is to show how I set up confidentialInfo.js
+// That file contains my private keys, so I hid the file from GitHub
+// confidentialInfo.dev.js is basically the same thing so don't worry about it
+
+let CR_API_TOKEN;
+if (process.env.NODE_ENV === "production") {
+  CR_API_TOKEN = "Bearer <INSERT PROD CR_API_TOKEN>";
+} else {
+  CR_API_TOKEN = "Bearer <INSERT DEV CR_API_TOKEN>";
+}
+
+module.exports = {
+  CR_API_TOKEN: CR_API_TOKEN,
+
+  mongoURI: "<INSERT CLOUD MONGODB STORAGE>"
+}

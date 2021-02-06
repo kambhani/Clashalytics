@@ -7,3 +7,11 @@ UPDATE (12/29/2020): I am not currently using the clan card images found here. H
 The Clan Trophies image came from: https://cdn.statsroyale.com/images/clan-trophies.png
 
 The clans image came from: https://cdn.royaleapi.com/static/img/ui/social.png?t=81a72ae0
+
+The boatBattle image came from: https://cdn.royaleapi.com/static/img/ui/cw-boat-battle.png
+
+The fame image came from: https://cdn.royaleapi.com/static/img/ui/cw-fame.png
+
+The repair image came from: https://cdn.royaleapi.com/static/img/ui/cw-repair.png
+
+The finishFlag came from: https://pixabay.com/vectors/finish-flag-race-racing-win-1294349/

@@ -137,18 +137,19 @@ var register = function register(Handlebars) {
     calculateCardLevel: function calculateCardLevel(oldLevel, oldMaxLevel) {
       return 13 - oldMaxLevel + oldLevel;
     },
-    // Finds the difference between when a battle was fought and the current time
+    // Finds the difference between when a date and the current time
     dateDifference: function dateDifference(pastDate, isLargeScreen) {
       // Date is processed like it is given in the Clash Royale API
       // The format is: YYYYMMDDTHHMMSS.000Z
       var oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
-      var timeDiffSec = Math.round((Date.now() - oldDate.getTime()) / 1000);
+      var newDate = new Date();
+      var timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
       var seconds = timeDiffSec % 60;
       var minutes = Math.floor(timeDiffSec / 60);
       var hours = Math.floor(minutes / 60);
       minutes = minutes % 60;
       var days = Math.floor(hours / 24);
-      hours = hours % 60;
+      hours = hours % 24;
       var hourWord = "hours";
       var minuteWord = "minutes";
       var secondWord = "seconds";
@@ -191,7 +192,7 @@ var register = function register(Handlebars) {
           if (minutes === 0) {
             return "".concat(seconds, " ").concat(secondWord, " ago");
           } else {
-            return "".concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
+            return "".concat(minutes, " ").concat(minuteWord, " and ").concat(seconds, " ").concat(secondWord, " ago");
           }
         } else {
           return "".concat(hours, " ").concat(hourWord, ", ").concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
@@ -435,6 +436,11 @@ var register = function register(Handlebars) {
             return "/images/badges/4 Year Badge.png";
           }
 
+        case "Played5Years":
+          {
+            return "/images/badges/5 Year Badge.png";
+          }
+
         default:
           {
             return "/images/badges/Crying King Emote.png";
@@ -529,9 +535,14 @@ var register = function register(Handlebars) {
             return "Played for 4 Years";
           }
 
+        case "Played5Years":
+          {
+            return "Played for 5 Years";
+          }
+
         default:
           {
-            return "Server Error: Name Not Found";
+            return apiName;
           }
       }
     },
@@ -634,9 +645,14 @@ var register = function register(Handlebars) {
             return "";
           }
 
+        case "Played5Years":
+          {
+            return "";
+          }
+
         default:
           {
-            return "Server Error: Name Not Found";
+            return "";
           }
       }
     },
@@ -2365,6 +2381,44 @@ var register = function register(Handlebars) {
         return num;
       } else {
         return "+" + num;
+      }
+    },
+    // This function returns the time between two dates
+    // dateDifference only allows the difference from the current date
+    twoDateDifference: function twoDateDifference(pastDate, futureDate, specialCode) {
+      // Date is processed like it is given in the Clash Royale API
+      // The format is: YYYYMMDDTHHMMSS.000Z
+      var oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
+      var newDate = new Date(Date.UTC(futureDate.substring(0, 4), futureDate.substring(4, 6) - 1, futureDate.substring(6, 8), futureDate.substring(9, 11), futureDate.substring(11, 13), futureDate.substring(13, 15))); // Special codes let me do special rendering to specific time requests
+
+      switch (specialCode) {
+        case 1:
+          {
+            // In clanInfo.hbs, deals with inaccurate createdDate in riverRaceLog
+            oldDate = new Date(oldDate.getTime() - 7 * 24 * 3600 * 1000);
+          }
+      }
+
+      var timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
+      var seconds = timeDiffSec % 60;
+      var minutes = Math.floor(timeDiffSec / 60);
+      var hours = Math.floor(minutes / 60);
+      minutes = minutes % 60;
+      var days = Math.floor(hours / 24);
+      hours = hours % 24;
+
+      if (days === 0) {
+        if (hours === 0) {
+          if (minutes === 0) {
+            return "".concat(seconds, "s");
+          } else {
+            return "".concat(minutes, "m ").concat(seconds, "s");
+          }
+        } else {
+          return "".concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
+        }
+      } else {
+        return "".concat(days, "d ").concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
       }
     }
   };

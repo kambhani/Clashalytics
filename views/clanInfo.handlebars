@@ -9,7 +9,7 @@
   <a href="/clans/{{removeFirstCharacter clanStats.tag}}/data" class="text-decoration-none text-right mx-3 align-middle d-none d-sm-block" style="line-height: 48px;">RAW DATA</a>
 </nav>
 
-<ul class="nav nav-tabs" id="tabs" role="tablist">
+<ul class="nav nav-tabs nav-fill" id="tabs" role="tablist">
   <li class="nav-item" role="presentation">
     <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description"
       aria-selected="true">DESCRIPTION</a>
@@ -17,6 +17,10 @@
   <li class="nav-item" role="presentation">
     <a class="nav-link" id="members-tab" data-toggle="tab" href="#members" role="tab" aria-controls="members"
       aria-selected="false">MEMBERS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="war-tab" data-toggle="tab" href="#war" role="tab" aria-controls="war"
+      aria-selected="false">WAR</a>
   </li>
 </ul>
 
@@ -173,7 +177,7 @@
               <td class="align-middle">{{math clanRank "-" previousClanRank}}</td>
               <td class="align-middle">{{donations}}</td>
               <td class="align-middle">{{donationsReceived}}</td>
-              <td class="align-middle">{{dateDifference lastSeen 0}}</td>
+              <td class="align-middle" data-order="{{lastSeen}}">{{dateDifference lastSeen 0}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -182,52 +186,312 @@
     <div id="memberCards" class="container-fluid mt-3 d-none">
       <div class="row justify-content-center">
         {{#each clanStats.memberList}}
-          <div class="card member-card" style="margin: 10px; width: 21em;">
-            <div class="row no-gutters">
-              <div class="col-4">
-                <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top pt-4" alt="League Badge">
-                <div class="card-data-4 text-center mb-1" style="height: 40px;">
-                  <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Trophies" height="40px;">
-                  <h5 class="card-text d-inline-block align-middle" style="line-height: 40px;">{{trophies}}</h5>
+          <a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black; margin: 10px;">
+            <div class="card hover-card border-primary pl-1" style="width: 21em; background-color: ghostwhite;">
+              <div class="row no-gutters">
+                <div class="col-3">
+                  <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top pt-4 pb-2" alt="League Badge">
+                  <div class="card-data-4 text-center mb-1" style="height: 35px;">
+                    <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Trophies" height="35px;">
+                    <p class="card-text d-inline-block align-middle" style="line-height: 35px; font-size: 1.1em;">{{trophies}}</p>
+                  </div>
                 </div>
-              </div>
-              <div class="col-8">
-                <div class="card-body">
-                  <h5 class="card-title font-weight-bold mb-1 card-data-0">{{name}}</h5>
-                  <h6 class="font-weight-light font-italic mb-2 card-data-1">{{tag}}</h6>
-                  <div class="mb-1 card-data-2" style="height: 20px;">
-                    <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Role" alt="Person Icon" height="20px;">
-                    <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization role}}</p>
-                  </div>
-                  <div class="mb-1 card-data-3" style="height: 20px;">
-                    <img src="/images/misc/exp_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Experience" alt="Experience Icon" height="20px;">
-                    <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{expLevel}}</p>
-                  </div>
-                  <div class="mb-1 card-data-5" style="height: 20px;">
-                    <img src="/images/misc/star v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Rank" alt="Star Icon" height="20px;">
-                    <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{clanRank}} [Δ: {{addPlusToNumber (math clanRank "-" previousClanRank)}}]</p>
-                  </div>
-                  <div class="mb-1 card-data-7">
-                    <div class="mb-1 mr-3 d-inline-block" style="height: 20px;">
-                      <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Given" alt="Donations Given Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donations}}</p>
+                <div class="col-9">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold mb-1 card-data-0">{{name}}</h5>
+                    <h6 class="font-weight-light font-italic mb-2 card-data-1">{{tag}}</h6>
+                    <div class="mb-1 card-data-2" style="height: 20px;">
+                      <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Role" alt="Person Icon" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization role}}</p>
                     </div>
-                    <div class="mb-1 ml-3 d-inline-block" style="height: 20px;">
-                      <img src="/images/misc/donations_received.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Received" alt="Donations Received Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsReceived}}</p>
+                    <div class="mb-1 card-data-3" style="height: 20px;">
+                      <img src="/images/misc/exp_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Experience" alt="Experience Icon" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{expLevel}}</p>
                     </div>
-                  </div>
-                  <div class="mb-1 card-data-9" style="height: 20px;">
-                    <img src="/images/misc/clock v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Seen" alt="Clock Icon" height="20px;">
-                    <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{dateDifference lastSeen 0}}</p>
+                    <div class="mb-1 card-data-5" style="height: 20px;">
+                      <img src="/images/misc/star v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Rank" alt="Star Icon" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{clanRank}} [Δ: {{addPlusToNumber (math clanRank "-" previousClanRank)}}]</p>
+                    </div>
+                    <div class="mb-1 card-data-7">
+                      <div class="mb-1 mr-3 d-inline-block" style="height: 20px;">
+                        <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Given" alt="Donations Given Icon" height="20px;">
+                        <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donations}}</p>
+                      </div>
+                      <div class="mb-1 ml-3 d-inline-block" style="height: 20px;">
+                        <img src="/images/misc/donations_received.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Received" alt="Donations Received Icon" height="20px;">
+                        <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsReceived}}</p>
+                      </div>
+                    </div>
+                    <div class="mb-1 card-data-9" style="height: 20px;">
+                      <img src="/images/misc/clock v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Seen" alt="Clock Icon" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{dateDifference lastSeen 0}}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </a>
         {{/each}}
       </div>
     </div>
+  </div>
+  <div class="tab-pane mx-1 mx-md-2" id="war" role="tabpanel" aria-labelledby="war-tab">
+    <hr class="my-0" style="background-color: black; height: 3px;">
+    <!--Tabs within the War Tab-->
+    <ul class="nav nav-pills nav-fill" id="war-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="current-war-tab" data-toggle="tab" href="#currentWar" role="tab" aria-controls="currentWar"
+          aria-selected="true">CURRENT WAR</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="past-wars-tab" data-toggle="tab" href="#pastWars" role="tab" aria-controls="pastWars"
+          aria-selected="false">PAST WARS</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="war-insights-tab" data-toggle="tab" href="#warInsights" role="tab" aria-controls="warInsights"
+          aria-selected="false">WAR INSIGHTS</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane active my-4" id="currentWar" role="tabpanel" aria-labelledby="current-war-tab">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            {{#each currentRiverRace.clans}}
+              <a href="#currentRiverRace_{{removeFirstCharacter tag}}" class="text-decoration-none" data-toggle="modal" style="color: black; margin: 10px;">
+                <div class="card hover-card border-primary" style="width: 21em; background-color: ghostwhite;">
+                  <div class="row no-gutters">
+                    <div class="col-4 d-flex align-items-center">
+                      <img src="{{getClanBadge badgeId clanScore}}" class="card-img-top card-data-0" alt="Clan Badge">
+                    </div>
+                    <div class="col-8">
+                      <div class="card-body">
+                        <h5 class="card-title font-weight-bold mb-1 card-data-1">{{name}}</h5>
+                        <h6 class="font-weight-light font-italic mb-2 card-data-2">{{tag}}</h6>
+                        <div class="mb-1" style="height: 30px;">
+                          <img src="/images/clans/finishFlag.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Finish Time" alt="Checkered Flag" height="30px;">
+                          <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{dateDifference finishTime 0}} ago</p>
+                        </div>
+                        <div class="mb-1" style="height: 30px;">
+                          <img src="/images/clans/fame.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Fame" alt="Fame" height="30px;">
+                          <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{fame}}</p>
+                        </div>
+                        <div class="mb-1" style="height: 30px;">
+                          <img src="/images/clans/repair.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Repair Points" alt="Repair" height="30px;">
+                          <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{repairPoints}}</p>
+                        </div>
+                        <div class="mb-1" style="height: 30px;">
+                          <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="30px;">
+                          <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{clanScore}}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <div id="currentRiverRace_{{removeFirstCharacter tag}}" class="modal fade" tabindex="-1" aria-labelledby="currentRiverRace_{{removeFirstCharacter tag}}_label" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <a href="/clans/{{removeFirstCharacter tag}}" id="currentRiverRace_{{removeFirstCharacter tag}}_label" class="modal-title font-weight-bold h5 text-decoration-none">{{name}}</a>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body" style="background-color: aliceblue">
+                      <div class="row mb-3 justify-content-center">
+                        <div class="dropdown mx-auto">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sort Type
+                          </button>
+                          <div class="dropdown-menu">
+                            <p class="dropdown-item">Name</p>
+                            <p class="dropdown-item">Tag</p>
+                            <p class="dropdown-item">Fame</p>
+                            <p class="dropdown-item">Repair Points</p>
+                            <p class="dropdown-item mb-0">Boat Attacks</p>
+                          </div>
+                        </div>
+                        <div class="dropdown mx-auto">
+                          <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sort Order
+                          </button>
+                          <div class="dropdown-menu">
+                            <p class="dropdown-item">Ascending</p>
+                            <p class="dropdown-item mb-0">Descending</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="sortable">
+                        {{#each participants}}
+                          <a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black;">
+                            <div class="card border-info mb-1 hover-card" style="background-color: ghostwhite;">
+                              <div class="card-body">
+                                <h5 class="card-title">{{name}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{tag}}</h6>
+                                <div class="row">
+                                  <div class="col-4" style="height: 20px;">
+                                    <img src="/images/clans/fame.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Fame" alt="Fame" height="20px;">
+                                    <p class="card-text d-inline-block align-middle participant-fame" style="line-height: 20px;">{{fame}}</p>
+                                  </div>
+                                  <div class="col-4" style="height: 20px;">
+                                    <img src="/images/clans/repair.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Repair Points" alt="Repair Points" height="20px;">
+                                    <p class="card-text d-inline-block align-middle participant-repair-points" style="line-height: 20px;">{{repairPoints}}</p>
+                                  </div>
+                                  <div class="col-4" style="height: 20px;">
+                                    <img src="/images/clans/boatBattle.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Boat Attacks" alt="Boat Attacks" height="20px;">
+                                    <p class="card-text d-inline-block align-middle participant-boat-attacks" style="line-height: 20px;">{{boatAttacks}}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </a>
+                        {{/each}}
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="pastWars" role="tabpanel" aria-labelledby="past-wars-tab">
+        <hr class="my-0" style="background-color: black; height: 3px;">
+        <!--Tabs within the Past Wars Tab-->
+        <ul class="nav nav-pills nav-fill" id="past-wars-tabs" role="tablist">
+          {{#each riverRaceLog.items}}
+            <li class="nav-item" role="presentation">
+              {{#if @first}}
+                <a class="nav-link active" id="rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}_tab" data-toggle="tab" href="#rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}" role="tab" aria-controls="rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}" aria-selected="true">S{{seasonId}} W{{math sectionIndex "+" 1}}</a>
+              {{else}}
+                <a class="nav-link" id="rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}_tab" data-toggle="tab" href="#rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}" role="tab" aria-controls="rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}" aria-selected="false">S{{seasonId}} W{{math sectionIndex "+" 1}}</a>
+              {{/if}}
+            </li>
+          {{/each}}
+        </ul>
+        <div class="tab-content">
+          {{#each riverRaceLog.items}}
+            <div class="tab-pane {{#if @first}}active{{/if}} my-4" id="rrlog_{{seasonId}}_{{math sectionIndex "+" 1}}" role="tabpanel" aria-labelledby="rrlog-{{seasonId}}-{{math sectionIndex "+" 1}}-tab">
+              <div class="container-fluid">
+                <div class="row justify-content-center">
+                  {{#each standings}}
+                    {{#with clan}}
+                      <a href="#rrlog_{{../../seasonId}}_{{math ../../sectionIndex "+" 1}}_{{removeFirstCharacter tag}}" class="text-decoration-none" data-toggle="modal" style="color: black; margin: 10px;">
+                        <div class="card hover-card border-primary" style="width: 21em; background-color: ghostwhite;">
+                          <div class="row no-gutters">
+                            <div class="col-4 d-flex align-items-center">
+                              <img src="{{getClanBadge badgeId clanScore}}" class="card-img-top card-data-0" alt="Clan Badge">
+                            </div>
+                            <div class="col-8">
+                              <div class="card-body">
+                                <h5 class="card-title font-weight-bold mb-1 card-data-1">{{name}}</h5>
+                                <h6 class="font-weight-light font-italic mb-1 card-data-2">{{tag}}</h6>
+                                <h6 class="font-weight-light font-italic mb-2 card-data-2">Rank: {{../rank}}</h6>
+                                <div class="mb-1" style="height: 30px;">
+                                  <img src="/images/clans/finishFlag.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Finish Time" alt="Checkered Flag" height="30px;">
+                                  <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{twoDateDifference ../../createdDate finishTime 1}}</p>
+                                </div>
+                                <div class="mb-1" style="height: 30px;">
+                                  <img src="/images/clans/fame.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Fame" alt="Fame" height="30px;">
+                                  <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{fame}}</p>
+                                </div>
+                                <div class="mb-1" style="height: 30px;">
+                                  <img src="/images/clans/repair.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Repair Points" alt="Repair" height="30px;">
+                                  <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{repairPoints}}</p>
+                                </div>
+                                <div class="mb-1" style="height: 30px;">
+                                  <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="30px;">
+                                  <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{clanScore}} [Δ {{addPlusToNumber ../trophyChange}}]</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                      <div id="rrlog_{{../../seasonId}}_{{math ../../sectionIndex "+" 1}}_{{removeFirstCharacter tag}}" class="modal fade" tabindex="-1" aria-labelledby="rrlog_{{../../seasonId}}_{{math ../../sectionIndex "+" 1}}_{{removeFirstCharacter tag}}_label" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <a href="/clans/{{removeFirstCharacter tag}}" id="rrlog_{{../../seasonId}}_{{math ../../sectionIndex "+" 1}}_{{removeFirstCharacter tag}}_label" class="modal-title font-weight-bold h5 text-decoration-none">{{name}}</a>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" style="background-color: aliceblue">
+                              <div class="row mb-3 justify-content-center">
+                                <div class="dropdown mx-auto">
+                                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sort Type
+                                  </button>
+                                  <div class="dropdown-menu">
+                                    <p class="dropdown-item">Name</p>
+                                    <p class="dropdown-item">Tag</p>
+                                    <p class="dropdown-item">Fame</p>
+                                    <p class="dropdown-item">Repair Points</p>
+                                    <p class="dropdown-item mb-0">Boat Attacks</p>
+                                  </div>
+                                </div>
+                                <div class="dropdown mx-auto">
+                                  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sort Order
+                                  </button>
+                                  <div class="dropdown-menu">
+                                    <p class="dropdown-item">Ascending</p>
+                                    <p class="dropdown-item mb-0">Descending</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="sortable">
+                                {{#each participants}}
+                                  <a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black;">
+                                    <div class="card border-info mb-1 hover-card" style="background-color: ghostwhite;">
+                                      <div class="card-body">
+                                        <h5 class="card-title">{{name}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{tag}}</h6>
+                                        <div class="row">
+                                          <div class="col-4" style="height: 20px;">
+                                            <img src="/images/clans/fame.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Fame" alt="Fame" height="20px;">
+                                            <p class="card-text d-inline-block align-middle participant-fame" style="line-height: 20px;">{{fame}}</p>
+                                          </div>
+                                          <div class="col-4" style="height: 20px;">
+                                            <img src="/images/clans/repair.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Repair Points" alt="Repair Points" height="20px;">
+                                            <p class="card-text d-inline-block align-middle participant-repair-points" style="line-height: 20px;">{{repairPoints}}</p>
+                                          </div>
+                                          <div class="col-4" style="height: 20px;">
+                                            <img src="/images/clans/boatBattle.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Boat Attacks" alt="Boat Attacks" height="20px;">
+                                            <p class="card-text d-inline-block align-middle participant-boat-attacks" style="line-height: 20px;">{{boatAttacks}}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </a>
+                                {{/each}}
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {{/with}}
+                  {{/each}}
+                  
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+      <div class="tab-pane my-4" id="warInsights" role="tabpanel" aria-labelledby="war-insights-tab">
+        war insights
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -269,14 +533,6 @@
         column.visible(!column.visible());
       });
     });
-
-    // This makes the background of the member cards a different color when they are hovered over
-    $(".member-card").mouseover(function() {
-      $(this).css("background-color", "#eeeeee");
-    });
-    $(".member-card").mouseout(function() {
-      $(this).css("background-color", "white");
-    });
   });
 
   // Toggle between table and card view
@@ -302,6 +558,105 @@
       html: true
     });
   });
+
+  // This makes the background of hoverable cards a different color when they are hovered over
+  $(".hover-card").mouseover(function() {
+    $(this).css("background-color", "#eeeeee");
+  });
+  $(".hover-card").mouseout(function() {
+    $(this).css("background-color", "ghostwhite");
+  });
+  
+  // Dropdown Menu JS (with sorting)
+  $(".dropdown-item").on("click", function(e) {
+    let selectedText = $(this).text();
+    let parentButton = $(this).parent().parent().children("button");
+    if (parentButton.text() !== selectedText) {
+      parentButton.text(selectedText);
+      let parentDropdown = $(this).parent().parent().get(0);
+      let dropdowns = $(this).parent().parent().parent().children();
+      let sortOrder, sortType;
+      dropdowns.each(function(index) {
+        if (index === 0) {
+          sortType = $(this).children("button").text();
+        } else {
+          sortOrder = $(this).children("button").text();
+        }
+      });
+      if (!dropdowns.get(0).innerText.includes("Sort Type") && !dropdowns.get(1).innerText.includes("Sort Order")) {
+        let toSort = $(this).parent().parent().parent().parent().children(".sortable");
+        switch (sortType) {
+          case ("Name"): {
+            if (sortOrder === "Ascending") {
+              toSort.html(toSort.children().sort(function (a, b) {
+                return $(a).find(".card-title").text() > $(b).find(".card-title").text();
+              }));
+            } else {
+              toSort.html(toSort.children().sort(function (a, b) {
+                return $(a).find(".card-title").text() < $(b).find(".card-title").text();
+              }));
+            }
+            break;
+          }
+          case ("Tag"): {
+            if (sortOrder === "Ascending") {
+              toSort.html(toSort.children().sort(function (a, b) {
+                return $(a).find(".card-subtitle").text() > $(b).find(".card-subtitle").text();
+              }));
+            } else {
+              toSort.html(toSort.children().sort(function (a, b) {
+                return $(a).find(".card-subtitle").text() < $(b).find(".card-subtitle").text();
+              }));
+            }
+            break;
+          }
+          case ("Fame"): {
+            toSort.html(toSort.children().sort(function (a, b) {
+              let num1 = parseInt($(a).find(".participant-fame").text());
+              let num2 = parseInt($(b).find(".participant-fame").text());
+              return numberComparator(num1, num2, sortOrder);
+            }));
+            break;
+          }
+          case ("Repair Points"): {
+            toSort.html(toSort.children().sort(function (a, b) {
+              let num1 = parseInt($(a).find(".participant-repair-points").text());
+              let num2 = parseInt($(b).find(".participant-repair-points").text());
+              return numberComparator(num1, num2, sortOrder);
+            }));
+            break;
+          }
+          case ("Boat Attacks"): {
+            toSort.html(toSort.children().sort(function (a, b) {
+              let num1 = parseInt($(a).find(".participant-boat-attacks").text());
+              let num2 = parseInt($(b).find(".participant-boat-attacks").text());
+              return numberComparator(num1, num2, sortOrder);
+            }));
+            break;
+          }
+        }
+        // Moving cards around destroys the event listeners associated with them
+        // To counteract this, I need to add the event listeners again after the cards have been sorted
+        $(".hover-card").mouseover(function() {
+          $(this).css("background-color", "#eeeeee");
+        });
+        $(".hover-card").mouseout(function() {
+          $(this).css("background-color", "ghostwhite");
+        });
+      }
+    }
+  });
+
+  // Useful helper functions
+  function numberComparator(num1, num2, sortOrder) {
+    if (num1 < num2) {
+      return (sortOrder === "Ascending") ? -1 : 1;
+    } else if (num1 > num2) {
+      return (sortOrder === "Ascending") ? 1 : -1;
+    } else {
+      return 0;
+    }
+  }
 </script>
 
 

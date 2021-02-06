@@ -552,8 +552,10 @@ app.get("/clans", function (req, res) {
 
         if (typeof limit !== "undefined") {
           url = url + "&limit=" + limit;
-        } //console.log(url);
+        } // Remove first "&"
 
+
+        url = url.replace("&", ""); //console.log(url);
 
         fetch(url, {
           headers: {
@@ -638,8 +640,10 @@ app.post("/clans", function (req, res) {
 
     if (limit !== "") {
       url2 = url2 + "&limit=" + limit;
-    }
+    } // Remove first "&"
 
+
+    url2 = url2.replace("&", "");
     res.redirect(url2);
   }
 });
@@ -864,7 +868,7 @@ var updateBattleLog = function updateBattleLog() {
                   var battleTime = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
                   var timeDifference = Date.now() - battleTime.getTime();
 
-                  if (timeDifference > 10800000) {
+                  if (timeDifference > 7200000) {
                     return "break|jsonLoop";
                   }
 

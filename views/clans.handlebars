@@ -82,24 +82,54 @@
     </div>
   </div>
 
-  <div id="cards" class="container-fluid mt-3 d-none">
+  <div id="cards" class="container-fluid my-3 d-none">
     <div class="row justify-content-center">
       {{#each results.items}}
-        <div class="card" style="width: 12em; margin: 10px;">
-          <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge">
-          <div class="card-body">
-            <h4 class="card-title mb-2 font-weight-bold card-data-1">{{name}}</h4>
-            <h6 class="font-weight-light font-italic mb-3 card-data-2">{{tag}}</h6>
-            <p class="card-text card-data-3">Type: {{correctCapitalization type}}</p>
-            <p class="card-text card-data-4">Location: {{location.name}}</p>
-            <p class="card-text card-data-5">Required Trophies: {{requiredTrophies}}</p>
-            <p class="card-text card-data-6">Donations Per Week: {{donationsPerWeek}}</p>
-            <p class="card-text card-data-7">Clan Score: {{clanScore}}</p>
-            <p class="card-text card-data-8">Clan War Trophies: {{clanWarTrophies}}</p>
-            <p class="card-text card-data-9">Members: {{members}} / 50</p>
-            <a href="/clans/{{removeFirstCharacter tag}}" class="btn btn-primary">View Clan</a>
+        <a href="/clans/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black; margin: 10px;">
+          <div class="card clan-card border-primary" style="width: 22em; background-color: ghostwhite;">
+            <div class="row no-gutters">
+              <div class="col-4 d-flex align-items-center">
+                <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge">
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h5 class="card-title font-weight-bold mb-1 card-data-1">{{name}}</h5>
+                  <h6 class="font-weight-light font-italic mb-2 card-data-2">{{tag}}</h6>
+                  <div class="row">
+                    <div class="col-12 mb-2 card-data-3" style="height: 20px;">
+                      <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Type" alt="Person Icon" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization type}}</p>
+                    </div>
+                    <div class="col-12 mb-1 card-data-4 d-flex align-items-center" style="">
+                      <img src="/images/misc/locations.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Location" alt="Location" height="20px;">
+                      <p class="card-text pl-2" style="font-size: 0.8em;">{{location.name}}</p>
+                    </div>
+                    <div class="col-6 mb-2 card-data-5" style="height: 20px;">
+                      <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Required Trophies" alt="Required Trophies" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{requiredTrophies}}</p>
+                    </div>
+                    <div class="col-6 mb-2 card-data-6" style="height: 20px;">
+                      <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Weekly Donations" alt="Weekly Donations" height="20px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsPerWeek}}</p>
+                    </div>
+                    <div class="col-6 mb-2 card-data-7" style="height: 25px;">
+                      <img src="/images/badges/Tournament.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Score" alt="Clan Score" height="25px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 25px;">{{clanScore}}</p>
+                    </div>
+                    <div class="col-6 mb-2 card-data-8" style="height: 25px;">
+                      <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="25px;">
+                      <p class="card-text d-inline-block align-middle" style="line-height: 25px;">{{clanWarTrophies}}</p>
+                    </div>
+                    <div class="col-6 mb-2 card-data-9" style="height: 25px;">
+                      <img src="/images/clans/clans.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Members" alt="Members" height="25px;">
+                      <p class="card-text d-inline-block align-middle ml-1" style="line-height: 25px;">{{members}} / 50</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </a>
       {{/each}}
     </div>
   </div>
@@ -207,26 +237,30 @@
 
   $(document).ready(function () {
     let table = $("#table").DataTable();
+
     // Initializes all display toggles and the view format toggle to on
     // This code is necessary; otherwise, the page would break if the user refreshes
     $(".display-toggle").each(function() {
       $(this).bootstrapToggle("on");
     });
     $("#searchDisplayFormat").bootstrapToggle("on");
+
     // Event handler for the display toggles
     $(function() {
       $(".display-toggle").change(function() {
         let cardClass = ".card-data-" + $(this).attr("data-column");
+        let cardClassDisplay = (cardClass === ".card-data-4") ? "d-flex" : "d-block";
         if($(this).prop("checked")) {
-          $(cardClass).removeClass("d-none").addClass("d-block");
+          $(cardClass).removeClass("d-none").addClass(cardClassDisplay);
         } else {
-          $(cardClass).removeClass("d-block").addClass("d-none");
+          $(cardClass).removeClass(cardClassDisplay).addClass("d-none");
         }
         let column = table.column($(this).attr("data-column"));
         column.visible(!column.visible());
       });
     });
   });
+
   // Event handler for the card/table toggle
   $(function() {
     $("#searchDisplayFormat").change(function() {
@@ -238,6 +272,21 @@
         $("#tableDiv").removeClass("d-block").addClass("d-none");
       }
     });
+  });
+
+  // Initialize bootstrap tooltips
+  $(function() {
+    $('[data-bs-toggle="tooltip"]').tooltip({
+      html: true
+    });
+  });
+
+  // This makes the background of the member cards a different color when they are hovered over
+  $(".clan-card").mouseover(function() {
+    $(this).css("background-color", "#eeeeee");
+  });
+  $(".clan-card").mouseout(function() {
+    $(this).css("background-color", "ghostwhite");
   });
 </script>
 

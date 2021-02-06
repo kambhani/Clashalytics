@@ -1,0 +1,6 @@
+This file is where I store things to get done
+No guarantee that I will ever finish these things
+
+- Improve playerInfo.handlebars analysis tab search
+- Finish clanInfo.handlebars
+- Add "Leaderboard Royale" to playerInfo.handlebars, general tab

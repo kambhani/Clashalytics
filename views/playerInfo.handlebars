@@ -1,13 +1,13 @@
-<link rel="stylesheet" href="/css/playerInfo.css">
 <title>Player Stats | {{playerStats.tag}}</title>
 
 <nav aria-label="breadcrumb" class="justify-content-between d-flex mb-3" style="background-color: #e9ecef; height: 48px;">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
     <li class="breadcrumb-item"><a href="/players" style="text-decoration: none;">Players</a></li>
-    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">{{playerStats.tag}}</li>
+    <li class="breadcrumb-item"><a href="/players/{{removeFirstCharacter playerStats.tag}}" style="text-decoration: none;">{{playerStats.tag}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">All</li>
   </ol>
-  <a id="rawDataLink" href="/players/{{removeFirstCharacter playerStats.tag}}/data" class="text-decoration-none text-right mx-3 align-middle" style="line-height: 48px;">RAW DATA</a>
+  <a href="/players/{{removeFirstCharacter playerStats.tag}}/data" class="d-none d-lg-block text-decoration-none text-right mx-3 align-middle" style="line-height: 48px;">RAW DATA</a>
 </nav>
 
 <!-- Tabs -->
@@ -36,749 +36,20 @@
 
 <!-- Tab panes -->
 <div class="tab-content mx-2">
-  <div class="tab-pane active mx-0 mx-sm-2 mx-lg-4 my-4" id="general" role="tabpanel" aria-labelledby="general-tab">
-    {{#with playerStats}}
-      <h1>{{name}}</h1>
-      <h2>
-        <img class="" src="/images/ladder/trophy.png" alt="trophy" style="width: 45px;"> 
-        {{bestTrophies}} PB
-      </h2>
-      {{#if role}}
-        <h3><a class="text-decoration-none" href="/clans/{{removeFirstCharacter clan.tag}}">{{clan.name}}</a> [{{correctCapitalization role}}]</h3>
-      {{else}}
-        <h3 class="font-italic">Not in Clan</h3>
-      {{/if}}
-      <div class="accordion pt-4 mx-0" id="playerInfo">
-        <div class="card">
-          <div class="card-header" style="" id="headingOne">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="font-size: 0.7em;">
-                League Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#playerInfo">
-            <div class="card-body" style="">
-              {{#if leagueStatistics}}
-                {{#with leagueStatistics}}
-                  <div class="container-fluid pt-4">
-                    <div class="row justify-content-center">
-                      {{#with currentSeason}}
-                        <div class="leagueRoyaleCardStyle">
-                          <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
-                          <div class="card-body">
-                            <h5 class="card-title text-center font-weight-bold">Current Season</h5>
-                            <p class="card-text">Current Trophies: {{trophies}}</p>
-                            <p class="card-text">Best Trophies: {{bestTrophies}}</p>
-                            {{#if rank}}
-                              <p class="card-text">Current Rank: {{rank}}</p>
-                            {{else}}
-                              <p class="card-text">Current Rank: Not Ranked</p>
-                            {{/if}}
-                          </div>
-                        </div>
-                      {{/with}}
-                      {{#with previousSeason}}
-                        <div class="leagueRoyaleCardStyle">
-                          <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
-                          <div class="card-body">
-                            <h5 class="card-title text-center font-weight-bold">Previous Season</h5>
-                            <p class="card-text">End Trophies: {{trophies}}</p>
-                            <p class="card-text">Best Trophies: {{bestTrophies}}</p>
-                            {{#if rank}}
-                              <p class="card-text">Rank: {{rank}}</p>
-                            {{else}}
-                              <p class="card-text">Rank: Not Ranked</p>
-                            {{/if}}
-                          </div>
-                        </div>
-                      {{/with}}
-                      {{#with bestSeason}}
-                        <div class="leagueRoyaleCardStyle">
-                          <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
-                          <div class="card-body">
-                            <h5 class="card-title text-center font-weight-bold">Best Season</h5>
-                            <p class="card-text">Season: {{id}}</p>
-                            <p class="card-text">Trophies: {{trophies}}</p>
-                            {{#if rank}}
-                              <p class="card-text">Rank: {{rank}}</p>
-                            {{else}}
-                              <p class="card-text">Rank: Not Ranked</p>
-                            {{/if}}
-                          </div>
-                        </div>
-                      {{/with}}
-                    </div>
-                  </div>
-                {{/with}}
-              {{else}}
-                <div class="alert alert-primary text-center" role="alert">
-                  This player does not have any league info
-                </div>
-              {{/if}}
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingTwo">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="font-size: 0.7em;">
-                Challenge Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="container-fluid pt-4">
-                <div class="row justify-content-center">
-                  <div class="challengeRoyaleCardStyle">
-                    <img src="/images/challenges/CRL Logo.png" class="card-img-top" alt="CRL Logo">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Challenge Stats</h5>
-                      <p class="card-text"><a data-bs-toggle="tooltip" data-bs-placement="top" title="Without Continues">Max Challenge Wins: {{challengeMaxWins}}*</a></p>
-                      <p class="card-text">Challenge Cards Won: {{challengeCardsWon}}</p>
-                    </div>
-                  </div>
-                  <div class="challengeRoyaleCardStyle">
-                    <img src="/images/challenges/Classic Challenge.png" class="card-img-top" alt="Classic Challenge Logo">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Classic Challenge Wins</h5>
-                      <h1 class="font-weight-light text-center">{{findCCGCWins "CC" badges}}</h1>
-                    </div>
-                  </div>
-                  <div class="challengeRoyaleCardStyle">
-                    <img src="/images/challenges/Grand Challenge.png" class="card-img-top" alt="Grand Challenge Logo">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Grand Challenge Wins</h5>
-                      <h1 class="font-weight-light text-center">{{findCCGCWins "GC" badges}}</h1>
-                    </div>
-                  </div>
-                  <div class="challengeRoyaleCardStyle">
-                    <img src="/images/challenges/Tournament.png" class="card-img-top" alt="Tournament Logo">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Tournaments</h5>
-                      <p class="card-text">Tournament Games Played: {{tournamentBattleCount}}</p>
-                      <p class="card-text">Tournament Cards Won: {{tournamentCardsWon}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingThree">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="font-size: 0.7em;">
-                Clan Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="container-fluid pt-4">
-                <div class="row justify-content-center">
-                  <div class="clanRoyaleCardStyle">
-                    <img src="/images/achievements/Donations.png" class="card-img-top" alt="Donation Cards" style="margin-bottom: 63.233px;">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Total Donations</h5>
-                      <h1 class="font-weight-light text-center">{{totalDonations}}</h1>
-                    </div>
-                  </div>
-                  <div class="clanRoyaleCardStyle">
-                    <img src="/images/clans/War Shield v4.png" class="card-img-top" alt="War Shield" style="">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">War Day Wins</h5>
-                      <h1 class="font-weight-light text-center">{{warDayWins}}</h1>
-                    </div>
-                    <div class="card-footer" style="background-color: mintcream;">
-                      <small class="text-muted">Clan Wars Veteran</small>
-                    </div>
-                  </div>
-                  <div class="clanRoyaleCardStyle">
-                    <img src="/images/misc/cards.png" class="card-img-top" alt="Clan Cards" style="margin-bottom: 19.167px;">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">Clan Cards Collected</h5>
-                      <h1 class="font-weight-light text-center">{{clanCardsCollected}}</h1>
-                    </div>
-                    <div class="card-footer" style="background-color: mintcream;">
-                      <small class="text-muted">Clan Wars Veteran</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingFour">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="font-size: 0.7em;">
-                Battle Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="container-fluid pt-4">
-                <div class="row justify-content-center">
-                  <div class="battleRoyaleCardStyle">
-                    <img src="/images/battles/King and the Crowd Illustration v3.png" class="card-img-top" alt="King and the Crowd">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Ladder and Challenges</h5>
-                      <p class="card-text mb-0">Total Wins: {{wins}}</p>
-                      <p class="card-text small font-weight-light font-italic">Percent Wins: {{round (math (math wins "/" (math wins "+" losses)) "*" 100) 3}}%</p>
-                      <p class="card-text mb-0">Total Losses: {{losses}}</p>
-                      <p class="card-text small font-weight-light font-italic">Percent Losses: {{round (math (math losses "/" (math wins "+" losses)) "*" 100) 3}}%</p>
-                      <p class="card-text mb-0">Total Games: {{math wins "+" losses}}</p>
-                    </div>
-                  </div>
-                  <div class="battleRoyaleCardStyle">
-                    <img src="/images/battles/2v2.png" class="card-img-top" alt="2v2 Logo">
-                    <div class="card-body">
-                      <h5 class="card-title text-center font-weight-bold">2v2 Games (and 1v1 draws)</h5>
-                      <h1 class="font-weight-light text-center">{{math battleCount "-" (math wins "+" losses)}}</h1>
-                    </div>
-                  </div>
-                  <div class="battleRoyaleCardStyle">
-                    <img src="/images/battles/Three Crowns.png" class="card-img-top" alt="Three Crowns Picture">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Three Crown Wins</h5>
-                      <h1 class="font-weight-light text-center">{{threeCrownWins}}</h1>
-                    </div>
-                  </div>
-                  <div class="battleRoyaleCardStyle">
-                    <img src="/images/battles/Battle.png" class="card-img-top" alt="Battle Logo">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Total Games</h5>
-                      <h1 class="font-weight-light text-center">{{battleCount}}</h1>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingFive">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" style="font-size: 0.7em;">
-                Badge Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="container-fluid pt-4">
-                <div class="row justify-content-center">
-                  {{#each badges}}
-                    <div class="badgeRoyaleCardStyle">
-                      <h6 class="font-weight-bold text-center mb-4" style="height: 45px;">{{getBadgeName name progress}}</h6>
-                      <img src="{{getBadgeImage name progress}}" class="card-img-top badge-royale-image" alt="{{name}}">
-                      <div class="card-body">
-                        <h2 class="font-weight-light text-center">{{displayBadgeValue name level progress}}</h2>
-                      </div>
-                    </div>
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingSix">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix" style="font-size: 0.7em;">
-                Achievement Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="alert alert-info text-center mb-0" role="alert">
-                Achievements are no longer shown in the game, but since they are still tracked, they are displayed below.
-              </div>
-              <div class="container-fluid pt-3">
-                <div class="row justify-content-center">
-                  {{#each achievements}}
-                    <div class="achievementRoyaleCardStyle">
-                      <h5 class="font-weight-bold text-center mb-3" style="height: 40px;">{{name}}</h5>
-                      <img src="{{getAchievementImage name value}}" class="card-img-top" alt="{{name}}" style="height: 200px;">
-                      <div class="card-body">
-                        <div class="container-fluid mx-0 px-0 mb-2" style="height: 40px;">
-                          <div class="row justify-content-center">
-                            {{{loopHTML stars "<img src=\"/images/misc/star v2.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"cartoon_star\">"}}}
-                          </div>
-                        </div>
-                        {{#if (compare name "===" "Challenge Streak")}}
-                          <p class="card-text text-center" style="height: 50px;"><a data-bs-toggle="tooltip" data-bs-placement="top" title="With or Without Continues">{{displayAchievementValue name value}}*</a></p>
-                        {{else}}
-                          <p class="card-text text-center" style="height: 50px;">{{displayAchievementValue name value}}</p>
-                        {{/if}}
-                      </div>
-                      <div class="card-footer" style="background-color: mintcream;">
-                        {{{achievementLevels name}}}
-                      </div>
-                    </div>
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingSeven">
-            <h2 class="mb-0">
-              <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven" style="font-size: 0.7em;">
-                Miscellaneous Royale
-              </button>
-            </h2>
-          </div>
-          <div id="collapseSeven" class="collapse" aria-labelledby="headingSeven" data-parent="#playerInfo">
-            <div class="card-body">
-              <div class="container-fluid pt-3">
-                <div class="row justify-content-center">
-                  <div class="miscellaneousRoyaleCardStyle">
-                    <img src="/images/misc/Experience.png" class="card-img-top" alt="Experience" style="height: 200px;">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Experience</h5>
-                      <h1 class="font-weight-light text-center">Level {{expLevel}}</h1>
-                    </div>
-                  </div>
-                  <div class="miscellaneousRoyaleCardStyle">
-                    <img src="/images/misc/cards.png" class="card-img-top" alt="cards" style="height: 200px;">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Cards Found</h5>
-                      <h1 class="font-weight-light text-center">{{objectLength cards}}</h1>
-                    </div>
-                  </div>
-                  <div class="miscellaneousRoyaleCardStyle">
-                    <img src="/images/misc/clock.png" class="card-img-top" alt="clock" style="height: 200px;">
-                    <div class="card-body">
-                      <h5 class="card-title font-weight-bold text-center">Account Since</h5>
-                      <h2 class="font-weight-light text-center px-0 mx-0">{{startDate badges}}</h2>
-                    </div>
-                  </div>
-                  <div class="miscellaneousRoyaleCardStyle">
-                    <h5 class="card-title font-weight-bold text-center">Current Deck</h5>
-                    <div class="container-fluid mx-0 px-0 mt-0">
-                      <div class="row justify-content-center">
-                        {{#each currentDeck}}
-                          <div class="mx-1">
-                            <img src="/images/cards/{{name}}.png" class="my-2" alt="{{name}}" width="70px;" style="">
-                          </div>
-                        {{/each}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="miscellaneousRoyaleCardStyle">
-                    <h5 class="card-title font-weight-bold text-center">Favorite Card</h5>
-                    <img src="/images/cards/{{currentFavouriteCard.name}}.png" class="my-2" alt="{{currentFavouriteCard.name}}" style="height: 250px;">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    {{/with}}
-  </div>
+  <!--This is for the general tab-->
+  {{>_playerInfoGeneral playerStats=playerStats}}
 
-  <div class="tab-pane mx-2 my-4 px-1" id="battles" role="tabpanel" aria-labelledby="battles-tab">
-    {{#unless playerBattles}}
-      <div class="alert alert-primary text-center" role="alert">
-        No battles are available for this player
-      </div>
-    {{/unless}}
-    {{#if playerBattles}}
-      <div class="row my-4 justify-content-center">
-        <div class="dropdown mx-auto">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="battleSortType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Sort Type
-          </button>
-          <div class="dropdown-menu" id="battleSortTypeOptions" aria-labelledby="battleSortType">
-            <p class="dropdown-item">Battle Outcome</p>
-            <p class="dropdown-item">Time</p>
-            <p class="dropdown-item mb-0">Level Difference</p>
-          </div>
-        </div>
-        <div class="dropdown mx-auto">
-          <button class="btn btn-info dropdown-toggle" type="button" id="battleSortOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Sort Order
-          </button>
-          <div class="dropdown-menu" id="battleSortOrderOptions" aria-labelledby="battleSortOrder">
-            <p class="dropdown-item">Ascending</p>
-            <p class="dropdown-item mb-0">Descending</p>
-          </div>
-        </div>
-      </div>
-    {{/if}}
-    <div id="battleDisplay">
-      {{#each playerBattles}}
-        {{#if (compare type "!==" "boatBattle")}}
-          <div class="card my-4 container-fluid" style="background-color: #e5e0eb;">
-            <h2 class="mt-4 mb-0 font-weight-bold text-center">{{gameModeName gameMode.id ../gameModeJson challengeTitle}}</h2>
-            <h2 class="mb-4 text-center battle-outcome font-weight-light font-italic">{{findVictor team.0.crowns opponent.0.crowns (objectLength team.0.cards)}}</h2>
-            <div class="row justify-content-center mb-2">
-              <img src="/images/misc/crown_blue.png" alt="Blue Crown" width="10%" style="max-width: 50px;">
-              <h4 class="mx-2" style="color:purple;">{{team.0.crowns}}</h4>
-              <h4 class="mx-2" style="color:purple;">—</h4>
-              <h4 class="mx-2" style="color:purple;">{{opponent.0.crowns}}</h4>
-              <img src="/images/misc/crown_red.png" alt="Red Crown" width="10%" style="max-width: 50px;">
-            </div>
-            <div class="row justify-content-between">
-              <!--Player names — smaller screen => smaller font-->
-              <div>
-                <h5 class="ml-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">{{team.0.name}}</a></h5>
-                <h3 class="ml-4 d-none d-lg-inline-block">
-                  <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none align-middle">{{team.0.name}}</a>
-                  {{> _battleTrophyBadge player = team.[0] type = type}}
-                </h3>
-              </div>
-              <div>
-                <h5 class="mr-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none">{{opponent.0.name}}</a></h5>
-                <h3 class="mr-4 d-none d-lg-inline-block">
-                  <a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none align-middle">{{opponent.0.name}}</a>
-                  {{> _battleTrophyBadge player = opponent.[0] type = type}}
-                </h3>
-              </div>
-            </div>
-            <div class="row justify-content-between">
-              <!--Clan names — smaller screen => smaller font-->
-              {{#if team.0.clan}}
-                <h5 class="ml-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></h5>
-                <p class="ml-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></p>
-              {{else}}
-                <h5 class="ml-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
-                <p class="ml-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
-              {{/if}}
-              {{#if opponent.0.clan}}
-                <h5 class="mr-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></h5>
-                <p class="mr-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></p>
-              {{else}}
-                <h5 class="mr-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
-                <p class="mr-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
-              {{/if}}
-            </div>
-            <div class="row justify-content-between mx-0 mx-sm-1 d-flex d-lg-none">
-              <div>
-                {{> _battleTrophyBadge player = team.[0] type = type}}
-              </div>
-              <div>
-                {{> _battleTrophyBadge player = opponent.[0] type = type}}
-              </div>
-            </div>
-            {{#if (compare (objectLength team.0.cards) ">" 8)}}
-              <!--Duel-->
-              {{#if (compare (objectLength team.0.cards) ">" 16)}}
-                <!--Third battle in the duel-->
-                {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 16 end = 24}}
-                <div class="row">
-                  <!--Third duel battle gets HP info since it is the last battle-->
-                  <!--API only gives tower HP info for final battle of the duel-->
-                  {{> _battleInfoDisplay player = team.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
-                  {{> _battleInfoDisplay player = opponent.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
-                </div>
-                <hr style="height: 1px; background-color: black;">
-              {{/if}}
-              <!--Second battle in the duel-->
-              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 8 end = 16}}
-              <div class="row">
-                {{#if team.0.cards.16.name}}
-                  {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
-                  {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
-                {{else}}
-                  <!--Second duel battle only gets HP info if there is no third-->
-                  <!--API only gives tower HP info for final battle of the duel-->
-                  {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
-                  {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
-                {{/if}}
-              </div>
-              <hr style="height: 1px; background-color: black;">
-              <!--First battle in the duel-->
-              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
-              <div class="row">
-                <!--First duel battle never gets HP info-->
-                <!--API only gives tower HP info for final battle of the duel-->
-                {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
-                {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
-              </div>
-            {{else}}
-              <!--1v1-->
-              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
-              <div class="row">
-                {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
-                {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
-              </div>
-              {{#if team.1.tag}}
-                <!--Additional code for 2v2-->
-                <div class="row justify-content-between">
-                  <!--Player names — smaller screen => smaller font-->
-                  <h3 class="ml-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h3>
-                  <h3 class="mr-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h3>
-                  <h5 class="ml-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h5>
-                  <h5 class="mr-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h5>
-                </div>
-                <div class="row justify-content-between">
-                  <!--Clan names — smaller screen => smaller font-->
-                  <h5 class="ml-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></h5>
-                  <h5 class="mr-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></h5>
-                  <p class="ml-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></p>
-                  <p class="mr-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></p>
-                </div>
-                {{> _battleCardDisplay teamCards = team.[1].cards opponentCards = opponent.[1].cards start = 0 end = 8}}
-                <div class="row">
-                  {{> _battleInfoDisplay player = team.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
-                  {{> _battleInfoDisplay player = opponent.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
-                </div>
-              {{/if}}
-            {{/if}}
-            <div class="row justify-content-between px-3 px-lg-4">
-              <p class="text-muted d-block d-lg-none">{{dateDifference battleTime 0}}</p>
-              <p class="text-muted d-none d-lg-block">{{dateDifference battleTime 1}}</p>
-              <!--This time (with class battle-time) is not visible to the user; it is here so the user can sort by date-->
-              <p class="battle-time d-none">{{battleTime}}</p>
-              <p class="text-muted d-block d-lg-none">Δ Lvl: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 3}}</span></p>
-              <p class="text-muted d-none d-lg-block">Average Level Difference: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 5}}</span></p>
-            </div>
-          </div>
-        {{/if}}
-      {{/each}}
-    </div>
-  </div>
+  <!--This is for the battles tab-->
+  {{>_playerInfoBattles playerBattles=playerBattles gameModeJson=gameModeJson cardJson=cardJson}}
 
-  <div class="tab-pane mx-4 my-4" id="cards" role="tabpanel" aria-labelledby="cards-tab">
-    <div class="container-fluid mx-0 px-0 d-none d-md-block">
-      <!--On large screen, cards will appear as individual parts-->
-      <div class="row my-4 justify-content-center">
-        <div class="dropdown" style="margin-right: 200px;">
-          <button class="btn btn-primary dropdown-toggle" type="button" id="cardSortType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Sort Type
-          </button>
-          <div class="dropdown-menu" id="cardSortTypeOptions" aria-labelledby="cardSortType">
-            <p class="dropdown-item">Name</p>
-            <p class="dropdown-item">Level</p>
-            <p class="dropdown-item">Rarity</p>
-            <p class="dropdown-item">Upgrade</p>
-            <p class="dropdown-item">Elixir</p>
-            <p class="dropdown-item">Trade</p>
-            <p class="dropdown-item mb-0">Star Level</p>
-          </div>
-        </div>
-        <div class="dropdown" style="margin-left: 200px;">
-          <button class="btn btn-info dropdown-toggle" type="button" id="cardSortOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Sort Order
-          </button>
-          <div class="dropdown-menu" id="cardSortOrderOptions" aria-labelledby="cardSortOrder">
-            <p class="dropdown-item">Ascending</p>
-            <p class="dropdown-item mb-0">Descending</p>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-center" id="cardListDisplay">
-        {{#each playerStats.cards}}
-          <div class="card mx-2 mb-4 px-3 pb-1 pt-3 bg-light border-primary rounded-lg" style="width: 10em;">
-            <h5 class="card-title" style="text-align: center; height:50px;">{{name}}</h5>
-            <img src="/images/cards/{{name}}.png" class="card-img-top" alt="{{name}}">
-            <div class="card-body">
-              <p class="my-0 font-weight-light card-level" style="text-align: center;">Level {{calculateCardLevel level maxLevel}}</p>
-              {{#if (compare level "===" maxLevel)}}
-                <!--This means that the card in question is at the max level-->
-                <p class="my-0 font-weight-light card-count" style="text-align: center;">{{findCardsNeeded level maxLevel}}</p>
-                <div class="container-fluid mx-0 px-0">
-                  <div class="row justify-content-center">
-                    {{{loopHTML starLevel "<img src=\"/images/misc/star_points.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"star_points_icon\">"}}}
-                  </div>
-                </div>
-              {{else}}
-                <p class="my-0 font-weight-light card-count" style="text-align: center;">{{count}} / {{findCardsNeeded level maxLevel}}</p>
-              {{/if}}
-            </div>
-          </div>
-        {{/each}}
-      </div>
-    </div>
-    <div class="d-block d-md-none">
-      <!--On small screens, cards will appear in a table-->
-      <div class="alert alert-primary text-center" role="alert">
-        Click the column headers to sort the table
-      </div>
-      <table class="table table-bordered table-striped table-sm" style="width: 100%" id="cards_table">
-        <thead class="">
-          <tr class="text-center">
-            <th class="align-middle sortable-column" onclick="sortTable(0)">
-              Card Name
-              <div>
-                <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                </svg>
-                <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
-              </div>
-            </th>
-            <th class="align-middle">Picture</th>
-            <th class="align-middle sortable-column" onclick="sortTable(2)">
-              Current Level
-              <div>
-                <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                </svg>
-                <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
-              </div>
-            </th>
-            <th class="align-middle sortable-column" onclick="sortTable(3)">
-              Card Count
-              <div>
-                <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                </svg>
-                <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
-              </div>
-            </th>
-            <th class="align-middle sortable-column" onclick="sortTable(4)">
-              Rarity
-              <div>
-                <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                </svg>
-                <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each playerStats.cards}}
-            <tr class="text-center">
-              <td class="align-middle">{{name}}</td>
-              <td class="align-middle"><img src="/images/cards/{{name}}.png" style="width: 50px;"></td>
-              <td class="align-middle">{{calculateCardLevel level maxLevel}}</td>
-              {{#if (compare level "===" maxLevel)}}
-                <td class="align-middle">{{findCardsNeeded level maxLevel}}</td>
-              {{else}}
-                <td class="align-middle">{{count}} / {{findCardsNeeded level maxLevel}}</td>
-              {{/if}}
-              {{#if (compare maxLevel "===" 13)}}
-                <td class="align-middle">Common</td>
-              {{else if (compare maxLevel "===" 11)}}
-                <td class="align-middle">Rare</td>
-              {{else if (compare maxLevel "===" 8)}}
-                <td class="align-middle">Epic</td>
-              {{else}}
-                <td class="align-middle">Legendary</td>
-              {{/if}}
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="tab-pane mx-4 my-4" id="chests" role="tabpanel" aria-labelledby="chests-tab">
-    <div class="container-fluid mx-0 px-0 py-4">
-      <div class="row justify-content-center">
-        {{#each playerChests.items}}
-          <div class="card mx-2 mb-4 px-3 pb-1 pt-3 bg-light border-primary rounded-lg" style="width: 11em;">
-            <h5 class="card-title" style="text-align: center; height: 50px;">{{name}}</h5>
-            <img src="/images/chests/{{name}} v2.png" class="card-img-top" alt="{{name}}" style="height: 145px;">
-            <div class="card-body">
-              <p class="my-0 font-weight-light" style="text-align: center;">+{{math index "+" 1}}</p>
-            </div>
-          </div>
-        {{/each}}
-      </div>
-    </div>
-  </div>
-  <div class="tab-pane mx-0 mx-md-2 mx-lg-4 my-4 px-0" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
-    {{#if isTracked}}
-      <div class="alert alert-primary text-center">This player is being tracked</div>
-      {{#if trackedBattles}}
-        <div class="alert alert-warning d-block d-lg-none text-center">
-          Analysis tab for a small screen is suboptimal; viewing on a bigger screen is recommended
-        </div>
-        <div id="analysisTableNumEntries" class="alert alert-info text-center">Showing All Entries</div>
-        <div id="analysisTableDiv" style="">
-          <table id="analysisTable" class="table bg-light table-bordered justify-content-center mb-4" style="width: 100%;">
-            <thead>
-              <tr class="thead-dark text-center" style="">
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Deck Used</p>
-                  <input id="analysisTableSearch0" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(0)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Opponent</p>
-                  <input id="analysisTableSearch1" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(1)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Deck Faced</p>
-                  <input id="analysisTableSearch2" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(2)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Level Difference</p>
-                  <input id="analysisTableSearch3" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(3)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Battle Type</p>
-                  <input id="analysisTableSearch4" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(4)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Battle Outcome</p>
-                  <input id="analysisTableSearch5" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(5)">
-                </th>
-                <th class="align-middle border-dark" style="position: sticky; top: 0;">
-                  <p class="my-0" style="height: 50px;">Time</p>
-                  <input id="analysisTableSearch6" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(6)">
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each trackedBattles}}
-                <tr>
-                  <td class="analysisTableDeckUsed" id="" style="min-width: 212px;">
-                    <div class="container-fluid">
-                      <div class="row justify-content-center">
-                        {{#each deck_used}}
-                          <img src="/images/cards/{{getCardNameFromID ../../cardJson this}}.png" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
-                        {{/each}}
-                      </div>
-                    </div>
-                  </td>
-                  <td class="align-middle text-center"><a href="/players/{{opponent_tag}}" class="text-decoration-none">{{opponent_tag}}</a></td>
-                  <td class="analysisTableDeckFaced" id="" style="min-width: 212px;">
-                    <div class="container-fluid">
-                      <div class="row justify-content-center">
-                        {{#each deck_faced}}
-                          <img src="/images/cards/{{getCardNameFromID ../../cardJson this}}.png" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
-                        {{/each}}
-                      </div>
-                    </div>
-                  </td>
-                  <td class="align-middle text-center level-difference">{{level_difference}}</td>
-                  <td class="align-middle text-center">{{gameModeName battle_type ../gameModeJson ""}}</td>
-                  <td class="align-middle text-center battle-outcome">{{battleOutcomeFromNumber battle_outcome}}</td>
-                  <td class="align-middle text-center">{{readableDate time}}</td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
-      {{else}}
-        <h1>No Tracked Battles</h1>
-      {{/if}}
-    {{else}}
-      <div class="alert alert-info text-center">This player is not being tracked</div>
-      <form class="container-fluid mx-0 px-0" action="/players/{{removeFirstCharacter playerStats.tag}}" method="POST">
-        <div class="row justify-content-center">
-          <input class="btn btn-lg btn-primary" name="addPlayer" value="Start Tracking Player" type="submit">
-        </div>
-      </form>
-    {{/if}}
-  </div>
+  <!--This is for the cards tab-->
+  {{>_playerInfoCards playerStats=playerStats}}
+
+  <!--This is for the chests tab-->
+  {{>_playerInfoChests playerChests=playerChests}}
+
+  <!--This is for the analysis tab-->
+  {{>_playerInfoAnalysis isTracked=isTracked trackedBattles=trackedBattles gameModeJson=gameModeJson cardJson=cardJson}}
 </div>
 
 <script>
@@ -890,7 +161,7 @@
     return ("gray");
   });
   
-  // Dropdown Menu JS (Cards section, large screen)
+  // Dropdown Menu JS (Battle tab)
   $("#battleSortTypeOptions p").on("click", function (e) {
     let selectedText = $(this).text();
     if($("#battleSortType").text() !== selectedText) {
@@ -955,6 +226,16 @@
       }
     }
   }
+
+  // Custom CSS styling for the cards table (small screen)
+  $("#cards_table").children("thead").css({"background-color": "#343a40", "color": "#ffffff"});
+  $("#cards_table").find("th").css({"border-left-color": "#454d55", "border-right-color": "#454d55"});
+  $(".cards-sortable-column").mouseover(function() {
+    $(this).css({"background-color": "#232930", "cursor": "pointer"});
+  });
+  $(".cards-sortable-column").mouseout(function() {
+    $(this).css({"background-color": "#343a40", "cursor": "initial"});
+  });
 
   // This code is for the sort feature on the cards table
   let directions = [1, Number.NEGATIVE_INFINITY, 1, 1, 1];
@@ -1103,7 +384,6 @@
     let sortType = $("#cardSortType").text();
     let sortOrder = $("#cardSortOrder").text();
     const upgradeOrder = [2, 4, 10, 20, 50, 100, 200, 400, 800, 1000, 2000, 5000];
-
     
     // Got the general sorting code from: http://jsfiddle.net/hibbard_eu/C2heg/
     switch (sortType) {
@@ -1257,6 +537,18 @@
     }
   }
 
+  // Analysis table styling
+  if (window.matchMedia("(max-width: 991.98px)").matches) {
+    $("#analysisTableDiv").css({"overflow-y": "auto", "height": "100vh"});
+  }
+  $(window).resize(function() {
+    if (window.matchMedia("(max-width: 991.98px)").matches) {
+      $("#analysisTableDiv").css({"overflow-y": "auto", "height": "100vh"});
+    } else {
+      $("#analysisTableDiv").css({"overflow-y": "", "height": ""});
+    }
+  });
+
   // This function filters the data from the table in the Analysis Tab
   // Implementation is taken from: https://www.w3schools.com/howto/howto_js_filter_table.asp
   function filterAnalysisTable(notNeeded) {
@@ -1275,7 +567,9 @@
         $(toSearch).each(function () {
           let tableData = "";
           $(this).find("div div img").each(function () {
-            tableData += $(this).attr("alt") + " ";
+            // Used Stack Overflow to get the RegEx
+            // Basically, it removes all spaces and periods from the character name
+            tableData += $(this).attr("alt").replace(/\s+/g, "").replace(/\./g, "") + " ";
           });
           let toShow = true;
           for (let j = 0; j < filters[i].length; j++) {

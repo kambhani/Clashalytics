@@ -4,7 +4,7 @@
       {{#each teamCards}}
         {{#if (booleanOperator (compare @index ">=" ../start) "AND" (compare @index "<" ../end))}}
           <div class="col-3">
-            <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
+            <img src="/images/cards/webp/{{name}}.webp" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
             <!--Remove lvl label on small screens-->
             <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
             <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>
@@ -18,7 +18,7 @@
       {{#each opponentCards}}
         {{#if (booleanOperator (compare @index ">=" ../start) "AND" (compare @index "<" ../end))}}
           <div class="col-3">
-            <img src="/images/cards/{{name}}.png" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
+            <img src="/images/cards/webp/{{name}}.webp" class="my-2 d-block mx-auto" alt="{{name}}" width="100%" style="max-width: 150px;">
             <!--Remove lvl label on small screens-->
             <p class="my-0 d-none d-lg-block" style="text-align: center;">Lvl {{calculateCardLevel level maxLevel}}</p>
             <p class="my-0 d-block d-lg-none" style="text-align: center;">{{calculateCardLevel level maxLevel}}</p>

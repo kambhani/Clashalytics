@@ -1,0 +1,14 @@
+<title>Player {{tag}} | Chests</title>
+
+{{>_playerInfoBreadcrumb page="Chests" tag=tag}}
+
+{{>_playerInfoTabs active="chests" tag=tag}}
+
+<div class="tab-content mx-2">
+  {{>_playerInfoChests playerChests=playerChests}}
+</div>
+
+<script>
+  // Displays the chests tab
+  $("#chests").show();
+</script>

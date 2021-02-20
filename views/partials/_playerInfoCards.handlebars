@@ -1,0 +1,132 @@
+<div class="tab-pane mx-0 mx-md-4 my-4" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+  <div class="container-fluid mx-0 px-0 d-none d-md-block">
+    <!--On large screen, cards will appear as individual parts-->
+    <div class="row my-4 justify-content-center">
+      <div class="dropdown" style="margin-right: 200px;">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="cardSortType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort Type
+        </button>
+        <div class="dropdown-menu" id="cardSortTypeOptions" aria-labelledby="cardSortType">
+          <p class="dropdown-item">Name</p>
+          <p class="dropdown-item">Level</p>
+          <p class="dropdown-item">Rarity</p>
+          <p class="dropdown-item">Upgrade</p>
+          <p class="dropdown-item">Elixir</p>
+          <p class="dropdown-item">Trade</p>
+          <p class="dropdown-item mb-0">Star Level</p>
+        </div>
+      </div>
+      <div class="dropdown" style="margin-left: 200px;">
+        <button class="btn btn-info dropdown-toggle" type="button" id="cardSortOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort Order
+        </button>
+        <div class="dropdown-menu" id="cardSortOrderOptions" aria-labelledby="cardSortOrder">
+          <p class="dropdown-item">Ascending</p>
+          <p class="dropdown-item mb-0">Descending</p>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center" id="cardListDisplay">
+      {{#each playerStats.cards}}
+        <div class="card mx-2 mb-4 px-3 pb-1 pt-3 bg-light border-primary rounded-lg" style="width: 10em;">
+          <h5 class="card-title" style="text-align: center; height:50px;">{{name}}</h5>
+          <img src="/images/cards/webp/{{name}}.webp" class="card-img-top" alt="{{name}}">
+          <div class="card-body">
+            <p class="my-0 font-weight-light card-level" style="text-align: center;">Level {{calculateCardLevel level maxLevel}}</p>
+            {{#if (compare level "===" maxLevel)}}
+              <!--This means that the card in question is at the max level-->
+              <p class="my-0 font-weight-light card-count" style="text-align: center;">{{findCardsNeeded level maxLevel}}</p>
+              <div class="container-fluid mx-0 px-0">
+                <div class="row justify-content-center">
+                  {{{loopHTML starLevel "<img src=\"/images/misc/star_points.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"star_points_icon\">"}}}
+                </div>
+              </div>
+            {{else}}
+              <p class="my-0 font-weight-light card-count" style="text-align: center;">{{count}} / {{findCardsNeeded level maxLevel}}</p>
+            {{/if}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  <div class="d-block d-md-none">
+    <!--On small screens, cards will appear in a table-->
+    <div class="alert alert-primary text-center" role="alert">
+      Click the column headers to sort the table
+    </div>
+    <table class="table table-bordered table-striped table-sm" style="width: 100%" id="cards_table">
+      <thead>
+        <tr class="text-center">
+          <th class="align-middle cards-sortable-column" onclick="sortTable(0)">
+            Card Name
+            <div>
+              <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+              </svg>
+              <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+              </svg>
+            </div>
+          </th>
+          <th class="align-middle">Picture</th>
+          <th class="align-middle cards-sortable-column" onclick="sortTable(2)">
+            Current Level
+            <div>
+              <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+              </svg>
+              <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+              </svg>
+            </div>
+          </th>
+          <th class="align-middle cards-sortable-column" onclick="sortTable(3)">
+            Card Count
+            <div>
+              <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+              </svg>
+              <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+              </svg>
+            </div>
+          </th>
+          <th class="align-middle cards-sortable-column" onclick="sortTable(4)">
+            Rarity
+            <div>
+              <svg class="up-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-up-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+              </svg>
+              <svg class="down-arrow-sort d-none" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-caret-down-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+              </svg>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each playerStats.cards}}
+          <tr class="text-center">
+            <td class="align-middle" style="font-size: 0.9rem;">{{name}}</td>
+            <td class="align-middle"><img src="/images/cards/webp/{{name}}.webp" style="width: 50px;"></td>
+            <td class="align-middle" style="font-size: 0.9rem;">{{calculateCardLevel level maxLevel}}</td>
+            {{#if (compare level "===" maxLevel)}}
+              <td class="align-middle" style="font-size: 0.9rem;">{{findCardsNeeded level maxLevel}}</td>
+            {{else}}
+              <td class="align-middle" style="font-size: 0.9rem;">{{count}} / {{findCardsNeeded level maxLevel}}</td>
+            {{/if}}
+            {{#if (compare maxLevel "===" 13)}}
+              <td class="align-middle" style="font-size: 0.9rem;">Common</td>
+            {{else if (compare maxLevel "===" 11)}}
+              <td class="align-middle" style="font-size: 0.9rem;">Rare</td>
+            {{else if (compare maxLevel "===" 8)}}
+              <td class="align-middle" style="font-size: 0.9rem;">Epic</td>
+            {{else}}
+              <td class="align-middle" style="font-size: 0.9rem;">Legendary</td>
+            {{/if}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

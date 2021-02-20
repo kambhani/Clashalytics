@@ -17,6 +17,8 @@ var serveStatic = require("serve-static");
 var _require = require("handlebars"),
     template = _require.template;
 
+var compression = require("compression");
+
 var app = express(); //Database Configuration
 
 var db = require("./config/database"); // Confidential Info (MongoDB Atlas user and password, CR API Token, etc.)
@@ -55,7 +57,9 @@ var Battle = mongoose.model("Battle");
 
 require("./models/Tracked_Player");
 
-var Tracked_Player = mongoose.model("Tracked_Player"); // How middleware works
+var Tracked_Player = mongoose.model("Tracked_Player"); // Compression middleware
+
+app.use(compression()); // How middleware works
 
 app.use(function (req, res, next) {
   //req.name = "Anish";
@@ -118,9 +122,11 @@ app.post("/players", function (req, res) {
   } else {
     res.redirect("/players/".concat(req.body.tag.toUpperCase()));
   }
-}); // Player Stat Pages
-
+});
 app.get("/players/:tag", function (req, res) {
+  res.redirect("/players/".concat(req.params.tag.toUpperCase(), "/general"));
+});
+app.get("/players/:tag/all", function (req, res) {
   var tag = req.params.tag.toUpperCase();
   var url1 = baseUrl + "v1/players/%23" + tag;
   var url2 = url1 + "/battlelog";
@@ -131,45 +137,35 @@ app.get("/players/:tag", function (req, res) {
   var playerIsTracked;
   var trackedBattles; // Check if player is being tracked with my system
 
-  (function _callee2() {
-    return regeneratorRuntime.async(function _callee2$(_context2) {
+  (function _callee() {
+    return regeneratorRuntime.async(function _callee$(_context) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            _context2.next = 2;
+            _context.next = 2;
             return regeneratorRuntime.awrap(Tracked_Player.exists({
               player: tag
             }));
 
           case 2:
-            playerIsTracked = _context2.sent;
+            playerIsTracked = _context.sent;
 
-            if (playerIsTracked) {
-              (function _callee() {
-                return regeneratorRuntime.async(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        _context.next = 2;
-                        return regeneratorRuntime.awrap(Battle.find({
-                          player_tag: tag
-                        }).lean());
-
-                      case 2:
-                        trackedBattles = _context.sent;
-
-                      case 3:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                });
-              })();
+            if (!playerIsTracked) {
+              _context.next = 7;
+              break;
             }
 
-          case 4:
+            _context.next = 6;
+            return regeneratorRuntime.awrap(Battle.find({
+              player_tag: tag
+            }).lean());
+
+          case 6:
+            trackedBattles = _context.sent;
+
+          case 7:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
     });
@@ -248,14 +244,22 @@ app.get("/players/:tag", function (req, res) {
       }
 
       if (playerInfo[2].reason) {
-        if (playerInfo[2].reason === "notFound") {
-          res.render("tagNotFound", {
-            tag: tag,
-            type: "players"
-          });
-        } else {
-          res.send("Server Error");
-        }
+        // This area means that something is off with the JSON response
+        // Final href is not used, but I put it in there for consistency
+        var path = [{
+          "href": "/",
+          "name": "Home"
+        }, {
+          "href": "/players",
+          "name": "Players"
+        }, {
+          "href": "/players/".concat(tag),
+          "name": "#" + tag
+        }, {
+          "href": "/players/".concat(tag, "/all"),
+          "name": "All"
+        }];
+        handleErrors(res, path, "Player #".concat(tag, " | All"), playerInfo[2]);
       } else {
         res.render("playerInfo", {
           playerStats: playerInfo[0],
@@ -270,7 +274,7 @@ app.get("/players/:tag", function (req, res) {
     }
   }
 });
-app.post("/players/:tag", function (req, res) {
+app.post("/players/:tag/all", function (req, res) {
   if ("addPlayer" in req.body) {
     var tag = req.params.tag.toUpperCase();
     var toAdd = {
@@ -278,7 +282,350 @@ app.post("/players/:tag", function (req, res) {
     };
     new Tracked_Player(toAdd).save().then(function (idea) {
       //console.log(idea);
-      res.redirect("/players/" + tag);
+      res.redirect("/players/" + tag + "/all");
+    })["catch"](function (err) {
+      console.log(err);
+    });
+  }
+});
+app.get("/players/:tag/general", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/players/%23" + tag;
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      // Final href is not used, but I put it in there for consistency
+      var path = [{
+        "href": "/",
+        "name": "Home"
+      }, {
+        "href": "/players",
+        "name": "Players"
+      }, {
+        "href": "/players/".concat(tag),
+        "name": "#" + tag
+      }, {
+        "href": "/players/".concat(tag, "/general"),
+        "name": "General"
+      }];
+      handleErrors(res, path, "Player #".concat(tag, " | General"), json);
+    } else {
+      res.render("playerInfoGeneral", {
+        playerStats: json
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/players/:tag/battles", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url1 = baseUrl + "v1/players/%23" + tag + "/battlelog"; // url2 is only used to discern between player tags without any battles and player tags that do not exist
+
+  var url2 = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/battles"),
+    "name": "Battles"
+  }];
+  var toSend = [0, 0, 0];
+  var toSendLogicalSize = 0;
+  var errors = [];
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[0] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[1] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[2] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+
+  function checkSend() {
+    if (toSendLogicalSize === 3) {
+      if (errors.length > 0) {
+        res.send("ERROR");
+      }
+
+      if (toSend[0].reason) {
+        handleErrors(res, path, "Player #".concat(tag, " | Battles"), toSend[0]);
+      } else {
+        if (toSend[0].length === 0) {
+          fetch(url2, {
+            headers: {
+              Accept: "application/json",
+              Authorization: auth
+            }
+          }).then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            if (json.reason) {
+              handleErrors(res, path, "Player #".concat(tag, " | Battles"), json);
+            } else {
+              res.render("playerInfoBattles", {
+                tag: "#" + req.params.tag.toUpperCase(),
+                playerBattles: toSend[0],
+                gameModeJson: toSend[1],
+                cardJson: toSend[2]
+              });
+            }
+          })["catch"](function (err) {
+            errors.push(err);
+            console.log(err);
+          });
+        } else {
+          res.render("playerInfoBattles", {
+            tag: "#" + req.params.tag.toUpperCase(),
+            playerBattles: toSend[0],
+            gameModeJson: toSend[1],
+            cardJson: toSend[2]
+          });
+        }
+      }
+    }
+  }
+});
+app.get("/players/:tag/cards", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/players/%23" + tag; // Final href is not used, but I put it in there for consistency
+
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/cards"),
+    "name": "Cards"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Player #".concat(tag, " | Cards"), json);
+    } else {
+      res.render("playerInfoCards", {
+        playerStats: json
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/players/:tag/chests", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/chests"),
+    "name": "Chests"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Player #".concat(tag, " | Chests"), json);
+    } else {
+      res.render("playerInfoChests", {
+        playerChests: json,
+        tag: "#" + tag
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/players/:tag/analysis", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/analysis"),
+    "name": "Analysis"
+  }];
+  var toSend = [0, 0, 0, 0, 0];
+  var toSendLogicalSize = 0;
+  var errors = []; // I send a request for chests just to see if the player tag is valid
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[0] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    console.log(err);
+    errors.push(err);
+  });
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[1] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  });
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    toSend[2] = json;
+    toSendLogicalSize++;
+    checkSend();
+  })["catch"](function (err) {
+    errors.push(err);
+    console.log(err);
+  }); // Check if player is being tracked with my system
+
+  (function _callee2() {
+    return regeneratorRuntime.async(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return regeneratorRuntime.awrap(Tracked_Player.exists({
+              player: tag
+            }));
+
+          case 2:
+            toSend[3] = _context2.sent;
+            toSendLogicalSize++;
+
+            if (!toSend[3]) {
+              _context2.next = 11;
+              break;
+            }
+
+            _context2.next = 7;
+            return regeneratorRuntime.awrap(Battle.find({
+              player_tag: tag
+            }).lean());
+
+          case 7:
+            toSend[4] = _context2.sent;
+            toSendLogicalSize++;
+            _context2.next = 12;
+            break;
+
+          case 11:
+            toSendLogicalSize++;
+
+          case 12:
+            checkSend();
+
+          case 13:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    });
+  })();
+
+  function checkSend() {
+    if (toSendLogicalSize === 5) {
+      if (errors.length > 0) {
+        res.send("ERROR");
+      }
+
+      if (toSend[0].reason) {
+        handleErrors(res, path, "Player #".concat(tag), toSend[0]);
+      } else {
+        res.render("playerInfoAnalysis", {
+          tag: "#" + tag,
+          gameModeJson: toSend[1],
+          cardJson: toSend[2],
+          isTracked: toSend[3],
+          trackedBattles: toSend[4]
+        });
+      }
+    }
+  }
+});
+app.post("/players/:tag/analysis", function (req, res) {
+  if ("addPlayer" in req.body) {
+    var tag = req.params.tag.toUpperCase();
+    var toAdd = {
+      player: tag
+    };
+    new Tracked_Player(toAdd).save().then(function (idea) {
+      //console.log(idea);
+      res.redirect("/players/" + tag + "/analysis");
     })["catch"](function (err) {
       console.log(err);
     });
@@ -648,10 +995,26 @@ app.post("/clans", function (req, res) {
   }
 });
 app.get("/clans/:tag", function (req, res) {
+  res.redirect("/clans/".concat(req.params.tag.toUpperCase(), "/description"));
+});
+app.get("/clans/:tag/all", function (req, res) {
   var tag = req.params.tag.toUpperCase();
   var url1 = baseUrl + "v1/clans/%23" + tag;
   var url2 = url1 + "/currentriverrace";
   var url3 = url1 + "/riverracelog";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/all"),
+    "name": "All"
+  }];
   var clanInfo = [0, 0, 0];
   var clanInfoLogicalSize = 0;
   var errors = [];
@@ -719,11 +1082,8 @@ app.get("/clans/:tag", function (req, res) {
         res.send("ERROR");
       }
 
-      if (clanInfo[0].reason === "notFound") {
-        res.render("tagNotFound", {
-          tag: tag,
-          type: "clans"
-        });
+      if (clanInfo[0].reason) {
+        handleErrors(res, path, "Clan #".concat(tag, " | All"), clanInfo[0]);
       } else {
         res.render("clanInfo", {
           clanStats: clanInfo[0],
@@ -732,6 +1092,206 @@ app.get("/clans/:tag", function (req, res) {
         });
       }
     }
+  }
+});
+app.get("/clans/:tag/description", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/clans/%23" + tag;
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/description"),
+    "name": "Description"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Clan #".concat(tag, " | Description"), json);
+    } else {
+      res.render("clanInfoDescription", {
+        clanStats: json
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/clans/:tag/members", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/clans/%23" + tag;
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/description"),
+    "name": "Members"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Clan #".concat(tag, " | Members"), json);
+    } else {
+      res.render("clanInfoMembers", {
+        clanStats: json
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/clans/:tag/war", function (req, res) {
+  // I don't use clanInfoWar.handlebars
+  // I've kept this here just in case
+
+  /*res.render("clanInfoWar", {
+    tag: "#" + req.params.tag.toUpperCase()
+  });*/
+  res.redirect("/clans/".concat(req.params.tag.toUpperCase(), "/war/race"));
+});
+app.get("/clans/:tag/war/race", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/clans/%23" + tag + "/currentriverrace";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/war"),
+    "name": "War"
+  }, {
+    "href": "/clans/".concat(tag, "/war/race"),
+    "name": "Race"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Clan #".concat(tag, " | Race"), json);
+    } else {
+      res.render("clanInfoWarRace", {
+        currentRiverRace: json,
+        tag: "#" + tag
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
+});
+app.get("/clans/:tag/war/log", function (req, res) {
+  res.redirect("/clans/".concat(req.params.tag.toUpperCase(), "/war/log/1"));
+});
+app.get("/clans/:tag/war/log/:num", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var num = parseInt(req.params.num);
+  var url = baseUrl + "v1/clans/%23" + tag + "/riverracelog";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/war"),
+    "name": "War"
+  }, {
+    "href": "/clans/".concat(tag, "/war/log"),
+    "name": "Log"
+  }, {
+    "href": "/clans/".concat(tag, "/war/log/").concat(req.params.num),
+    "name": req.params.num
+  }];
+
+  if (num !== parseFloat(req.params.num.toUpperCase()) || isNaN(num)) {
+    handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+      "reason": "Invalid Log",
+      "message": "The requested log number for clan #".concat(tag, " is invalid")
+    });
+  } else {
+    fetch(url, {
+      headers: {
+        Accept: "application/json",
+        Authorization: auth
+      }
+    }).then(function (res) {
+      return res.json();
+    }).then(function (json) {
+      if (json.reason) {
+        handleErrors(res, path, "Clan #".concat(tag, " | Log"), json);
+      } else {
+        if (num <= 0 || num > json.items.length) {
+          if (num === 1) {
+            // Clan has no river log
+            handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+              "reason": "No Log",
+              "message": "The requested clan #".concat(tag, " has no log")
+            });
+          } else {
+            handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+              "reason": "Invalid Log",
+              "message": "The requested log number for clan #".concat(tag, " is invalid")
+            });
+          }
+        } else {
+          var season, week;
+
+          for (var i = 0; i < json.items.length; i++) {
+            if (i + 1 === num) {
+              season = json.items[i].seasonId;
+              week = json.items[i].sectionIndex + 1;
+              break;
+            }
+          }
+
+          res.render("clanInfoWarLog", {
+            riverRaceLog: json,
+            tag: "#" + tag,
+            index: num - 1,
+            season: season,
+            week: week
+          });
+        }
+      }
+    })["catch"](function (err) {
+      console.log(err);
+    });
   }
 });
 app.get("/clans/:tag/data", function (req, res) {
@@ -821,8 +1381,32 @@ app.get("/guides", function (req, res) {
   });
 }); // This is for 404 errors
 
-app.use(function (req, res, next) {
-  res.status(404).send("fail");
+app.use(function (req, res) {
+  var urlPath = req.url.split("/");
+  urlPath.shift();
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }];
+
+  for (var i = 0; i < urlPath.length; i++) {
+    var curUrl = "/";
+    var name = urlPath[i];
+
+    for (var j = 0; j <= i; j++) {
+      curUrl = curUrl + urlPath[j] + "/";
+    }
+
+    path.push({
+      "href": curUrl,
+      "name": name
+    });
+  }
+
+  res.status(404);
+  handleErrors(res, path, "404", {
+    "reason": "notFound"
+  });
 }); // This area is where I try to keep track of player battles and update the db every two hours
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
 // I'm updating every two hours (not one) to lighten server load
@@ -1005,6 +1589,35 @@ var doEveryHour = function doEveryHour(something) {
     }
   };
 };
+
+function handleErrors(res, path, title, object) {
+  switch (object.reason) {
+    case "notFound":
+      {
+        sendError(res, path, "".concat(title, " | NOT FOUND"), "The requested resource could not be found");
+        break;
+      }
+
+    default:
+      {
+        var message = "The request was unable to be completed.\nReason --> ".concat(object.reason, ".");
+
+        if (object.message) {
+          message += "\nMessage --> ".concat(object.message, ".");
+        }
+
+        sendError(res, path, "".concat(title, " | ").concat(object.reason), message);
+      }
+  }
+}
+
+function sendError(res, path, title, message) {
+  res.render("error", {
+    path: path,
+    title: title,
+    message: message
+  });
+}
 
 var updatingBattleLog = doEveryHour(updateBattleLog);
 updatingBattleLog.exec();

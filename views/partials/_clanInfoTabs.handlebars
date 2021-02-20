@@ -1,0 +1,11 @@
+<ul class="nav nav-tabs nav-fill" id="tabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "description")}}active{{/if}}" id="description-tab" {{#if (compare active "===" "description")}}data-toggle="tab"{{/if}} href="/clans/{{removeFirstCharacter tag}}/description" role="tab" {{#if (compare active "===" "description")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>DESCRIPTION</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "members")}}active{{/if}}" id="members-tab" {{#if (compare active "===" "members")}}data-toggle="tab"{{/if}} href="/clans/{{removeFirstCharacter tag}}/members" role="tab" {{#if (compare active "===" "members")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>MEMBERS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "war")}}active{{/if}}" id="war-tab" href="/clans/{{removeFirstCharacter tag}}/war" {{#if (compare active "===" "war")}}data-toggle="tab"{{/if}}role="tab" {{#if (compare active "===" "war")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>WAR</a>
+  </li>
+</ul>

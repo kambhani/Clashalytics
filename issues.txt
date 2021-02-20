@@ -2,5 +2,11 @@ This file is where I store things to get done
 No guarantee that I will ever finish these things
 
 - Improve playerInfo.handlebars analysis tab search
-- Finish clanInfo.handlebars
+  - Also add a button where analysis will be done upon pressing it
+- Finish clanInfo.handlebars (make page smaller, 160,000 lines of HTML is too much)
 - Add "Leaderboard Royale" to playerInfo.handlebars, general tab
+- Do something with fetch error that is NOT console.log
+  - Maybe a logging db?
+- Convert images to webp or svg for faster load times
+- Finish clanInfo war analysis
+- When errors.length > 0, do something other than: res.send("Error")

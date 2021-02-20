@@ -1,23 +1,23 @@
 {{#if (compare type "===" "PvP")}}
   <!--PvP-->
   <span class="badge badge-pill badge-secondary {{#if (compare player.trophyChange ">" 0)}}badge-success{{/if}} {{#if (compare player.trophyChange "<" 0)}}badge-danger{{/if}}">
-    <img src="/images/ladder/trophy.png" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
-    <img src="/images/ladder/trophy.png" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
+    <img src="/images/ladder/webp/trophy.webp" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
+    <img src="/images/ladder/webp/trophy.webp" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
     {{player.startingTrophies}}
     {{#if player.trophyChange}}
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
       </svg>
-      <img src="/images/ladder/trophy.png" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
-      <img src="/images/ladder/trophy.png" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
+      <img src="/images/ladder/webp/trophy.webp" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
+      <img src="/images/ladder/webp/trophy.webp" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
       {{math player.startingTrophies "+" player.trophyChange}}
     {{/if}}
   </span>
 {{else if (compare type "===" "tournament")}}
   <!--Tournament-->
   <span class="badge badge-pill badge-secondary">
-    <img src="/images/badges/Tournament.png" class="d-inline-block d-sm-none" height="25px;" alt="Tournament Icon">
-    <img src="/images/badges/Tournament.png" class="d-none d-sm-inline-block" height="35px;" alt="Tournament Icon">
+    <img src="/images/badges/webp/Tournament.webp" class="d-inline-block d-sm-none" height="25px;" alt="Tournament Icon">
+    <img src="/images/badges/webp/Tournament.webp" class="d-none d-sm-inline-block" height="35px;" alt="Tournament Icon">
     {{#if player.startingTrophies}}
       <!--Has at least one win in the tournament-->
       {{player.startingTrophies}}
@@ -29,8 +29,8 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
       </svg>
-      <img src="/images/badges/Tournament.png" class="d-inline-block d-sm-none" height="25px;" alt="Tournament Icon">
-      <img src="/images/badges/Tournament.png" class="d-none d-sm-inline-block" height="35px;" alt="Tournament Icon">
+      <img src="/images/badges/webp/Tournament.webp" class="d-inline-block d-sm-none" height="25px;" alt="Tournament Icon">
+      <img src="/images/badges/webp/Tournament.webp" class="d-none d-sm-inline-block" height="35px;" alt="Tournament Icon">
       {{#if player.startingTrophies}}
         {{math player.startingTrophies "+" player.trophyChange}}
       {{else}}
@@ -41,8 +41,8 @@
 {{else}}
   <!--Neither tournament nor PvP-->
   <span class="badge badge-pill badge-secondary">
-    <img src="/images/ladder/trophy.png" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
-    <img src="/images/ladder/trophy.png" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
+    <img src="/images/ladder/webp/trophy.webp" class="d-inline-block d-sm-none" height="20px;" alt="Ladder Trophy">
+    <img src="/images/ladder/webp/trophy.webp" class="d-none d-sm-inline-block" height="30px;" alt="Ladder Trophy">
     {{player.startingTrophies}}
   </span>
 {{/if}}

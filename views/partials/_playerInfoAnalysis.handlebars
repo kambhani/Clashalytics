@@ -1,0 +1,85 @@
+<div class="tab-pane mx-0 mx-md-2 mx-lg-4 my-4 px-0" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+  {{#if isTracked}}
+    <div class="alert alert-primary text-center">This player is being tracked</div>
+    {{#if trackedBattles}}
+      <div class="alert alert-warning d-block d-lg-none text-center">
+        Analysis tab for a small screen is suboptimal; viewing on a bigger screen is recommended
+      </div>
+      <div id="analysisTableNumEntries" class="alert alert-info text-center">Showing All Entries</div>
+      <div id="analysisTableDiv" style="">
+        <table id="analysisTable" class="table bg-light table-bordered justify-content-center mb-4" style="width: 100%;">
+          <thead>
+            <tr class="thead-dark text-center" style="">
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Deck Used</p>
+                <input id="analysisTableSearch0" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(0)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Opponent</p>
+                <input id="analysisTableSearch1" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(1)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Deck Faced</p>
+                <input id="analysisTableSearch2" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(2)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Level Difference</p>
+                <input id="analysisTableSearch3" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(3)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Battle Type</p>
+                <input id="analysisTableSearch4" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(4)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Battle Outcome</p>
+                <input id="analysisTableSearch5" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(5)">
+              </th>
+              <th class="align-middle border-dark" style="position: sticky; top: 0;">
+                <p class="my-0" style="height: 50px;">Time</p>
+                <input id="analysisTableSearch6" class="form-control mt-2" type="search" placeholder="Filter" aria-label="Search" onkeyup="filterAnalysisTable(6)">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each trackedBattles}}
+              <tr>
+                <td class="analysisTableDeckUsed" id="" style="min-width: 212px;">
+                  <div class="container-fluid">
+                    <div class="row justify-content-center">
+                      {{#each deck_used}}
+                        <img src="/images/cards/webp/{{getCardNameFromID ../../cardJson this}}.webp" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
+                      {{/each}}
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-center"><a href="/players/{{opponent_tag}}" class="text-decoration-none">{{opponent_tag}}</a></td>
+                <td class="analysisTableDeckFaced" id="" style="min-width: 212px;">
+                  <div class="container-fluid">
+                    <div class="row justify-content-center">
+                      {{#each deck_faced}}
+                        <img src="/images/cards/webp/{{getCardNameFromID ../../cardJson this}}.webp" class="analysisTablePicture" style="" alt="{{getCardNameFromID ../../cardJson this}}">
+                      {{/each}}
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-center level-difference">{{addPlusToNumber level_difference}}</td>
+                <td class="align-middle text-center">{{gameModeName battle_type ../gameModeJson ""}}</td>
+                <td class="align-middle text-center battle-outcome">{{battleOutcomeFromNumber battle_outcome}}</td>
+                <td class="align-middle text-center">{{readableDate time}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <h1>No Tracked Battles</h1>
+    {{/if}}
+  {{else}}
+    <div class="alert alert-info text-center">This player is not being tracked</div>
+    <form class="container-fluid mx-0 px-0" method="POST">
+      <div class="row justify-content-center">
+        <input class="btn btn-lg btn-primary" name="addPlayer" value="Start Tracking Player" type="submit">
+      </div>
+    </form>
+  {{/if}}
+</div>

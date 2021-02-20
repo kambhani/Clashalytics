@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "general")}}active{{/if}}" id="general-tab" {{#if (compare active "===" "general")}}data-toggle="tab"{{/if}} href="/players/{{removeFirstCharacter tag}}/general" role="tab" aria-controls="general" {{#if (compare active "===" "general")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>GENERAL</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "battles")}}active{{/if}}" id="battles-tab" {{#if (compare active "===" "battles")}}data-toggle="tab"{{/if}} href="/players/{{removeFirstCharacter tag}}/battles" role="tab" aria-controls="battles" {{#if (compare active "===" "battles")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>BATTLES</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "cards")}}active{{/if}}" id="cards-tab" {{#if (compare active "===" "cards")}}data-toggle="tab"{{/if}} href="/players/{{removeFirstCharacter tag}}/cards" role="tab" aria-controls="cards" {{#if (compare active "===" "cards")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>CARDS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "chests")}}active{{/if}}" id="chests-tab" {{#if (compare active "===" "chests")}}data-toggle="tab"{{/if}} href="/players/{{removeFirstCharacter tag}}/chests" role="tab" aria-controls="chests" {{#if (compare active "===" "chests")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>CHESTS</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link {{#if (compare active "===" "analysis")}}active{{/if}}" id="analysis-tab" {{#if (compare active "===" "analysis")}}data-toggle="tab"{{/if}} href="/players/{{removeFirstCharacter tag}}/analysis" role="tab" aria-controls="analysis" {{#if (compare active "===" "analysis")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>ANALYSIS</a>
+  </li>
+</ul>

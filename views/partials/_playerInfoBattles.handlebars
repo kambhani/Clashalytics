@@ -1,0 +1,162 @@
+<div class="tab-pane mx-2 my-4 px-1" id="battles" role="tabpanel" aria-labelledby="battles-tab">
+  {{#unless playerBattles}}
+    <div class="alert alert-primary text-center" role="alert">
+      No battles are available for this player
+    </div>
+  {{/unless}}
+  {{#if playerBattles}}
+    <div class="row my-4 justify-content-center">
+      <div class="dropdown mx-auto">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="battleSortType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort Type
+        </button>
+        <div class="dropdown-menu" id="battleSortTypeOptions" aria-labelledby="battleSortType">
+          <p class="dropdown-item">Battle Outcome</p>
+          <p class="dropdown-item">Time</p>
+          <p class="dropdown-item mb-0">Level Difference</p>
+        </div>
+      </div>
+      <div class="dropdown mx-auto">
+        <button class="btn btn-info dropdown-toggle" type="button" id="battleSortOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort Order
+        </button>
+        <div class="dropdown-menu" id="battleSortOrderOptions" aria-labelledby="battleSortOrder">
+          <p class="dropdown-item">Ascending</p>
+          <p class="dropdown-item mb-0">Descending</p>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+  <div id="battleDisplay">
+    {{#each playerBattles}}
+      {{#if (compare type "!==" "boatBattle")}}
+        <div class="card my-4 container-fluid" style="background-color: #e5e0eb;">
+          <h2 class="mt-4 mb-0 font-weight-bold text-center">{{gameModeName gameMode.id ../gameModeJson challengeTitle}}</h2>
+          <h2 class="mb-4 text-center battle-outcome font-weight-light font-italic">{{findVictor team.0.crowns opponent.0.crowns (objectLength team.0.cards)}}</h2>
+          <div class="row justify-content-center mb-2">
+            <img src="/images/misc/crown_blue.png" alt="Blue Crown" width="10%" style="max-width: 50px;">
+            <h4 class="mx-2" style="color:purple;">{{team.0.crowns}}</h4>
+            <h4 class="mx-2" style="color:purple;">—</h4>
+            <h4 class="mx-2" style="color:purple;">{{opponent.0.crowns}}</h4>
+            <img src="/images/misc/crown_red.png" alt="Red Crown" width="10%" style="max-width: 50px;">
+          </div>
+          <div class="row justify-content-between">
+            <!--Player names — smaller screen => smaller font-->
+            <div>
+              <h5 class="ml-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none">{{team.0.name}}</a></h5>
+              <h3 class="ml-4 d-none d-lg-inline-block">
+                <a href="/players/{{removeFirstCharacter team.0.tag}}" class="text-decoration-none align-middle">{{team.0.name}}</a>
+                {{> _battleTrophyBadge player = team.[0] type = type}}
+              </h3>
+            </div>
+            <div>
+              <h5 class="mr-4 d-inline-block d-lg-none"><a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none">{{opponent.0.name}}</a></h5>
+              <h3 class="mr-4 d-none d-lg-inline-block">
+                <a href="/players/{{removeFirstCharacter opponent.0.tag}}" class="text-decoration-none align-middle">{{opponent.0.name}}</a>
+                {{> _battleTrophyBadge player = opponent.[0] type = type}}
+              </h3>
+            </div>
+          </div>
+          <div class="row justify-content-between">
+            <!--Clan names — smaller screen => smaller font-->
+            {{#if team.0.clan}}
+              <h5 class="ml-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></h5>
+              <p class="ml-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter team.0.clan.tag}}" class="text-decoration-none text-secondary">{{team.0.clan.name}}</a></p>
+            {{else}}
+              <h5 class="ml-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
+              <p class="ml-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
+            {{/if}}
+            {{#if opponent.0.clan}}
+              <h5 class="mr-4 font-italic d-none d-lg-block"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></h5>
+              <p class="mr-4 font-italic d-block d-lg-none"><a href="/clans/{{removeFirstCharacter opponent.0.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.0.clan.name}}</a></p>
+            {{else}}
+              <h5 class="mr-4 font-italic d-none d-lg-block text-secondary">No Clan</h5>
+              <p class="mr-4 font-italic d-block d-lg-none text-secondary">No Clan</p>
+            {{/if}}
+          </div>
+          <div class="row justify-content-between mx-0 mx-sm-1 d-flex d-lg-none">
+            <div>
+              {{> _battleTrophyBadge player = team.[0] type = type}}
+            </div>
+            <div>
+              {{> _battleTrophyBadge player = opponent.[0] type = type}}
+            </div>
+          </div>
+          {{#if (compare (objectLength team.0.cards) ">" 8)}}
+            <!--Duel-->
+            {{#if (compare (objectLength team.0.cards) ">" 16)}}
+              <!--Third battle in the duel-->
+              {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 16 end = 24}}
+              <div class="row">
+                <!--Third duel battle gets HP info since it is the last battle-->
+                <!--API only gives tower HP info for final battle of the duel-->
+                {{> _battleInfoDisplay player = team.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
+                {{> _battleInfoDisplay player = opponent.[0] start = 16 end = 24 cardJson = ../cardJson showHealth = true}}
+              </div>
+              <hr style="height: 1px; background-color: black;">
+            {{/if}}
+            <!--Second battle in the duel-->
+            {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 8 end = 16}}
+            <div class="row">
+              {{#if team.0.cards.16.name}}
+                {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
+                {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = false}}
+              {{else}}
+                <!--Second duel battle only gets HP info if there is no third-->
+                <!--API only gives tower HP info for final battle of the duel-->
+                {{> _battleInfoDisplay player = team.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
+                {{> _battleInfoDisplay player = opponent.[0] start = 8 end = 16 cardJson = ../cardJson showHealth = true}}
+              {{/if}}
+            </div>
+            <hr style="height: 1px; background-color: black;">
+            <!--First battle in the duel-->
+            {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
+            <div class="row">
+              <!--First duel battle never gets HP info-->
+              <!--API only gives tower HP info for final battle of the duel-->
+              {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
+              {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = false}}
+            </div>
+          {{else}}
+            <!--1v1-->
+            {{> _battleCardDisplay teamCards = team.[0].cards opponentCards = opponent.[0].cards start = 0 end = 8}}
+            <div class="row">
+              {{> _battleInfoDisplay player = team.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+              {{> _battleInfoDisplay player = opponent.[0] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+            </div>
+            {{#if team.1.tag}}
+              <!--Additional code for 2v2-->
+              <div class="row justify-content-between">
+                <!--Player names — smaller screen => smaller font-->
+                <h3 class="ml-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h3>
+                <h3 class="mr-4 d-none d-md-block"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h3>
+                <h5 class="ml-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter team.1.tag}}" class="text-decoration-none">{{team.1.name}}</a></h5>
+                <h5 class="mr-4 d-block d-md-none"><a href="/players/{{removeFirstCharacter opponent.1.tag}}" class="text-decoration-none">{{opponent.1.name}}</a></h5>
+              </div>
+              <div class="row justify-content-between">
+                <!--Clan names — smaller screen => smaller font-->
+                <h5 class="ml-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></h5>
+                <h5 class="mr-4 font-italic d-none d-md-block"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></h5>
+                <p class="ml-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter team.1.clan.tag}}" class="text-decoration-none text-secondary">{{team.1.clan.name}}</a></p>
+                <p class="mr-4 font-italic d-block d-md-none"><a href="/clans/{{removeFirstCharacter opponent.1.clan.tag}}" class="text-decoration-none text-secondary">{{opponent.1.clan.name}}</a></p>
+              </div>
+              {{> _battleCardDisplay teamCards = team.[1].cards opponentCards = opponent.[1].cards start = 0 end = 8}}
+              <div class="row">
+                {{> _battleInfoDisplay player = team.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+                {{> _battleInfoDisplay player = opponent.[1] start = 0 end = 8 cardJson = ../cardJson showHealth = true}}
+              </div>
+            {{/if}}
+          {{/if}}
+          <div class="row justify-content-between px-3 px-lg-4">
+            <p class="text-muted d-block d-lg-none">{{dateDifference battleTime 0}}</p>
+            <p class="text-muted d-none d-lg-block">{{dateDifference battleTime 1}}</p>
+            <!--This time (with class battle-time) is not visible to the user; it is here so the user can sort by date-->
+            <p class="battle-time d-none">{{battleTime}}</p>
+            <p class="text-muted d-block d-lg-none">Δ Lvl: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 3}}</span></p>
+            <p class="text-muted d-none d-lg-block">Average Level Difference: <span class="level-difference">{{round (levelDifference team.0.cards team.1.cards opponent.0.cards opponent.1.cards) 5}}</span></p>
+          </div>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>

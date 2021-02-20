@@ -1,0 +1,347 @@
+<div class="tab-pane active mx-0 mx-sm-2 mx-lg-4 my-4" id="general" role="tabpanel" aria-labelledby="general-tab">
+  {{#with playerStats}}
+    <h1>{{name}}</h1>
+    <h2>
+      <img class="" src="/images/ladder/trophy.png" alt="trophy" style="width: 45px;"> 
+      {{bestTrophies}} PB
+    </h2>
+    {{#if role}}
+      <h3><a class="text-decoration-none" href="/clans/{{removeFirstCharacter clan.tag}}">{{clan.name}}</a> [{{correctCapitalization role}}]</h3>
+    {{else}}
+      <h3 class="font-italic">Not in Clan</h3>
+    {{/if}}
+    <div class="accordion pt-4 mx-0" id="playerInfo">
+      <div class="card">
+        <div class="card-header" style="" id="headingOne">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="font-size: 0.7em;">
+              League Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#playerInfo">
+          <div class="card-body" style="">
+            {{#if leagueStatistics}}
+              {{#with leagueStatistics}}
+                <div class="container-fluid pt-4">
+                  <div class="row justify-content-center">
+                    {{#with currentSeason}}
+                      <div class="leagueRoyaleCardStyle">
+                        <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
+                        <div class="card-body">
+                          <h5 class="card-title text-center font-weight-bold">Current Season</h5>
+                          <p class="card-text">Current Trophies: {{trophies}}</p>
+                          <p class="card-text">Best Trophies: {{bestTrophies}}</p>
+                          {{#if rank}}
+                            <p class="card-text">Current Rank: {{rank}}</p>
+                          {{else}}
+                            <p class="card-text">Current Rank: Not Ranked</p>
+                          {{/if}}
+                        </div>
+                      </div>
+                    {{/with}}
+                    {{#with previousSeason}}
+                      <div class="leagueRoyaleCardStyle">
+                        <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
+                        <div class="card-body">
+                          <h5 class="card-title text-center font-weight-bold">Previous Season</h5>
+                          <p class="card-text">End Trophies: {{trophies}}</p>
+                          <p class="card-text">Best Trophies: {{bestTrophies}}</p>
+                          {{#if rank}}
+                            <p class="card-text">Rank: {{rank}}</p>
+                          {{else}}
+                            <p class="card-text">Rank: Not Ranked</p>
+                          {{/if}}
+                        </div>
+                      </div>
+                    {{/with}}
+                    {{#with bestSeason}}
+                      <div class="leagueRoyaleCardStyle">
+                        <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top" alt="{{getLeague trophies}}">
+                        <div class="card-body">
+                          <h5 class="card-title text-center font-weight-bold">Best Season</h5>
+                          <p class="card-text">Season: {{id}}</p>
+                          <p class="card-text">Trophies: {{trophies}}</p>
+                          {{#if rank}}
+                            <p class="card-text">Rank: {{rank}}</p>
+                          {{else}}
+                            <p class="card-text">Rank: Not Ranked</p>
+                          {{/if}}
+                        </div>
+                      </div>
+                    {{/with}}
+                  </div>
+                </div>
+              {{/with}}
+            {{else}}
+              <div class="alert alert-primary text-center" role="alert">
+                This player does not have any league info
+              </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="font-size: 0.7em;">
+              Challenge Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="container-fluid pt-4">
+              <div class="row justify-content-center">
+                <div class="challengeRoyaleCardStyle">
+                  <img src="/images/challenges/CRL Logo.png" class="card-img-top" alt="CRL Logo">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Challenge Stats</h5>
+                    <p class="card-text"><a data-bs-toggle="tooltip" data-bs-placement="top" title="Without Continues">Max Challenge Wins: {{challengeMaxWins}}*</a></p>
+                    <p class="card-text">Challenge Cards Won: {{challengeCardsWon}}</p>
+                  </div>
+                </div>
+                <div class="challengeRoyaleCardStyle">
+                  <img src="/images/challenges/Classic Challenge.png" class="card-img-top" alt="Classic Challenge Logo">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Classic Challenge Wins</h5>
+                    <h1 class="font-weight-light text-center">{{findCCGCWins "CC" badges}}</h1>
+                  </div>
+                </div>
+                <div class="challengeRoyaleCardStyle">
+                  <img src="/images/challenges/Grand Challenge.png" class="card-img-top" alt="Grand Challenge Logo">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Grand Challenge Wins</h5>
+                    <h1 class="font-weight-light text-center">{{findCCGCWins "GC" badges}}</h1>
+                  </div>
+                </div>
+                <div class="challengeRoyaleCardStyle">
+                  <img src="/images/challenges/Tournament.png" class="card-img-top" alt="Tournament Logo">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Tournaments</h5>
+                    <p class="card-text">Tournament Games Played: {{tournamentBattleCount}}</p>
+                    <p class="card-text">Tournament Cards Won: {{tournamentCardsWon}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="font-size: 0.7em;">
+              Clan Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="container-fluid pt-4">
+              <div class="row justify-content-center">
+                <div class="clanRoyaleCardStyle">
+                  <img src="/images/achievements/Donations.png" class="card-img-top" alt="Donation Cards" style="margin-bottom: 63.233px;">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Total Donations</h5>
+                    <h1 class="font-weight-light text-center">{{totalDonations}}</h1>
+                  </div>
+                </div>
+                <div class="clanRoyaleCardStyle">
+                  <img src="/images/clans/War Shield v4.png" class="card-img-top" alt="War Shield" style="">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">War Day Wins</h5>
+                    <h1 class="font-weight-light text-center">{{warDayWins}}</h1>
+                  </div>
+                  <div class="card-footer" style="background-color: mintcream;">
+                    <small class="text-muted">Clan Wars Veteran</small>
+                  </div>
+                </div>
+                <div class="clanRoyaleCardStyle">
+                  <img src="/images/misc/cards.png" class="card-img-top" alt="Clan Cards" style="margin-bottom: 19.167px;">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">Clan Cards Collected</h5>
+                    <h1 class="font-weight-light text-center">{{clanCardsCollected}}</h1>
+                  </div>
+                  <div class="card-footer" style="background-color: mintcream;">
+                    <small class="text-muted">Clan Wars Veteran</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFour">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="font-size: 0.7em;">
+              Battle Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="container-fluid pt-4">
+              <div class="row justify-content-center">
+                <div class="battleRoyaleCardStyle">
+                  <img src="/images/battles/King and the Crowd Illustration v3.png" class="card-img-top" alt="King and the Crowd">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Ladder and Challenges</h5>
+                    <p class="card-text mb-0">Total Wins: {{wins}}</p>
+                    <p class="card-text small font-weight-light font-italic">Percent Wins: {{round (math (math wins "/" (math wins "+" losses)) "*" 100) 3}}%</p>
+                    <p class="card-text mb-0">Total Losses: {{losses}}</p>
+                    <p class="card-text small font-weight-light font-italic">Percent Losses: {{round (math (math losses "/" (math wins "+" losses)) "*" 100) 3}}%</p>
+                    <p class="card-text mb-0">Total Games: {{math wins "+" losses}}</p>
+                  </div>
+                </div>
+                <div class="battleRoyaleCardStyle">
+                  <img src="/images/battles/2v2.png" class="card-img-top" alt="2v2 Logo">
+                  <div class="card-body">
+                    <h5 class="card-title text-center font-weight-bold">2v2 Games (and 1v1 draws)</h5>
+                    <h1 class="font-weight-light text-center">{{math battleCount "-" (math wins "+" losses)}}</h1>
+                  </div>
+                </div>
+                <div class="battleRoyaleCardStyle">
+                  <img src="/images/battles/Three Crowns.png" class="card-img-top" alt="Three Crowns Picture">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Three Crown Wins</h5>
+                    <h1 class="font-weight-light text-center">{{threeCrownWins}}</h1>
+                  </div>
+                </div>
+                <div class="battleRoyaleCardStyle">
+                  <img src="/images/battles/Battle.png" class="card-img-top" alt="Battle Logo">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Total Games</h5>
+                    <h1 class="font-weight-light text-center">{{battleCount}}</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFive">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" style="font-size: 0.7em;">
+              Badge Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="container-fluid pt-4">
+              <div class="row justify-content-center">
+                {{#each badges}}
+                  <div class="badgeRoyaleCardStyle">
+                    <h6 class="font-weight-bold text-center mb-4" style="height: 45px;">{{getBadgeName name progress}}</h6>
+                    <img src="{{getBadgeImage name progress}}" class="card-img-top badge-royale-image" alt="{{name}}">
+                    <div class="card-body">
+                      <h2 class="font-weight-light text-center">{{displayBadgeValue name level progress}}</h2>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingSix">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix" style="font-size: 0.7em;">
+              Achievement Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="alert alert-info text-center mb-0" role="alert">
+              Achievements are no longer shown in the game, but since they are still tracked, they are displayed below.
+            </div>
+            <div class="container-fluid pt-3">
+              <div class="row justify-content-center">
+                {{#each achievements}}
+                  <div class="achievementRoyaleCardStyle">
+                    <h5 class="font-weight-bold text-center mb-3" style="height: 40px;">{{name}}</h5>
+                    <img src="{{getAchievementImage name value}}" class="card-img-top" alt="{{name}}" style="height: 200px;">
+                    <div class="card-body">
+                      <div class="container-fluid mx-0 px-0 mb-2" style="height: 40px;">
+                        <div class="row justify-content-center">
+                          {{{loopHTML stars "<img src=\"/images/misc/star v2.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"cartoon_star\">"}}}
+                        </div>
+                      </div>
+                      {{#if (compare name "===" "Challenge Streak")}}
+                        <p class="card-text text-center" style="height: 50px;"><a data-bs-toggle="tooltip" data-bs-placement="top" title="With or Without Continues">{{displayAchievementValue name value}}*</a></p>
+                      {{else}}
+                        <p class="card-text text-center" style="height: 50px;">{{displayAchievementValue name value}}</p>
+                      {{/if}}
+                    </div>
+                    <div class="card-footer" style="background-color: mintcream;">
+                      {{{achievementLevels name}}}
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingSeven">
+          <h2 class="mb-0">
+            <button class="btn btn-block btn-link text-decoration-none text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven" style="font-size: 0.7em;">
+              Miscellaneous Royale
+            </button>
+          </h2>
+        </div>
+        <div id="collapseSeven" class="collapse" aria-labelledby="headingSeven" data-parent="#playerInfo">
+          <div class="card-body">
+            <div class="container-fluid pt-3">
+              <div class="row justify-content-center">
+                <div class="miscellaneousRoyaleCardStyle">
+                  <img src="/images/misc/Experience.png" class="card-img-top" alt="Experience" style="height: 200px;">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Experience</h5>
+                    <h1 class="font-weight-light text-center">Level {{expLevel}}</h1>
+                  </div>
+                </div>
+                <div class="miscellaneousRoyaleCardStyle">
+                  <img src="/images/misc/cards.png" class="card-img-top" alt="cards" style="height: 200px;">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Cards Found</h5>
+                    <h1 class="font-weight-light text-center">{{objectLength cards}}</h1>
+                  </div>
+                </div>
+                <div class="miscellaneousRoyaleCardStyle">
+                  <img src="/images/misc/svg/clock.svg" class="card-img-top" alt="clock" style="height: 200px;">
+                  <div class="card-body">
+                    <h5 class="card-title font-weight-bold text-center">Account Since</h5>
+                    <h2 class="font-weight-light text-center px-0 mx-0">{{startDate badges}}</h2>
+                  </div>
+                </div>
+                <div class="miscellaneousRoyaleCardStyle">
+                  <h5 class="card-title font-weight-bold text-center">Current Deck</h5>
+                  <div class="container-fluid mx-0 px-0 mt-0">
+                    <div class="row justify-content-center">
+                      {{#each currentDeck}}
+                        <div class="mx-1">
+                          <img src="/images/cards/{{name}}.png" class="my-2" alt="{{name}}" width="70px;" style="">
+                        </div>
+                      {{/each}}
+                    </div>
+                  </div>
+                </div>
+                <div class="miscellaneousRoyaleCardStyle">
+                  <h5 class="card-title font-weight-bold text-center">Favorite Card</h5>
+                  <img src="/images/cards/{{currentFavouriteCard.name}}.png" class="my-2" alt="{{currentFavouriteCard.name}}" style="height: 250px;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/with}}
+</div>

@@ -6,6 +6,7 @@ const fetch = require("node-fetch")
 const Handlebars = require("handlebars");
 const serveStatic = require("serve-static");
 const { template } = require("handlebars");
+const compression = require("compression");
 
 const app = express();
 
@@ -47,6 +48,9 @@ require("./models/Battle");
 const Battle = mongoose.model("Battle");
 require("./models/Tracked_Player");
 const Tracked_Player = mongoose.model("Tracked_Player");
+
+// Compression middleware
+app.use(compression());
 
 // How middleware works
 app.use((req, res, next) => {
@@ -111,8 +115,11 @@ app.post("/players", (req, res) => {
   }
 });
 
-// Player Stat Pages
 app.get("/players/:tag", (req, res) => {
+  res.redirect(`/players/${req.params.tag.toUpperCase()}/general`);
+});
+
+app.get("/players/:tag/all", (req, res) => {
   const tag = req.params.tag.toUpperCase();
   const url1 = baseUrl + "v1/players/%23" + tag;
   const url2 = url1 + "/battlelog";
@@ -127,9 +134,7 @@ app.get("/players/:tag", (req, res) => {
   (async function () {
     playerIsTracked = await Tracked_Player.exists({player: tag});
     if (playerIsTracked) {
-      (async function () {
         trackedBattles = await Battle.find({player_tag: tag}).lean();
-      }) ();
     }
   }) ();
 
@@ -214,14 +219,27 @@ app.get("/players/:tag", (req, res) => {
         res.send("ERROR");
       }
       if (playerInfo[2].reason) {
-        if (playerInfo[2].reason === "notFound") {
-          res.render("tagNotFound", {
-            tag: tag,
-            type: "players"
-          });
-        } else {
-          res.send("Server Error");
-        }
+        // This area means that something is off with the JSON response
+        // Final href is not used, but I put it in there for consistency
+        const path = [
+          {
+            "href": "/",
+            "name": "Home"
+          },
+          {
+            "href": "/players",
+            "name": "Players"
+          },
+          {
+            "href": `/players/${tag}`,
+            "name": "#" + tag
+          },
+          {
+            "href": `/players/${tag}/all`,
+            "name": "All"
+          }
+        ];
+        handleErrors(res, path, `Player #${tag} | All`, playerInfo[2]);
       } else {
         res.render("playerInfo", {
           playerStats: playerInfo[0],
@@ -237,7 +255,8 @@ app.get("/players/:tag", (req, res) => {
   }
 });
 
-app.post("/players/:tag", (req, res) => {
+
+app.post("/players/:tag/all", (req, res) => {
   if ("addPlayer" in req.body) {
     const tag = req.params.tag.toUpperCase();
     const toAdd = {
@@ -247,7 +266,372 @@ app.post("/players/:tag", (req, res) => {
       .save()
       .then(idea => {
         //console.log(idea);
-        res.redirect("/players/" + tag);
+        res.redirect("/players/" + tag + "/all");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+});
+
+app.get("/players/:tag/general", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/players/%23" + tag;
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        // Final href is not used, but I put it in there for consistency
+        const path = [
+          {
+            "href": "/",
+            "name": "Home"
+          },
+          {
+            "href": "/players",
+            "name": "Players"
+          },
+          {
+            "href": `/players/${tag}`,
+            "name": "#" + tag
+          },
+          {
+            "href": `/players/${tag}/general`,
+            "name": "General"
+          }
+        ];
+        handleErrors(res, path, `Player #${tag} | General`, json);
+      } else {
+        res.render("playerInfoGeneral", {
+          playerStats: json
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/players/:tag/battles", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url1 = baseUrl + "v1/players/%23" + tag + "/battlelog";
+  // url2 is only used to discern between player tags without any battles and player tags that do not exist
+  const url2 = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/players",
+      "name": "Players"
+    },
+    {
+      "href": `/players/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/players/${tag}/battles`,
+      "name": "Battles"
+    }
+  ];
+  let toSend = [0, 0, 0];
+  let toSendLogicalSize = 0;
+  let errors = [];
+
+  fetch(url1, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      toSend[0] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+  
+  
+  
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
+    .then(res => res.json())
+    .then((json) => {
+      toSend[1] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
+    .then(res => res.json())
+    .then((json) => {
+      toSend[2] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  function checkSend () {
+    if (toSendLogicalSize === 3) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      if (toSend[0].reason) {
+        handleErrors(res, path, `Player #${tag} | Battles`, toSend[0]);
+      } else {
+        if (toSend[0].length === 0) {
+          fetch(url2, {
+            headers: {
+              Accept: "application/json",
+              Authorization: auth
+            }
+          })
+            .then(res => res.json())
+            .then((json) => {
+              if (json.reason) {
+                handleErrors(res, path, `Player #${tag} | Battles`, json);
+              } else {
+                res.render("playerInfoBattles", {
+                  tag: "#" + req.params.tag.toUpperCase(),
+                  playerBattles: toSend[0],
+                  gameModeJson: toSend[1],
+                  cardJson: toSend[2]
+                });
+              }
+            })
+            .catch((err) => {
+              errors.push(err);
+              console.log(err);
+            });
+        } else {
+          res.render("playerInfoBattles", {
+            tag: "#" + req.params.tag.toUpperCase(),
+            playerBattles: toSend[0],
+            gameModeJson: toSend[1],
+            cardJson: toSend[2]
+          });
+        }
+      }
+    }
+  }
+});
+
+app.get("/players/:tag/cards", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/players/%23" + tag;
+  // Final href is not used, but I put it in there for consistency
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/players",
+      "name": "Players"
+    },
+    {
+      "href": `/players/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/players/${tag}/cards`,
+      "name": "Cards"
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        handleErrors(res, path, `Player #${tag} | Cards`, json);
+      } else {
+        res.render("playerInfoCards", {
+          playerStats: json
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/players/:tag/chests", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/players",
+      "name": "Players"
+    },
+    {
+      "href": `/players/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/players/${tag}/chests`,
+      "name": "Chests"
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        handleErrors(res, path, `Player #${tag} | Chests`, json);
+      } else {
+        res.render("playerInfoChests", {
+          playerChests: json,
+          tag: "#" + tag
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/players/:tag/analysis", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/players/%23" + tag + "/upcomingchests";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/players",
+      "name": "Players"
+    },
+    {
+      "href": `/players/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/players/${tag}/analysis`,
+      "name": "Analysis"
+    }
+  ];
+  let toSend = [0, 0, 0, 0, 0];
+  let toSendLogicalSize = 0;
+  let errors = [];
+
+  // I send a request for chests just to see if the player tag is valid
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      toSend[0] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      console.log(err);
+      errors.push(err);
+    });
+
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
+    .then(res => res.json())
+    .then((json) => {
+      toSend[1] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
+    .then(res => res.json())
+    .then((json) => {
+      toSend[2] = json;
+      toSendLogicalSize++;
+      checkSend();
+    })
+    .catch((err) => {
+      errors.push(err);
+      console.log(err);
+    });
+
+  // Check if player is being tracked with my system
+  (async function () {
+    toSend[3] = await Tracked_Player.exists({player: tag});
+    toSendLogicalSize++;
+    if (toSend[3]) {
+      toSend[4] = await Battle.find({player_tag: tag}).lean();
+      toSendLogicalSize++;
+    } else {
+      toSendLogicalSize++;
+    }
+    checkSend();
+  }) ();
+
+  function checkSend() {
+    if (toSendLogicalSize === 5) {
+      if(errors.length > 0) {
+        res.send("ERROR");
+      }
+      if (toSend[0].reason) {
+        handleErrors(res, path, `Player #${tag}`, toSend[0]);
+      } else {
+        res.render("playerInfoAnalysis", {
+          tag: "#" + tag,
+          gameModeJson: toSend[1],
+          cardJson: toSend[2],
+          isTracked: toSend[3],
+          trackedBattles: toSend[4]
+        });
+      }
+    }
+  }
+});
+
+app.post("/players/:tag/analysis", (req, res) => {
+  if ("addPlayer" in req.body) {
+    const tag = req.params.tag.toUpperCase();
+    const toAdd = {
+      player: tag
+    }
+    new Tracked_Player(toAdd)
+      .save()
+      .then(idea => {
+        //console.log(idea);
+        res.redirect("/players/" + tag + "/analysis");
       })
       .catch((err) => {
         console.log(err);
@@ -562,10 +946,32 @@ app.post("/clans", (req, res) => {
 });
 
 app.get("/clans/:tag", (req, res) => {
+  res.redirect(`/clans/${req.params.tag.toUpperCase()}/description`);
+});
+
+app.get("/clans/:tag/all", (req, res) => {
   const tag = req.params.tag.toUpperCase();
   const url1 = baseUrl + "v1/clans/%23" + tag;
   const url2 = url1 + "/currentriverrace";
   const url3 = url1 + "/riverracelog";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    },
+    {
+      "href": `/clans/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/clans/${tag}/all`,
+      "name": "All"
+    }
+  ];
   let clanInfo = [0, 0, 0];
   let clanInfoLogicalSize = 0;
   let errors = [];
@@ -639,11 +1045,8 @@ app.get("/clans/:tag", (req, res) => {
       if(errors.length > 0) {
         res.send("ERROR");
       }
-      if (clanInfo[0].reason === "notFound") {
-        res.render("tagNotFound", {
-          tag: tag,
-          type: "clans"
-        });
+      if (clanInfo[0].reason) {
+        handleErrors(res, path, `Clan #${tag} | All`, clanInfo[0]);
       } else {
         res.render("clanInfo", {
           clanStats: clanInfo[0],
@@ -654,6 +1057,231 @@ app.get("/clans/:tag", (req, res) => {
     }
   }
 });
+
+app.get("/clans/:tag/description", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/clans/%23" + tag;
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    },
+    {
+      "href": `/clans/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/clans/${tag}/description`,
+      "name": "Description"
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        handleErrors(res, path, `Clan #${tag} | Description`, json);
+      } else {
+        res.render("clanInfoDescription", {
+          clanStats: json
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/clans/:tag/members", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/clans/%23" + tag;
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    },
+    {
+      "href": `/clans/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/clans/${tag}/description`,
+      "name": "Members"
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        handleErrors(res, path, `Clan #${tag} | Members`, json);
+      } else {
+        res.render("clanInfoMembers", {
+          clanStats: json
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/clans/:tag/war", (req, res) => {
+  // I don't use clanInfoWar.handlebars
+  // I've kept this here just in case
+  /*res.render("clanInfoWar", {
+    tag: "#" + req.params.tag.toUpperCase()
+  });*/
+  res.redirect(`/clans/${req.params.tag.toUpperCase()}/war/race`);
+});
+
+app.get("/clans/:tag/war/race", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/clans/%23" + tag + "/currentriverrace";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    },
+    {
+      "href": `/clans/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/clans/${tag}/war`,
+      "name": "War"
+    },
+    {
+      "href": `/clans/${tag}/war/race`,
+      "name": "Race"
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      if (json.reason) {
+        handleErrors(res, path, `Clan #${tag} | Race`, json);
+      } else {
+        res.render("clanInfoWarRace", {
+          currentRiverRace: json,
+          tag: "#" + tag
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/clans/:tag/war/log", (req, res) => {
+  res.redirect(`/clans/${req.params.tag.toUpperCase()}/war/log/1`);
+});
+
+app.get("/clans/:tag/war/log/:num", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const num = parseInt(req.params.num);
+  const url = baseUrl + "v1/clans/%23" + tag + "/riverracelog";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    },
+    {
+      "href": `/clans/${tag}`,
+      "name": "#" + tag
+    },
+    {
+      "href": `/clans/${tag}/war`,
+      "name": "War"
+    },
+    {
+      "href": `/clans/${tag}/war/log`,
+      "name": "Log"
+    },
+    {
+      "href": `/clans/${tag}/war/log/${req.params.num}`,
+      "name": req.params.num
+    }
+  ];
+
+  if (num !== parseFloat(req.params.num.toUpperCase()) || isNaN(num)) {
+    handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "Invalid Log", "message": `The requested log number for clan #${tag} is invalid`});
+  } else {
+    fetch(url, {
+      headers: {
+        Accept: "application/json",
+        Authorization: auth
+      }
+    })
+      .then(res => res.json())
+      .then((json) => {
+        if (json.reason) {
+          handleErrors(res, path, `Clan #${tag} | Log`, json);
+        } else {
+          if (num <= 0 || num > json.items.length) {
+            if (num === 1) {
+              // Clan has no river log
+              handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "No Log", "message": `The requested clan #${tag} has no log`});
+            } else {
+              handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "Invalid Log", "message": `The requested log number for clan #${tag} is invalid`});
+            }
+          } else {
+            let season, week;
+            for (let i = 0; i < json.items.length; i++) {
+              if (i + 1 === num) {
+                season = json.items[i].seasonId;
+                week = json.items[i].sectionIndex + 1;
+                break;
+              }
+            }
+            res.render("clanInfoWarLog", {
+              riverRaceLog: json,
+              tag: "#" + tag,
+              index: num - 1,
+              season: season,
+              week: week
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+});
+
 app.get("/clans/:tag/data", (req, res) => {
   const tag = req.params.tag.toUpperCase();
   const url1 = baseUrl + "v1/clans/%23" + tag;
@@ -750,8 +1378,20 @@ app.get("/guides", (req, res) => {
 });
 
 // This is for 404 errors
-app.use((req, res, next) => {
-  res.status(404).send("fail");
+app.use((req, res) => {
+  const urlPath = req.url.split("/");
+  urlPath.shift();
+  let path = [{"href": "/", "name": "Home"}];
+  for (let i = 0; i < urlPath.length; i++) {
+    let curUrl = "/";
+    let name = urlPath[i];
+    for (let j = 0; j <= i; j++) {
+      curUrl = curUrl + urlPath[j] + "/";
+    }
+    path.push({"href": curUrl, "name": name});
+  }
+  res.status(404);
+  handleErrors(res, path, `404`, {"reason": "notFound"});
 });
 
 // This area is where I try to keep track of player battles and update the db every two hours
@@ -881,6 +1521,30 @@ const doEveryHour = (something) => {
       running = true;
     }
   }
+}
+
+function handleErrors (res, path, title, object) {
+  switch(object.reason) {
+    case ("notFound"): {
+      sendError(res, path, `${title} | NOT FOUND`, "The requested resource could not be found");
+      break;
+    }
+    default: {
+      let message = `The request was unable to be completed.\nReason --> ${object.reason}.`;
+      if (object.message) {
+        message += `\nMessage --> ${object.message}.`;
+      }
+      sendError(res, path, `${title} | ${object.reason}`, message);
+    }
+  }
+}
+
+function sendError(res, path, title, message) {
+  res.render("error", {
+    path: path,
+    title: title,
+    message: message
+  });
 }
 
 let updatingBattleLog = doEveryHour(updateBattleLog);

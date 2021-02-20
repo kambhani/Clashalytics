@@ -141,6 +141,10 @@ var register = function register(Handlebars) {
     dateDifference: function dateDifference(pastDate, isLargeScreen) {
       // Date is processed like it is given in the Clash Royale API
       // The format is: YYYYMMDDTHHMMSS.000Z
+      if (typeof pastDate === "undefined") {
+        return "server error";
+      }
+
       var oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
       var newDate = new Date();
       var timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
@@ -206,14 +210,18 @@ var register = function register(Handlebars) {
       var teamCardSum = 0;
       var oppCardSum = 0;
 
-      for (var i = 0; i < t0.length; i++) {
-        teamCardSum += 13 - t0[i].maxLevel + t0[i].level;
-        oppCardSum += 13 - opp0[i].maxLevel + opp0[i].level;
+      try {
+        for (var i = 0; i < t0.length; i++) {
+          teamCardSum += 13 - t0[i].maxLevel + t0[i].level;
+          oppCardSum += 13 - opp0[i].maxLevel + opp0[i].level;
 
-        if (t1) {
-          teamCardSum += 13 - t1[i].maxLevel + t1[i].level;
-          oppCardSum += 13 - opp1[i].maxLevel + opp1[i].level;
+          if (t1) {
+            teamCardSum += 13 - t1[i].maxLevel + t1[i].level;
+            oppCardSum += 13 - opp1[i].maxLevel + opp1[i].level;
+          }
         }
+      } catch (error) {
+        return "n/a";
       }
 
       if (t1) {
@@ -994,21 +1002,6 @@ var register = function register(Handlebars) {
             return challengeTitle === "" ? "Challenge" : challengeTitle;
           }
 
-        case 72000268:
-          {
-            return "River Race 1v1";
-          }
-
-        case 72000267:
-          {
-            return "Clan War Duel";
-          }
-
-        case 72000281:
-          {
-            return "Hog Race with Mother Witch";
-          }
-
         case 72000226:
         case 72000227:
         case 72000228:
@@ -1016,6 +1009,31 @@ var register = function register(Handlebars) {
         case 72000230:
           {
             return "Nery's Elixir Extravaganza";
+          }
+
+        case 72000267:
+          {
+            return "Clan War Duel";
+          }
+
+        case 72000268:
+          {
+            return "River Race 1v1";
+          }
+
+        case 72000281:
+          {
+            return "Hog Race with Mother Witch";
+          }
+
+        case 72000283:
+          {
+            return "Princess Build-A-Deck";
+          }
+
+        case 72000284:
+          {
+            return "Prince Build-A-Deck";
           }
       }
 
@@ -2222,9 +2240,17 @@ var register = function register(Handlebars) {
     // There is a start and end so I can deal with duels as well
     averageElixirCost: function averageElixirCost(cards, deck, start, end) {
       var sum = 0;
+      var name;
 
       deck: for (var i = start; i < end; i++) {
-        var name = deck[i].name;
+        try {
+          name = deck[i].name;
+        } catch (error) {
+          // If here, then the inputted deck somehow did not have eight cards
+          return "n/a";
+        }
+
+        name = deck[i].name;
 
         for (var j = 0; j < cards.length; j++) {
           if (cards[j].name === name) {
@@ -2247,9 +2273,14 @@ var register = function register(Handlebars) {
     // There is a start and end so I can deal with duels
     fourCardCycle: function fourCardCycle(cards, deck, start, end) {
       var elixirCosts = [];
+      var name;
 
       deck: for (var i = start; i < end; i++) {
-        var name = deck[i].name;
+        try {
+          name = deck[i].name;
+        } catch (error) {
+          return "n/a";
+        }
 
         for (var j = 0; j < cards.length; j++) {
           if (cards[j].name === name) {
@@ -2266,9 +2297,14 @@ var register = function register(Handlebars) {
     // There is a start and end so I can deal with duels
     inGameLink: function inGameLink(cards, deck, start, end) {
       var baseLink = "https://link.clashroyale.com/deck/en?deck=";
+      var name;
 
       deck: for (var i = start; i < end; i++) {
-        var name = deck[i].name;
+        try {
+          name = deck[i].name;
+        } catch (error) {
+          return "#";
+        }
 
         for (var j = 0; j < cards.length; j++) {
           if (cards[j].name === name) {
@@ -2386,8 +2422,26 @@ var register = function register(Handlebars) {
     // This function returns the time between two dates
     // dateDifference only allows the difference from the current date
     twoDateDifference: function twoDateDifference(pastDate, futureDate, specialCode) {
-      // Date is processed like it is given in the Clash Royale API
+      // Special processing for specialCode === 1
+      if (specialCode === 1 && typeof futureDate === "undefined" && typeof pastDate !== "undefined") {
+        return "Not Completed";
+      } //General check to prevent substring errors later on
+
+
+      if (typeof pastDate === "undefined" || typeof futureDate === "undefined") {
+        return "Server Error";
+      } // Wrote this here just in case
+      // Won't likely use it since I could just use dateDifference instead
+
+
+      if (futureDate === "now") {
+        // Rewriting the current date in the Clash Royale API form
+        var tmp = new Date();
+        futureDate = tmp.getUTCFullYear() + tmp.getUTCMonth() + tmp.getUTCDate() + "T" + tmp.getUTCHours() + tmp.getUTCMinutes() + tmp.getUTCSeconds() + ".000Z";
+      } // Date is processed like it is given in the Clash Royale API
       // The format is: YYYYMMDDTHHMMSS.000Z
+
+
       var oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
       var newDate = new Date(Date.UTC(futureDate.substring(0, 4), futureDate.substring(4, 6) - 1, futureDate.substring(6, 8), futureDate.substring(9, 11), futureDate.substring(11, 13), futureDate.substring(13, 15))); // Special codes let me do special rendering to specific time requests
 
@@ -2420,6 +2474,26 @@ var register = function register(Handlebars) {
       } else {
         return "".concat(days, "d ").concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
       }
+    },
+    // This function returns the total number of boat attacks, given the participant list
+    totalBoatAttacks: function totalBoatAttacks(participantList) {
+      var totalBoatAttacks = 0;
+
+      for (var i = 0; i < participantList.length; i++) {
+        totalBoatAttacks += participantList[i].boatAttacks;
+      }
+
+      return totalBoatAttacks;
+    },
+    // This function concats all the values given in arr
+    concat: function concat() {
+      var toReturn = ""; // Last argument is not used as that is "options"
+
+      for (var i = 0; i < arguments.length - 1; i++) {
+        toReturn += arguments[i];
+      }
+
+      return toReturn;
     }
   };
 

@@ -1,0 +1,43 @@
+<title>Clan {{tag}} | War</title>
+
+<!--I am not currently using this-->
+<!--I am only keeping this here in case I need to use it in the future-->
+
+<nav aria-label="breadcrumb" class="justify-content-between d-flex mb-3" style="background-color: #e9ecef; height: 48px;">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
+    <li class="breadcrumb-item"><a href="/clans" style="text-decoration: none;">Clans</a></li>
+    <li class="breadcrumb-item"><a href="/clans/{{removeFirstCharacter tag}}" style="text-decoration: none;">{{tag}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">War</li>
+  </ol>
+  <a href="/clans/{{removeFirstCharacter tag}}/data" class="text-decoration-none text-right mx-3 align-middle d-none d-lg-block" style="line-height: 48px;">RAW DATA</a>
+</nav>
+
+{{> _clanInfoTabs active="war" tag=tag}}
+
+<div class="tab-content">
+  <div class="tab-pane active mx-4 my-4" id="war" role="tabpanel" aria-labelledby="war-tab">
+    <div class="jumbotron" style="background-color: lavenderblush;">
+      <h1 class="display-4">Clan Wars | {{tag}}</h1>
+      <p class="lead">View <span class="font-weight-bold font-italic">key</span> stats, including member fame, current River Race position, war history, and custom war insights. Select an option below to begin.</p>
+      <hr class="my-4">
+      <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/clans/{{removeFirstCharacter tag}}/war/race" role="button">Current River Race</a>
+        <a class="btn btn-info btn-lg" href="#" role="button">River Race History</a>
+        <a class="btn btn-success btn-lg" href="#" role="button">War Insights</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Displays the war tab
+  $("#war").tab("show");
+
+  // Initialize bootstrap tooltips
+  $(function() {
+    $('[data-bs-toggle="tooltip"]').tooltip({
+      html: true
+    });
+  });
+</script>

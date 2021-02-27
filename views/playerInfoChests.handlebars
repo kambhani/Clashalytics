@@ -1,6 +1,6 @@
 <title>Player {{tag}} | Chests</title>
 
-{{>_playerInfoBreadcrumb page="Chests" tag=tag}}
+{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter tag) "/data")}}
 
 {{>_playerInfoTabs active="chests" tag=tag}}
 

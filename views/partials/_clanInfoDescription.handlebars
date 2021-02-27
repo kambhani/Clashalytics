@@ -1,0 +1,45 @@
+<div class="tab-pane active mx-4 my-4" id="description" role="tabpanel" aria-labelledby="description-tab">
+  <div class="card mb-3 border-primary" style="background-color: ghostwhite;">
+    <div class="row no-gutters mb-2 align-items-center">
+      <div class="col-md-4 col-lg-3 col-xl-2 text-center">
+        <img src="{{getClanBadge clanStats.badgeId clanStats.clanWarTrophies}}" class="card-img" alt="Clan Badge" style="max-width: 300px;">
+      </div>
+      <div class="col-md-8 col-lg-9 col-xl-10">
+        <div class="card-body">
+          <h5 class="card-title text-center font-weight-bold">{{clanStats.name}}</h5>
+          <div class="container-fluid">
+            <div class="row justify-content-center">
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                <img src="/images/badges/Tournament.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Score" alt="Clan Score" style="height: 80px;">
+                <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanScore}}</p>
+              </div>
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                <img src="/images/badges/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Required Trophies" alt="Required Trophies" style="height: 80px;">
+                <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.requiredTrophies}}</p>
+              </div>
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Trophies" alt="Clan Trophies" style="height: 80px;">
+                <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanWarTrophies}}</p>
+              </div>
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
+                <img src="/images/clans/clans.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Members" alt="Clan Members" style="height: 80px;">
+                <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.members}} / 50</p>
+              </div>
+              <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
+                <img src="/images/misc/locations.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Location" alt="Location" style="height: 80px;">
+                <p class="mx-2 h5" style="line-height: 80px;">{{clanStats.location.name}}</p>
+              </div>
+              <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
+                <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Type" alt="Clan Type" style="height: 80px;">
+                <p class="mx-2 h5" style="line-height: 80px;">{{correctCapitalization clanStats.type}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-center">
+      <small class="text-muted">{{clanStats.description}}</small>
+    </div>
+  </div>
+</div>

@@ -1,14 +1,26 @@
 <title>Clan Stats | {{clanStats.tag}}</title>
 
-<nav aria-label="breadcrumb" class="justify-content-between d-flex mb-3" style="background-color: #e9ecef; height: 48px;">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-    <li class="breadcrumb-item"><a href="/clans" style="text-decoration: none;">Clans</a></li>
-    <li class="breadcrumb-item"><a href="/clans/{{removeFirstCharacter clanStats.tag}}" style="text-decoration: none;">{{clanStats.tag}}</a></li>
-    <li class="breadcrumb-item active" aria-current="page" id="breadcrumb_tag">All</li>
-  </ol>
-  <a href="/clans/{{removeFirstCharacter clanStats.tag}}/data" class="text-decoration-none text-right mx-3 align-middle d-none d-sm-block" style="line-height: 48px;">RAW DATA</a>
-</nav>
+<!--This script initializes the Bootstrap tooltips on the page-->
+<script defer src="/js/bootstrapTooltips.js"></script>
+<!--This script enables the hover functionality on certain cards-->
+<script defer src="/js/hoverCard.js"></script>
+<!--This script controls the functionality on the members tab-->
+<script defer src="/js/clanInfoMembers.js"></script>
+<!--This script controls the sorting for the participant lists-->
+<script defer src="/js/clanWarSort.js"></script>
+<!--This script is for Apex Charts, a framework I used to draw the charts under War Insights-->
+<script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<!--This script is for the JS code I used to create the charts-->
+<script defer src="/js/clanWarInsights.js"></script>
+<!--The next three links are for DataTables, a JQuery plug-in-->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script defer src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<!--The next two lines are for a plugin that converts checkboxes into toggles-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css">
+<script defer src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+{{> _breadcrumbPath path=path rawData=(concat "/clans/" (removeFirstCharacter tag) "/data")}}
 
 <ul class="nav nav-tabs nav-fill" id="tabs" role="tablist">
   <li class="nav-item" role="presentation">
@@ -26,216 +38,12 @@
 </ul>
 
 <div class="tab-content">
-  <div class="tab-pane active mx-4 my-4" id="description" role="tabpanel" aria-labelledby="description-tab">
-    <div class="card mb-3 border-primary" style="background-color: ghostwhite;">
-      <div class="row no-gutters mb-2 align-items-center">
-        <div class="col-md-4 col-lg-3 col-xl-2 text-center">
-          <img src="{{getClanBadge clanStats.badgeId clanStats.clanWarTrophies}}" class="card-img" alt="Clan Badge" style="max-width: 300px;">
-        </div>
-        <div class="col-md-8 col-lg-9 col-xl-10">
-          <div class="card-body">
-            <h5 class="card-title text-center font-weight-bold">{{clanStats.name}}</h5>
-            <div class="container-fluid">
-              <div class="row justify-content-center">
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
-                  <img src="/images/badges/Tournament.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Score" alt="Clan Score" style="height: 80px;">
-                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanScore}}</p>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
-                  <img src="/images/badges/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Required Trophies" alt="Required Trophies" style="height: 80px;">
-                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.requiredTrophies}}</p>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
-                  <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Trophies" alt="Clan Trophies" style="height: 80px;">
-                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.clanWarTrophies}}</p>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex my-2 align-self-center" style="">
-                  <img src="/images/clans/clans.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Members" alt="Clan Members" style="height: 80px;">
-                  <p class="mx-2 h3" style="line-height: 80px;">{{clanStats.members}} / 50</p>
-                </div>
-                <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
-                  <img src="/images/misc/locations.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Location" alt="Location" style="height: 80px;">
-                  <p class="mx-2 h5" style="line-height: 80px;">{{clanStats.location.name}}</p>
-                </div>
-                <div class="col-12 col-lg-6 d-flex my-2 align-self-center" style="">
-                  <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Type" alt="Clan Type" style="height: 80px;">
-                  <p class="mx-2 h5" style="line-height: 80px;">{{correctCapitalization clanStats.type}}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-footer text-center">
-        <small class="text-muted">{{clanStats.description}}</small>
-      </div>
-    </div>
-  </div>
+  <!--This is for the clan description-->
+  {{>_clanInfoDescription clanStats=clanStats}}
 
-  <div class="tab-pane mx-md-4 my-4" id="members" role="tabpanel" aria-labelledby="members-tab">
-    <div class="container-fluid d-flex justify-content-center">
-      <input id="memberDisplayFormat" type="checkbox" data-toggle="" data-onstyle="outline-info" data-offstyle="outline-dark" data-on="Table" data-off="Cards" data-size="lg" data-width="103.383px" data-height="47.6px" checked style="width: 103px;">
-      <button type="button" class="btn btn-primary ml-5" data-toggle="modal" data-target="#viewSettings">
-        Change Viewable Data
-      </button>
-    </div>
-    <div class="modal fade" id="viewSettings" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="viewSettingsLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title font-weight-bold" id="viewSettingsLabel">Data View Settings</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Name: </h5>
-              <input class="display-toggle" data-column="0" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Tag: </h5>
-              <input class="display-toggle" data-column="1" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Role: </h5>
-              <input class="display-toggle" data-column="2" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Tower Level: </h5>
-              <input class="display-toggle" data-column="3" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Trophies: </h5>
-              <input class="display-toggle" data-column="4" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Table-only toggle-->
-            <div class="modal-toggle-div-table">
-              <h5>Display Clan Rank: </h5>
-              <input class="display-toggle" data-column="5" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Table-only toggle-->
-            <div class="modal-toggle-div-table">
-              <h5>Display Clan Rank Change: </h5>
-              <input class="display-toggle" data-column="6" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Card-only toggle-->
-            <div class="modal-toggle-div-card">
-              <h5>Display Clan Rank Info: </h5>
-              <input class="display-toggle" data-column="5" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Table-only toggle-->
-            <div class="modal-toggle-div-table">
-              <h5>Display Donations Given: </h5>
-              <input class="display-toggle" data-column="7" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Table-only toggle-->
-            <div class="modal-toggle-div-table">
-              <h5>Display Donations Received: </h5>
-              <input class="display-toggle" data-column="8" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <!--Card-only toggle-->
-            <div class="modal-toggle-div-card">
-              <h5>Display Donation Info: </h5>
-              <input class="display-toggle" data-column="7" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-            <div class="modal-toggle-div-card modal-toggle-div-table">
-              <h5>Display Last Seen: </h5>
-              <input class="display-toggle" data-column="9" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-info" data-dismiss="modal">Save Changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="memberTableDiv" class="container-fluid mt-3 px-0 py-2 px-lg-4 mb-5 table-responsive" style="">
-      <table id="memberTable" class="table table-bordered table-striped justify-content-center" style="width: 100%;" data-page-length="50">
-        <thead>
-          <tr class="thead-dark text-center">
-            <th>Name</th>
-            <th>Tag</th>
-            <th>Role</th>
-            <th>Tower Level</th>
-            <th>Trophies</th>
-            <th>Clan Rank</th>
-            <th>Clan Rank Change</th>
-            <th>Donations Given</th>
-            <th>Donations Received</th>
-            <th>Last Seen</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each clanStats.memberList}}
-            <tr class="text-center">
-              <td class="align-middle"><a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
-              <td class="align-middle"><a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none">{{tag}}</a></td>
-              <td class="align-middle">{{correctCapitalization role}}</td>
-              <td class="align-middle">{{expLevel}}</td>
-              <td class="align-middle">{{trophies}}</td>
-              <td class="align-middle">{{clanRank}}</td>
-              <td class="align-middle">{{math clanRank "-" previousClanRank}}</td>
-              <td class="align-middle">{{donations}}</td>
-              <td class="align-middle">{{donationsReceived}}</td>
-              <td class="align-middle" data-order="{{lastSeen}}">{{dateDifference lastSeen 0}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-    <div id="memberCards" class="container-fluid mt-3 d-none">
-      <div class="row justify-content-center">
-        {{#each clanStats.memberList}}
-          <a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black; margin: 10px;">
-            <div class="card hover-card border-primary pl-1" style="width: 21em; background-color: ghostwhite;">
-              <div class="row no-gutters">
-                <div class="col-3">
-                  <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top pt-4 pb-2" alt="League Badge">
-                  <div class="card-data-4 text-center mb-1" style="height: 35px;">
-                    <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Trophies" height="35px;">
-                    <p class="card-text d-inline-block align-middle" style="line-height: 35px; font-size: 1.1em;">{{trophies}}</p>
-                  </div>
-                </div>
-                <div class="col-9">
-                  <div class="card-body">
-                    <h5 class="card-title font-weight-bold mb-1 card-data-0">{{name}}</h5>
-                    <h6 class="font-weight-light font-italic mb-2 card-data-1">{{tag}}</h6>
-                    <div class="mb-1 card-data-2" style="height: 20px;">
-                      <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Role" alt="Person Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization role}}</p>
-                    </div>
-                    <div class="mb-1 card-data-3" style="height: 20px;">
-                      <img src="/images/misc/exp_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Experience" alt="Experience Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{expLevel}}</p>
-                    </div>
-                    <div class="mb-1 card-data-5" style="height: 20px;">
-                      <img src="/images/misc/star v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Rank" alt="Star Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{clanRank}} [Δ: {{addPlusToNumber (math clanRank "-" previousClanRank)}}]</p>
-                    </div>
-                    <div class="mb-1 card-data-7">
-                      <div class="mb-1 mr-3 d-inline-block" style="height: 20px;">
-                        <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Given" alt="Donations Given Icon" height="20px;">
-                        <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donations}}</p>
-                      </div>
-                      <div class="mb-1 ml-3 d-inline-block" style="height: 20px;">
-                        <img src="/images/misc/donations_received.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Received" alt="Donations Received Icon" height="20px;">
-                        <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsReceived}}</p>
-                      </div>
-                    </div>
-                    <div class="mb-1 card-data-9" style="height: 20px;">
-                      <img src="/images/misc/clock v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Seen" alt="Clock Icon" height="20px;">
-                      <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{dateDifference lastSeen 0}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        {{/each}}
-      </div>
-    </div>
-  </div>
+  <!--This is for the clan members-->
+  {{>_clanInfoMembers clanStats=clanStats}}
+
   <div class="tab-pane mx-1 mx-md-2" id="war" role="tabpanel" aria-labelledby="war-tab">
     <hr class="my-0" style="background-color: black; height: 3px;">
     <!--Tabs within the War Tab-->
@@ -255,15 +63,9 @@
     </ul>
 
     <div class="tab-content">
-      <div class="tab-pane active my-4" id="currentWar" role="tabpanel" aria-labelledby="current-war-tab">
-        <div class="container-fluid">
-          <div class="row justify-content-center">
-            {{#each currentRiverRace.clans}}
-              {{> _riverRace clan=this base="currentRiverRace" startTime="" rank="" trophyChange=""}}
-            {{/each}}
-          </div>
-        </div>
-      </div>
+      <!--This is for the current river race-->
+      {{> _clanInfoWarRace currentRiverRace=currentRiverRace}}
+      
       <div class="tab-pane" id="pastWars" role="tabpanel" aria-labelledby="past-wars-tab">
         <hr class="my-0" style="background-color: black; height: 3px;">
         <!--Tabs within the Past Wars Tab-->
@@ -292,176 +94,11 @@
           {{/each}}
         </div>
       </div>
-      <div class="tab-pane my-4" id="warInsights" role="tabpanel" aria-labelledby="war-insights-tab">
-        war insights
-      </div>
+
+      <!--This for the war insights-->
+      {{> _clanInfoWarInsights tag=clanStats.tag riverRaceLog=riverRaceLog}}
     </div>
-
   </div>
-
 </div>
-
-<script>
-  $(document).ready(function () {
-    let memberTable = $("#memberTable").DataTable({
-      // Set options here if necessary
-    });
-    
-    // Set all toggles to "on" upon page load
-    $("#memberDisplayFormat").bootstrapToggle("on");
-    $(".display-toggle").each(function() {
-      $(this).bootstrapToggle("on");
-    });
-
-    // Add properties to certain classes
-    // Table toggles are initially shown; card toggles are initially hidden
-    // Toggles required for both modes are initially on
-    $(".modal-toggle-div-card").addClass("d-none my-2 justify-content-between");
-    $(".modal-toggle-div-card").css({"height": "34.4px"});
-    $(".modal-toggle-div-card h5").addClass("mr-4");
-    $(".modal-toggle-div-card h5").css({"line-height": "30.0px"});
-    $(".modal-toggle-div-table").addClass("d-flex my-2 justify-content-between");
-    $(".modal-toggle-div-table").css({"height": "34.4px"});
-    $(".modal-toggle-div-table h5").addClass("mr-4");
-    $(".modal-toggle-div-table h5").css({"line-height": "30.0px"});
-
-    // Handles when a modal toggle changes state
-    $(function() {
-      $(".display-toggle").change(function() {
-        let cardClass = ".card-data-" + $(this).attr("data-column");
-        if($(this).prop("checked")) {
-          $(cardClass).removeClass("d-none").addClass("d-block");
-        } else {
-          $(cardClass).removeClass("d-block").addClass("d-none");
-        }
-        let column = memberTable.column($(this).attr("data-column"));
-        column.visible(!column.visible());
-      });
-    });
-  });
-
-  // Toggle between table and card view
-  $(function() {
-    $("#memberDisplayFormat").change(function() {
-      if($(this).prop("checked")) {
-        $("#memberCards").removeClass("d-block").addClass("d-none");
-        $("#memberTableDiv").removeClass("d-none").addClass("d-block");
-        $(".modal-toggle-div-card").removeClass("d-flex").addClass("d-none");
-        $(".modal-toggle-div-table").removeClass("d-none").addClass("d-flex");
-      } else {
-        $("#memberCards").removeClass("d-none").addClass("d-block");
-        $("#memberTableDiv").removeClass("d-block").addClass("d-none");
-        $(".modal-toggle-div-table").removeClass("d-flex").addClass("d-none");
-        $(".modal-toggle-div-card").removeClass("d-none").addClass("d-flex");
-      }
-    });
-  });
-
-  // Initialize bootstrap tooltips
-  $(function() {
-    $('[data-bs-toggle="tooltip"]').tooltip({
-      html: true
-    });
-  });
-
-  // This makes the background of hoverable cards a different color when they are hovered over
-  $(".hover-card").mouseover(function() {
-    $(this).css("background-color", "#eeeeee");
-  });
-  $(".hover-card").mouseout(function() {
-    $(this).css("background-color", "ghostwhite");
-  });
-  
-  // Dropdown Menu JS (with sorting)
-  $(".dropdown-item").on("click", function(e) {
-    let selectedText = $(this).text();
-    let parentButton = $(this).parent().parent().children("button");
-    if (parentButton.text() !== selectedText) {
-      parentButton.text(selectedText);
-      let parentDropdown = $(this).parent().parent().get(0);
-      let dropdowns = $(this).parent().parent().parent().children();
-      let sortOrder, sortType;
-      dropdowns.each(function(index) {
-        if (index === 0) {
-          sortType = $(this).children("button").text();
-        } else {
-          sortOrder = $(this).children("button").text();
-        }
-      });
-      if (!dropdowns.get(0).innerText.includes("Sort Type") && !dropdowns.get(1).innerText.includes("Sort Order")) {
-        let toSort = $(this).parent().parent().parent().parent().children(".sortable");
-        switch (sortType) {
-          case ("Name"): {
-            if (sortOrder === "Ascending") {
-              toSort.html(toSort.children().sort(function (a, b) {
-                return $(a).find(".card-title").text().toUpperCase() > $(b).find(".card-title").text().toUpperCase();
-              }));
-            } else {
-              toSort.html(toSort.children().sort(function (a, b) {
-                return $(a).find(".card-title").text().toUpperCase() < $(b).find(".card-title").text().toUpperCase();
-              }));
-            }
-            break;
-          }
-          case ("Tag"): {
-            if (sortOrder === "Ascending") {
-              toSort.html(toSort.children().sort(function (a, b) {
-                return $(a).find(".card-subtitle").text() > $(b).find(".card-subtitle").text();
-              }));
-            } else {
-              toSort.html(toSort.children().sort(function (a, b) {
-                return $(a).find(".card-subtitle").text() < $(b).find(".card-subtitle").text();
-              }));
-            }
-            break;
-          }
-          case ("Fame"): {
-            toSort.html(toSort.children().sort(function (a, b) {
-              let num1 = parseInt($(a).find(".participant-fame").text());
-              let num2 = parseInt($(b).find(".participant-fame").text());
-              return numberComparator(num1, num2, sortOrder);
-            }));
-            break;
-          }
-          case ("Repair Points"): {
-            toSort.html(toSort.children().sort(function (a, b) {
-              let num1 = parseInt($(a).find(".participant-repair-points").text());
-              let num2 = parseInt($(b).find(".participant-repair-points").text());
-              return numberComparator(num1, num2, sortOrder);
-            }));
-            break;
-          }
-          case ("Boat Attacks"): {
-            toSort.html(toSort.children().sort(function (a, b) {
-              let num1 = parseInt($(a).find(".participant-boat-attacks").text());
-              let num2 = parseInt($(b).find(".participant-boat-attacks").text());
-              return numberComparator(num1, num2, sortOrder);
-            }));
-            break;
-          }
-        }
-        // Moving cards around destroys the event listeners associated with them
-        // To counteract this, I need to add the event listeners again after the cards have been sorted
-        $(".hover-card").mouseover(function() {
-          $(this).css("background-color", "#eeeeee");
-        });
-        $(".hover-card").mouseout(function() {
-          $(this).css("background-color", "ghostwhite");
-        });
-      }
-    }
-  });
-
-  // Useful helper functions
-  function numberComparator(num1, num2, sortOrder) {
-    if (num1 < num2) {
-      return (sortOrder === "Ascending") ? -1 : 1;
-    } else if (num1 > num2) {
-      return (sortOrder === "Ascending") ? 1 : -1;
-    } else {
-      return 0;
-    }
-  }
-</script>
 
 

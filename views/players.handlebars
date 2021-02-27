@@ -1,11 +1,6 @@
 <title>Player Search</title>
 
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/" style="text-decoration: none;">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Players</li>
-  </ol>
-</nav>
+{{> _breadcrumbPath path=path rawData=""}}
 
 {{#each errors}}
   <div class="alert alert-danger mx-4">{{text}}</div>

@@ -37,6 +37,10 @@
             <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{totalBoatAttacks participants}}</p>
           </div>
           <div class="mb-1" style="height: 30px;">
+            <img src="/images/clans/decks_used.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Decks Used" alt="Decks Used" height="30px;">
+            <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{totalDecksUsed participants}}</p>
+          </div>
+          <div class="mb-1" style="height: 30px;">
             <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="30px;">
             {{#if ../trophyChange}}
               <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{clanScore}} [Δ {{addPlusToNumber ../trophyChange}}]</p>
@@ -69,7 +73,8 @@
               <p class="dropdown-item">Tag</p>
               <p class="dropdown-item">Fame</p>
               <p class="dropdown-item">Repair Points</p>
-              <p class="dropdown-item mb-0">Boat Attacks</p>
+              <p class="dropdown-item">Boat Attacks</p>
+              <p class="dropdown-item mb-0">Decks Used</p>
             </div>
           </div>
           <div class="dropdown mx-auto">
@@ -90,17 +95,21 @@
                   <h5 class="card-title">{{name}}</h5>
                   <h6 class="card-subtitle mb-2 text-muted">{{tag}}</h6>
                   <div class="row">
-                    <div class="col-4" style="height: 20px;">
-                      <img src="/images/clans/fame.png" alt="Fame" height="20px;">
-                      <p class="card-text d-inline-block align-middle participant-fame" style="line-height: 20px;">{{fame}}</p>
+                    <div class="col-3" style="height: 25px;">
+                      <img src="/images/clans/fame.png" alt="Fame" height="25px;">
+                      <p class="card-text d-inline-block align-middle participant-fame" style="line-height: 25px;">{{fame}}</p>
                     </div>
-                    <div class="col-4" style="height: 20px;">
-                      <img src="/images/clans/repair.png" alt="Repair Points" height="20px;">
-                      <p class="card-text d-inline-block align-middle participant-repair-points" style="line-height: 20px;">{{repairPoints}}</p>
+                    <div class="col-3" style="height: 25px;">
+                      <img src="/images/clans/repair.png" alt="Repair Points" height="25px;">
+                      <p class="card-text d-inline-block align-middle participant-repair-points" style="line-height: 25px;">{{repairPoints}}</p>
                     </div>
-                    <div class="col-4" style="height: 20px;">
-                      <img src="/images/clans/boatBattle.png" alt="Boat Attacks" height="20px;">
-                      <p class="card-text d-inline-block align-middle participant-boat-attacks" style="line-height: 20px;">{{boatAttacks}}</p>
+                    <div class="col-3" style="height: 25px;">
+                      <img src="/images/clans/boatBattle.png" alt="Boat Attacks" height="25px;">
+                      <p class="card-text d-inline-block align-middle participant-boat-attacks" style="line-height: 25px;">{{boatAttacks}}</p>
+                    </div>
+                    <div class="col-3" style="height: 28px;">
+                      <img src="/images/clans/decks_used.png" alt="Decks Used" height="28px;">
+                      <p class="card-text d-inline-block align-middle participant-decks-used" style="line-height: 28px;">{{decksUsed}}</p>
                     </div>
                   </div>
                 </div>

@@ -6,6 +6,6 @@
     <a class="nav-link {{#if (compare active "===" "pastWars")}}active{{/if}}" id="past-wars-tab" {{#if (compare active "===" "pastWars")}}data-toggle="tab"{{/if}} href="/clans/{{removeFirstCharacter tag}}/war/log" role="tab" {{#if (compare active "===" "pastWars")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>PAST WARS</a>
   </li>
   <li class="nav-item" role="presentation">
-    <a class="nav-link {{#if (compare active "===" "warInsights")}}active{{/if}}" id="war-insights-tab" {{#if (compare active "===" "pastWars")}}data-toggle="tab"{{/if}} href="/clan/{{removeFirstCharacter tag}}/war/" role="tab" {{#if (compare active "===" "warInsights")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>WAR INSIGHTS</a>
+    <a class="nav-link {{#if (compare active "===" "warInsights")}}active{{/if}}" id="war-insights-tab" {{#if (compare active "===" "warInsights")}}data-toggle="tab"{{/if}} href="/clans/{{removeFirstCharacter tag}}/war/insights" role="tab" {{#if (compare active "===" "warInsights")}}aria-selected="true"{{else}}aria-selected="false"{{/if}}>WAR INSIGHTS</a>
   </li>
 </ul>

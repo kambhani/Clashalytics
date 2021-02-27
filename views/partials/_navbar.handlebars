@@ -1,5 +1,4 @@
-<div class="container-fluid mx-0 px-0">
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
       <!--This SVG graphic was taken from "https://icons.getbootstrap.com/icons/controller/#"-->
       <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-controller" fill="currentColor"
@@ -30,17 +29,16 @@
             CLANS
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/cards">
-            CARDS
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            MORE
           </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/guides">
-            GUIDES
-          </a>
+          <div class="dropdown-menu bg-dark border-dark" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item dropdown-item-dark" href="/cards" style="color: rgba(255, 255, 255, 0.5)">CARDS</a>
+            <a class="dropdown-item dropdown-item-dark" href="/guides" style="color: rgba(255, 255, 255, 0.5)">GUIDES</a>
+            <a class="dropdown-item dropdown-item-dark" href="/tournaments" style="color: rgba(255, 255, 255, 0.5)">TOURNAMENTS</a>
+          </div>
         </li>
       </ul>
     </div>
   </nav>
-</div>

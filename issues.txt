@@ -3,10 +3,13 @@ No guarantee that I will ever finish these things
 
 - Improve playerInfo.handlebars analysis tab search
   - Also add a button where analysis will be done upon pressing it
-- Finish clanInfo.handlebars (make page smaller, 160,000 lines of HTML is too much)
 - Add "Leaderboard Royale" to playerInfo.handlebars, general tab
 - Do something with fetch error that is NOT console.log
   - Maybe a logging db?
 - Convert images to webp or svg for faster load times
-- Finish clanInfo war analysis
 - When errors.length > 0, do something other than: res.send("Error")
+- Add dark mode (idk if I can ever do this)
+
+Useful Links
+https://nsspot.herokuapp.com/imagetowebp/
+https://gist.github.com/mozeago/8c6bfbfda8a5931ce97e48beb081ee6b

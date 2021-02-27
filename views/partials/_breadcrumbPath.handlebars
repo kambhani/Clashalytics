@@ -1,0 +1,14 @@
+<nav id="breadcrumb" aria-label="breadcrumb" {{#if rawData}}class="justify-content-between d-lg-flex mb-3" style="background-color: #e9ecef;"{{/if}}>
+  <ol class="breadcrumb">
+    {{#each path}}
+      {{#unless @last}}
+        <li class="breadcrumb-item"><a href="{{href}}" style="text-decoration: none;">{{name}}</a></li>
+      {{else}}
+        <li class="breadcrumb-item active" aria-current="page">{{name}}</li>
+      {{/unless}}
+    {{/each}}
+  </ol>
+  {{#if rawData}}
+    <a href="{{rawData}}" class="text-decoration-none text-right mx-3 align-middle d-none d-lg-block" style="line-height: 48px;">RAW DATA</a>
+  {{/if}}
+</nav>

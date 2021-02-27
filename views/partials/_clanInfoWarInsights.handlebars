@@ -1,0 +1,60 @@
+<div class="tab-pane mb-4" id="warInsights" role="tabpanel" aria-labelledby="war-insights-tab">
+  <hr class="my-0" style="background-color: black; height: 3px; width: 100%;">
+  <ul class="nav nav-pills nav-fill" id="tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="participation-tab" data-toggle="tab" href="#participation" role="tab" aria-controls="participation"
+        aria-selected="true">PARTICIPATION</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="cw-trophies-tab" data-toggle="tab" href="#cwTrophies" role="tab" aria-controls="cwTrophies"
+        aria-selected="false">TROPHIES</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="participation" class="tab-pane active my-4" role="tabpanel" aria-labelledby="participation-tab">
+      {{#each riverRaceLog.items}}
+        {{#each standings}}
+          {{#if (compare clan.tag "===" ../../tag)}}
+            <div class="week-participation S{{../seasonId}}-W{{math ../sectionIndex "+" 1}}">
+              {{#each clan.participants}}
+                <div>
+                  <h1 class="d-none">{{tag}}</h1>
+                  <h2 class="d-none">{{name}}</h2>
+                  <h3 class="d-none">{{fame}}</h3>
+                  <h4 class="d-none">{{repairPoints}}</h4>
+                  <h5 class="d-none">{{boatAttacks}}</h5>
+                  <h6 class="d-none">{{decksUsed}}</h6>
+                </div>
+              {{/each}}
+            </div>
+          {{/if}}
+        {{/each}}
+      {{/each}}
+      <div class="form-inline justify-content-center mb-4">
+        <label class="" for="playerSelect" style=""><strong>Select Player: </strong></label>
+        <input id="playerSelect" class="mx-2" type="text" list="playerList" style="width: 170px;">
+        <datalist id="playerList"></datalist>
+        <button class="btn btn-primary" onclick="drawPlayerChart()" style="">Select</button>
+      </div>
+      <div id="playerChartErrors"></div>
+      <div id="playerChartAll" class="pr-2 px-md-5"></div>
+      <div id="playerChartFame" class="pr-5 px-sm-3 px-lg-5"></div>
+      <div id="playerChartRepairPoints" class="pr-5 px-sm-3 px-lg-5"></div>
+      <div id="playerChartBoatAttacks" class="pr-5 px-sm-3 px-lg-5"></div>
+      <div id="playerChartDecksUsed" class="pr-5 px-sm-3 px-lg-5"></div>
+    </div>
+    <div id="cwTrophies" class="tab-pane my-4" role="tabpanel" aria-labelledby="cw-trophies-tab">
+      <div id="trophyChart" class="pr-5 px-sm-3 px-lg-5">
+        {{#each riverRaceLog.items}}
+          {{#each standings}}
+            {{#if (compare clan.tag "===" ../../tag)}}
+              <h4 class="d-none">S{{../seasonId}} W{{math ../sectionIndex "+" 1}}</h4>
+              <h5 class="d-none">{{clan.clanScore}}</h5>
+            {{/if}}
+          {{/each}}
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

@@ -87,17 +87,28 @@ var auth = confidentialInfo.CR_API_TOKEN; // Records are deleted after 90 days
 var daysToDeletion = 90; // Root Index
 
 app.get("/", function (req, res) {
-  var title = "Welcome!";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }];
   res.render("index", {
-    title: title
+    path: path
   });
 }); // Players Page
 
 app.get("/players", function (req, res) {
-  res.render("players");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }];
+  res.render("players", {
+    path: path
+  });
 });
 app.post("/players", function (req, res) {
-  //console.log(req.body);
   var errors = [];
 
   if (!req.body.tag) {
@@ -131,6 +142,19 @@ app.get("/players/:tag/all", function (req, res) {
   var url1 = baseUrl + "v1/players/%23" + tag;
   var url2 = url1 + "/battlelog";
   var url3 = url1 + "/upcomingchests";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/all"),
+    "name": "All"
+  }];
   var playerInfo = [0, 0, 0, 0, 0];
   var playerInfoLogicalSize = 0;
   var errors = [];
@@ -245,23 +269,10 @@ app.get("/players/:tag/all", function (req, res) {
 
       if (playerInfo[2].reason) {
         // This area means that something is off with the JSON response
-        // Final href is not used, but I put it in there for consistency
-        var path = [{
-          "href": "/",
-          "name": "Home"
-        }, {
-          "href": "/players",
-          "name": "Players"
-        }, {
-          "href": "/players/".concat(tag),
-          "name": "#" + tag
-        }, {
-          "href": "/players/".concat(tag, "/all"),
-          "name": "All"
-        }];
         handleErrors(res, path, "Player #".concat(tag, " | All"), playerInfo[2]);
       } else {
         res.render("playerInfo", {
+          path: path,
           playerStats: playerInfo[0],
           playerBattles: playerInfo[1],
           playerChests: playerInfo[2],
@@ -291,6 +302,19 @@ app.post("/players/:tag/all", function (req, res) {
 app.get("/players/:tag/general", function (req, res) {
   var tag = req.params.tag.toUpperCase();
   var url = baseUrl + "v1/players/%23" + tag;
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/players",
+    "name": "Players"
+  }, {
+    "href": "/players/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/players/".concat(tag, "/general"),
+    "name": "General"
+  }];
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -300,23 +324,10 @@ app.get("/players/:tag/general", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      // Final href is not used, but I put it in there for consistency
-      var path = [{
-        "href": "/",
-        "name": "Home"
-      }, {
-        "href": "/players",
-        "name": "Players"
-      }, {
-        "href": "/players/".concat(tag),
-        "name": "#" + tag
-      }, {
-        "href": "/players/".concat(tag, "/general"),
-        "name": "General"
-      }];
       handleErrors(res, path, "Player #".concat(tag, " | General"), json);
     } else {
       res.render("playerInfoGeneral", {
+        path: path,
         playerStats: json
       });
     }
@@ -415,6 +426,7 @@ app.get("/players/:tag/battles", function (req, res) {
           });
         } else {
           res.render("playerInfoBattles", {
+            path: path,
             tag: "#" + req.params.tag.toUpperCase(),
             playerBattles: toSend[0],
             gameModeJson: toSend[1],
@@ -454,6 +466,7 @@ app.get("/players/:tag/cards", function (req, res) {
       handleErrors(res, path, "Player #".concat(tag, " | Cards"), json);
     } else {
       res.render("playerInfoCards", {
+        path: path,
         playerStats: json
       });
     }
@@ -489,6 +502,7 @@ app.get("/players/:tag/chests", function (req, res) {
       handleErrors(res, path, "Player #".concat(tag, " | Chests"), json);
     } else {
       res.render("playerInfoChests", {
+        path: path,
         playerChests: json,
         tag: "#" + tag
       });
@@ -607,6 +621,7 @@ app.get("/players/:tag/analysis", function (req, res) {
         handleErrors(res, path, "Player #".concat(tag), toSend[0]);
       } else {
         res.render("playerInfoAnalysis", {
+          path: path,
           tag: "#" + tag,
           gameModeJson: toSend[1],
           cardJson: toSend[2],
@@ -742,21 +757,73 @@ app.get("/players/:tag/data", function (req, res) {
   }
 });
 app.get("/about", function (req, res) {
-  res.render("about");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/about",
+    "name": "About"
+  }];
+  res.render("about", {
+    path: path
+  });
 });
 app.get("/tos", function (req, res) {
-  res.render("tos");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/tos",
+    "name": "Terms of Service"
+  }];
+  res.render("tos", {
+    path: path
+  });
 });
 app.get("/privacy", function (req, res) {
-  res.render("privacy");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/privacy",
+    "name": "Privacy Policy"
+  }];
+  res.render("privacy", {
+    path: path
+  });
 });
 app.get("/disclaimers", function (req, res) {
-  res.render("disclaimers");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/disclaimers",
+    "name": "Disclaimers"
+  }];
+  res.render("disclaimers", {
+    path: path
+  });
 });
 app.get("/help", function (req, res) {
-  res.render("help");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/help",
+    "name": "Help"
+  }];
+  res.render("help", {
+    path: path
+  });
 });
 app.get("/clans", function (req, res) {
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }];
   fetch(baseUrl + "v1/locations", {
     headers: {
       Accept: "application/json",
@@ -767,6 +834,7 @@ app.get("/clans", function (req, res) {
   }).then(function (json) {
     if (Object.keys(req.query).length === 0) {
       res.render("clans", {
+        path: path,
         locations: json,
         results: []
       });
@@ -913,6 +981,7 @@ app.get("/clans", function (req, res) {
           return res.json();
         }).then(function (json2) {
           res.render("clans", {
+            path: path,
             locations: json,
             results: json2
           });
@@ -1086,6 +1155,7 @@ app.get("/clans/:tag/all", function (req, res) {
         handleErrors(res, path, "Clan #".concat(tag, " | All"), clanInfo[0]);
       } else {
         res.render("clanInfo", {
+          path: path,
           clanStats: clanInfo[0],
           currentRiverRace: clanInfo[1],
           riverRaceLog: clanInfo[2]
@@ -1122,6 +1192,7 @@ app.get("/clans/:tag/description", function (req, res) {
       handleErrors(res, path, "Clan #".concat(tag, " | Description"), json);
     } else {
       res.render("clanInfoDescription", {
+        path: path,
         clanStats: json
       });
     }
@@ -1157,6 +1228,7 @@ app.get("/clans/:tag/members", function (req, res) {
       handleErrors(res, path, "Clan #".concat(tag, " | Members"), json);
     } else {
       res.render("clanInfoMembers", {
+        path: path,
         clanStats: json
       });
     }
@@ -1204,6 +1276,7 @@ app.get("/clans/:tag/war/race", function (req, res) {
       handleErrors(res, path, "Clan #".concat(tag, " | Race"), json);
     } else {
       res.render("clanInfoWarRace", {
+        path: path,
         currentRiverRace: json,
         tag: "#" + tag
       });
@@ -1281,6 +1354,7 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
           }
 
           res.render("clanInfoWarLog", {
+            path: path,
             riverRaceLog: json,
             tag: "#" + tag,
             index: num - 1,
@@ -1293,6 +1367,46 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
       console.log(err);
     });
   }
+});
+app.get("/clans/:tag/war/insights", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/clans/%23" + tag + "/riverracelog";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }, {
+    "href": "/clans/".concat(tag),
+    "name": "#" + tag
+  }, {
+    "href": "/clans/".concat(tag, "/war"),
+    "name": "War"
+  }, {
+    "href": "/clans/".concat(tag, "/war/insights"),
+    "name": "Insights"
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Clan #".concat(tag, " | Insights"), json);
+    } else {
+      res.render("clanInfoWarInsights", {
+        path: path,
+        tag: "#" + tag,
+        riverRaceLog: json
+      });
+    }
+  })["catch"](function (err) {
+    console.log(err);
+  });
 });
 app.get("/clans/:tag/data", function (req, res) {
   var tag = req.params.tag.toUpperCase();
@@ -1371,13 +1485,44 @@ app.get("/clans/:tag/data", function (req, res) {
   }
 });
 app.get("/cards", function (req, res) {
-  res.render("construction", {
-    page: "Cards"
+  // This path is under construction
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/cards",
+    "name": "Cards"
+  }];
+  handleErrors(res, path, "Cards", {
+    "reason": "construction"
   });
 });
 app.get("/guides", function (req, res) {
-  res.render("construction", {
-    page: "Guides"
+  // This path is under construction
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/guides",
+    "name": "Guides"
+  }];
+  handleErrors(res, path, "Guides", {
+    "reason": "construction"
+  });
+});
+app.get("/tournaments", function (req, res) {
+  var url = baseUrl + "v1/locations/global/rankings/players";
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    res.send(json);
+  })["catch"](function (err) {
+    console.log(err);
   });
 }); // This is for 404 errors
 
@@ -1391,7 +1536,7 @@ app.use(function (req, res) {
 
   for (var i = 0; i < urlPath.length; i++) {
     var curUrl = "/";
-    var name = urlPath[i];
+    var name = urlPath[i].charAt(0).toUpperCase() + urlPath[i].substring(1);
 
     for (var j = 0; j <= i; j++) {
       curUrl = curUrl + urlPath[j] + "/";
@@ -1592,11 +1737,20 @@ var doEveryHour = function doEveryHour(something) {
 
 function handleErrors(res, path, title, object) {
   switch (object.reason) {
+    // Clash Royale API error for an invalid tag
     case "notFound":
       {
         sendError(res, path, "".concat(title, " | NOT FOUND"), "The requested resource could not be found");
         break;
       }
+    // My own error for pages I have not yet completed
+
+    case "construction":
+      {
+        sendError(res, path, "".concat(title, " | UNDER CONSTRUCTION"), "This page is currently under construction");
+        break;
+      }
+    // Any other uncaught errors
 
     default:
       {

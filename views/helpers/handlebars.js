@@ -1768,6 +1768,14 @@ var register = function(Handlebars) {
         toReturn += arguments[i];
       }
       return toReturn;
+    },
+    // This function returns the total number of decks used, given the participant list
+    totalDecksUsed(participantList) {
+      let totalDecksUsed = 0;
+      for (let i = 0; i < participantList.length; i++) {
+        totalDecksUsed += participantList[i].decksUsed;
+      }
+      return totalDecksUsed;
     }
   }
 

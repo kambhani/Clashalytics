@@ -1,0 +1,5 @@
+Emotes are labeled according to the number scheme at: https://clashroyale.fandom.com/wiki/Emotes
+
+Emote contributions are as follows:
+
+18 --> github.com/kambhani

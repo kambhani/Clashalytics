@@ -273,62 +273,54 @@ var register = function(Handlebars) {
     getBadgeImage (name, value) {
       switch (name) {
         case "Classic12Wins": {
-          return "/images/badges/Classic Challenge.png";
+          return "/images/badges/webp/Classic Challenge.webp";
         }
         case "Grand12Wins": {
-          return "/images/badges/Grand Challenge.png";
+          return "/images/badges/webp/Grand Challenge.webp";
         }
         case "Crl20Wins": {
           return "/images/badges/CRL Logo.png";
         }
         case "1000Wins": {
-          return "/images/badges/1000 Wins.png";
+          return "/images/badges/webp/1000 Wins.webp";
         }
         case "Played1Year": {
-          return "/images/badges/1 Year Badge.png";
+          return "/images/badges/webp/1 Year Badge.webp";
         }
         case "Played2Years": {
-          return "/images/badges/2 Year Badge.png";
+          return "/images/badges/webp/2 Year Badge.webp";
         }
         case "Played3Years": {
-          return "/images/badges/3 Year Badge.png";
+          return "/images/badges/webp/3 Year Badge.webp";
         }
-        case "LadderTournamentTop1000_1": {
-          return "/images/badges/Tournament.png";
-        }
-        case "LadderTournamentTop1000_2": {
-          return "/images/badges/Tournament.png";
-        }
+        case "LadderTournamentTop1000_1":
+        case "LadderTournamentTop1000_2":
         case "LadderTournamentTop1000_3": {
-          return "/images/badges/Tournament.png";
+          return "/images/badges/webp/Tournament.webp";
         }
-        case "LadderTop1000_1": {
-          return "/images/badges/Trophy.png";
-        }
-        case "LadderTop1000_2": {
-          return "/images/badges/Trophy.png";
-        }
+        case "LadderTop1000_1":
+        case "LadderTop1000_2":
         case "LadderTop1000_3": {
-          return "/images/badges/Trophy.png";
+          return "/images/badges/webp/trophy.webp";
         }
         case "TopLeague": {
           let league = getLeagueWithTrophies(value);
-          return (`/images/ladder/${league}.png`);
+          return (`/images/ladder/webp/${league}.webp`);
         }
         case "ClanWarWins": {
-          return "/images/clans/War Shield v4.png";
+          return "/images/clans/webp/War Shield.webp";
         }
         case "Crl20Wins2019": {
           return "/images/badges/CRL Logo.png";
         }
         case "Played4Years": {
-          return "/images/badges/4 Year Badge.png";
+          return "/images/badges/webp/4 Year Badge.webp";
         }
         case "Played5Years": {
-          return "/images/badges/5 Year Badge.png";
+          return "/images/badges/webp/5 Year Badge.webp";
         }
         default: {
-          return "/images/badges/Crying King Emote.png";
+          return "/images/badges/webp/Crying King Emote.webp";
         }
       }
     },
@@ -471,40 +463,40 @@ var register = function(Handlebars) {
     getAchievementImage (apiName, value) {
       switch (apiName) {
         case "Team Player": {
-          return "/images/achievements/clans.png";
+          return "/images/achievements/webp/Clans.webp";
         }
         case "Friend in Need": {
-          return "/images/achievements/Donations.png";
+          return "/images/achievements/webp/Donations.webp";
         }
         case "Road to Glory": {
-          return (`/images/ladder/${getLeagueByArena(value)}.png`);
+          return (`/images/ladder/webp/${getLeagueByArena(value)}.webp`);
         }
         case "Gatherer": {
-          return "/images/misc/cards.png";
+          return "/images/misc/webp/cards.webp";
         }
         case "TV Royale": {
-          return "/images/achievements/TV Royale.png";
+          return "/images/achievements/webp/TV Royale.webp";
         }
         case "Tournament Rewards": {
-          return "/images/achievements/Tournament Cards v2.png";
+          return "/images/achievements/webp/Tournament Cards.webp";
         }
         case "Tournament Host": {
-          return "/images/challenges/Tournament.png";
+          return "/images/badges/webp/Tournament.webp";
         }
         case "Tournament Player": {
-          return "/images/challenges/Tournament.png";
+          return "/images/badges/webp/Tournament.webp";
         }
         case "Challenge Streak": {
-          return "/images/badges/Classic Challenge.png";
+          return "/images/badges/webp/Classic Challenge.webp";
         }
         case "Practice with Friends": {
-          return "/images/achievements/Friendly Battle.png";
+          return "/images/achievements/webp/Friendly Battle.webp";
         }
         case "Special Challenge": {
-          return "/images/achievements/Special Event.png";
+          return "/images/achievements/webp/Special Event.webp";
         }
         case "Friend in Need II": {
-          return "/images/achievements/Donations.png";
+          return "/images/achievements/webp/Donations.webp";
         }
       }
     },
@@ -690,6 +682,20 @@ var register = function(Handlebars) {
         }
         case ("clans"): {
           return "Clans";
+        }
+        // Next one is for tournament type — open is already checked for above
+        case ("passwordProtected"): {
+          return "Password Protected";
+        }
+        // Next three are for tournament statuses
+        case ("inPreparation"): {
+          return "In Preparation";
+        }
+        case ("inProgress"): {
+          return "In Progress";
+        }
+        case ("ended"): {
+          return "Ended";
         }
         // Default is for server error or unknown value
         default: {

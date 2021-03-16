@@ -1,0 +1,244 @@
+<title>Tournaments</title>
+
+<!--This initializes the tooltips on the page-->
+<script defer src="/js/bootstrapTooltips.js"></script>
+<!--This is for the hover functionality on the clan cards-->
+<script defer src="/js/hoverCard.js"></script>
+<!--This script contains the page-specific JS required to run the page-->
+<script defer src="/js/tournaments.js"></script>
+<!--The next three links are for DataTables, a JQuery plug-in-->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script defer src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<!--The next two lines are for a plugin that converts checkboxes into toggles-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css">
+<script defer src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+{{> _breadcrumbPath path=path rawData=""}}
+
+{{#if results}}
+  <!--This is a toggle that lets the user select between card view and table view-->
+  <!--Default is table view-->
+  <div class="container-fluid d-flex justify-content-center mt-4">
+    <input id="searchDisplayFormat" style="mx-auto" type="checkbox" data-toggle="toggle" data-onstyle="outline-info" data-offstyle="outline-dark" data-on="Table" data-off="Cards" data-size="lg" checked>
+    <button type="button" class="btn btn-primary ml-5" data-toggle="modal" data-target="#viewSettings">
+      Change Viewable Data
+    </button>
+  </div>
+
+  <!--This is for the modal that lets the user select what info they want visible-->
+  <div class="modal fade" id="viewSettings" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="viewSettingsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="viewSettingsLabel">Data View Settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-toggle-div">
+            <h5>Display Name: </h5>
+            <input class="display-toggle" data-column="0" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Tag: </h5>
+            <input class="display-toggle" data-column="1" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Description: </h5>
+            <input class="display-toggle" data-column="2" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Type: </h5>
+            <input class="display-toggle" data-column="3" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Status: </h5>
+            <input class="display-toggle" data-column="4" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Game Mode: </h5>
+            <input class="display-toggle" data-column="5" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Level Cap: </h5>
+            <input class="display-toggle" data-column="6" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Capacity: </h5>
+            <input class="display-toggle" data-column="7" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Durations: </h5>
+            <input class="display-toggle" data-column="8" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Creator: </h5>
+            <input class="display-toggle" data-column="9" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info" data-dismiss="modal">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--This is for the table that displays the results-->
+  <div id="tableDiv" class="container-fluid mt-3 px-0 py-2 px-lg-4 mb-5 table-responsive" style="">
+    <table id="table" class="table table-bordered table-striped justify-content-center" style="width: 100%;">
+      <thead>
+        <tr class="thead-dark text-center">
+          <th>Name</th>
+          <th>Tag</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Game Mode</th>
+          <th>Level Cap</th>
+          <th>Capacity</th>
+          <th>Durations</th>
+          <th>Creator</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results.items}}
+          <tr class="text-center">
+            <td class="align-middle"><a href="/tournaments/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
+            <td class="align-middle">{{tag}}</td>
+            <td class="align-middle">{{description}}</td>
+            <td class="align-middle">{{correctCapitalization type}}</td>
+            <td class="align-middle">{{correctCapitalization status}}</td>
+            <td class="align-middle">{{gameModeName gameMode.id ../gameModeJson ""}}</td>
+            <td class="align-middle">{{levelCap}}</td>
+            <td class="align-middle" data-sort="{{math maxCapacity "-" capacity}}">{{capacity}} / {{maxCapacity}}</td>
+            <td class="align-middle">{{math preparationDuration "/" 3600}}h | {{math duration "/" 3600}}h</td>
+            <td class="align-middle"><a href="/players/{{removeFirstCharacter creatorTag}}" class="text-decoration-none">{{creatorTag}}</a></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <!--This is for the cards that display the results-->
+  <div id="cards" class="container-fluid my-3 d-none">
+    <div class="row justify-content-center">
+      {{#each results.items}}
+        <div style="margin: 10px;">
+          <div class="card border-primary" style="width: 22em; background-color: ghostwhite; height: 100%;">
+            <a href="/tournaments/{{removeFirstCharacter tag}}" class="text-decoration-none">
+              <div class="card-header">
+                <h5 class="font-weight-bold mb-1 text-decoration-none card-data-0">{{name}}</h5>
+                <h6 class="font-weight-light font-italic mb-0 card-data-1">{{tag}}</h6>
+              </div>
+            </a>
+            <div class="card-body">
+              <div class="row">
+                {{#if (compare type "===" "open")}}
+                  <div class="col-6 mb-3 card-data-3" style="height: 24px;">
+                    <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/unlock-fill/-->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#28a745" class="bi bi-unlock-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Type">
+                      <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    <p class="card-text d-inline-block align-middle" style="line-height: 24px; color: #28a745;">Open</p>
+                  </div>
+                {{else}}
+                  <div class="col-12 mb-3 card-data-3" style="height: 24px;">
+                    <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/lock-fill/-->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#dc3545" class="bi bi-lock-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Type">
+                      <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    <p class="card-text d-inline-block align-middle" style="line-height: 24px; color: #dc3545;">Password Protected</p>
+                  </div>
+                {{/if}}
+                <div class="col-6 mb-2 card-data-4">
+                  <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/info-circle-fill/-->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#007bff" class="bi bi-info-circle-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Status">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </svg>
+                  <p class="card-text ml-1 d-inline-block align-middle" style="line-height: 24px;">{{correctCapitalization status}}</p>
+                </div>
+                <div class="col-12 mb-2 card-data-5">
+                  <!--Material Design Icon: https://materialdesignicons.com/icon/sword-cross-->
+                  <!--License: https://github.com/Templarian/MaterialDesign/blob/master/LICENSE-->
+                  <svg width="24" height="24" viewBox="0 0 24 24" data-bs-toggle="tooltip" data-bs-placement="top" title="Game Mode">
+                    <path fill="#6c757d" d="M6.2,2.44L18.1,14.34L20.22,12.22L21.63,13.63L19.16,16.1L22.34,19.28C22.73,19.67 22.73,20.3 22.34,20.69L21.63,21.4C21.24,21.79 20.61,21.79 20.22,21.4L17,18.23L14.56,20.7L13.15,19.29L15.27,17.17L3.37,5.27V2.44H6.2M15.89,10L20.63,5.26V2.44H17.8L13.06,7.18L15.89,10M10.94,15L8.11,12.13L5.9,14.34L3.78,12.22L2.37,13.63L4.84,16.1L1.66,19.29C1.27,19.68 1.27,20.31 1.66,20.7L2.37,21.41C2.76,21.8 3.39,21.8 3.78,21.41L7,18.23L9.44,20.7L10.85,19.29L8.73,17.17L10.94,15Z" />
+                  </svg>
+                  <p class="card-text d-inline-block align-middle" style="line-height: 24px;">{{gameModeName gameMode.id ../gameModeJson ""}}</p>
+                </div>
+                <div class="col-6 mb-2 card-data-6">
+                  <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/patch-minus-fill/-->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#6f42c1" class="bi bi-patch-minus-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Level Cap">
+                    <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM6 7.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1 0-1z"/>
+                  </svg>
+                  <p class="card-text d-inline-block align-middle" style="line-height: 24px;">Lvl {{levelCap}}</p>
+                </div>
+                <div class="col-6 mb-2 card-data-7">
+                  <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/people-fill/-->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#404040" class="bi bi-people-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Capacity">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                  </svg>
+                  <p class="card-text d-inline-block align-middle" style="line-height: 24px;">{{capacity}} / {{maxCapacity}}</p>
+                </div>
+                <div class="col-6 mb-2 card-data-8">
+                  <img src="/images/misc/svg/clock.svg" alt="clock" width="24" height="24" data-bs-toggle="tooltip" data-bs-placement="top" title="Durations">
+                  <p class="card-text d-inline-block align-middle" style="line-height: 24px;">{{math preparationDuration "/" 3600}}h | {{math duration "/" 3600}}h</p>
+                </div>
+                <div class="col-6 mb-2 card-data-9">
+                  <img src="/images/misc/svg/person_icon.svg" alt="person" width="24" height="24" data-bs-toggle="tooltip" data-bs-placement="top" title="Creator">
+                  <a href="/players/{{removeFirstCharacter creatorTag}}" class="card-text d-inline-block text-decoration-none align-middle" style="line-height: 24px;">{{creatorTag}}</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted card-data-2">{{description}}</small>
+              {{#if description}}
+                <br>
+              {{/if}}
+              <a href="https://link.clashroyale.com/?jointournament?id={{removeFirstCharacter tag}}">
+                <img src="/images/misc/svg/open_link.svg" alt="Open Link Icon" width="20px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Open In-Game">
+              </a>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+{{else}}
+  <div class="mt-4">
+    {{#each errors}}
+      <div class="alert alert-danger mx-4 text-center">{{this}}</div>
+    {{/each}}
+  </div>
+  <div class="m-3">
+    <h1>Tournaments</h1>
+
+    <h3 class="font-weight-light">Search by Tournament Tag</h3>
+    <div class="container-fluid">
+      <form class="form-inline my-2" action="/tournaments" method="POST">
+        <input class="form-control mr-2" type="text" name="tag" placeholder="ENTER TOURNAMENT TAG" aria-label="Search" required>
+        <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+      </form>
+    </div>
+
+    <h3 class="mx-1 my-3">OR</h3>
+
+    <h3 class="font-weight-light">Search by Tournament Name</h3>
+    <div class="container-fluid">
+      <form class="form-inline my-2" action="/tournaments" method="POST">
+        <input class="form-control mr-2" type="text" name="name" placeholder="ENTER TOURNAMENT NAME" aria-label="Search" minLength="3" required>
+        <button class="btn btn-primary my-2 mr-2" type="submit">Search</button>
+      </form>
+    </div>
+
+    <h3 class="mx-1 my-3">OR</h3>
+    <h3 class="font-weight-light">Search for Global Tournaments</h3>
+    <a href="/tournaments/gt" class="btn btn-primary" role="button">Search</a>
+
+  </div>
+{{/if}}
+

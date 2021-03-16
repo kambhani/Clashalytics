@@ -1,4 +1,4 @@
-I got star_points.png from this website: https://clashroyale.fandom.com/wiki/Star_Points
+I got star_level.png from this website: https://cdn.royaleapi.com/static/img/ui/star-level.png
 
 I got the card image from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/cards.png
 

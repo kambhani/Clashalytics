@@ -114,12 +114,12 @@
     <div class="row justify-content-center">
       {{#each clanStats.memberList}}
         <a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black; margin: 10px;">
-          <div class="card hover-card border-primary pl-1" style="width: 21em; background-color: ghostwhite;">
+          <div class="card hover-card border-primary pl-1" style="width: 21em; background-color: ghostwhite; height: 100%;">
             <div class="row no-gutters">
               <div class="col-3">
-                <img src="/images/ladder/{{getLeague trophies}}.png" class="card-img-top pt-4 pb-2" alt="League Badge">
+                <img src="/images/ladder/webp/{{getLeague trophies}}.webp" class="card-img-top pt-4 pb-2" alt="League Badge">
                 <div class="card-data-4 text-center mb-1" style="height: 35px;">
-                  <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Trophies" height="35px;">
+                  <img src="/images/ladder/webp/trophy.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Trophies" height="35px;">
                   <p class="card-text d-inline-block align-middle" style="line-height: 35px; font-size: 1.1em;">{{trophies}}</p>
                 </div>
               </div>
@@ -128,29 +128,29 @@
                   <h5 class="card-title font-weight-bold mb-1 card-data-0">{{name}}</h5>
                   <h6 class="font-weight-light font-italic mb-2 card-data-1">{{tag}}</h6>
                   <div class="mb-1 card-data-2" style="height: 20px;">
-                    <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Role" alt="Person Icon" height="20px;">
+                    <img src="/images/misc/svg/person_icon.svg" data-bs-toggle="tooltip" data-bs-placement="top" title="Role" alt="Person Icon" height="20px;">
                     <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization role}}</p>
                   </div>
                   <div class="mb-1 card-data-3" style="height: 20px;">
-                    <img src="/images/misc/exp_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Experience" alt="Experience Icon" height="20px;">
+                    <img src="/images/misc/webp/exp_icon.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Experience" alt="Experience Icon" height="20px;">
                     <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{expLevel}}</p>
                   </div>
                   <div class="mb-1 card-data-5" style="height: 20px;">
-                    <img src="/images/misc/star v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Rank" alt="Star Icon" height="20px;">
+                    <img src="/images/misc/webp/star.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Rank" alt="Star Icon" height="20px;">
                     <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{clanRank}} [Δ: {{addPlusToNumber (math clanRank "-" previousClanRank)}}]</p>
                   </div>
                   <div class="mb-1 card-data-7">
                     <div class="mb-1 mr-3 d-inline-block" style="height: 20px;">
-                      <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Given" alt="Donations Given Icon" height="20px;">
+                      <img src="/images/misc/webp/donations_given.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Given" alt="Donations Given Icon" height="20px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donations}}</p>
                     </div>
                     <div class="mb-1 ml-3 d-inline-block" style="height: 20px;">
-                      <img src="/images/misc/donations_received.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Received" alt="Donations Received Icon" height="20px;">
+                      <img src="/images/misc/webp/donations_received.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Donations Received" alt="Donations Received Icon" height="20px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsReceived}}</p>
                     </div>
                   </div>
                   <div class="mb-1 card-data-9" style="height: 20px;">
-                    <img src="/images/misc/clock v2.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Seen" alt="Clock Icon" height="20px;">
+                    <img src="/images/misc/svg/clock.svg" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Seen" alt="Clock Icon" height="20px;">
                     <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{dateDifference lastSeen 0}}</p>
                   </div>
                 </div>

@@ -16,10 +16,6 @@
 
 {{> _breadcrumbPath path=path rawData=""}}
 
-{{#each errors}}
-  <div class="alert alert-danger mx-4 text-center">{{this}}</div>
-{{/each}}
-
 {{#if results}}
   <!--Displaying Results-->
 
@@ -95,10 +91,10 @@
     <div class="row justify-content-center">
       {{#each results.items}}
         <a href="/clans/{{removeFirstCharacter tag}}" class="text-decoration-none" style="color: black; margin: 10px;">
-          <div class="card hover-card border-primary" style="width: 22em; background-color: ghostwhite;">
+          <div class="card hover-card border-primary" style="width: 22em; background-color: ghostwhite; height: 100%;">
             <div class="row no-gutters">
               <div class="col-4 d-flex align-items-center">
-                <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge">
+                <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge" loading="lazy">
               </div>
               <div class="col-8">
                 <div class="card-body">
@@ -106,31 +102,31 @@
                   <h6 class="font-weight-light font-italic mb-2 card-data-2">{{tag}}</h6>
                   <div class="row">
                     <div class="col-12 mb-2 card-data-3" style="height: 20px;">
-                      <img src="/images/misc/person_icon.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Type" alt="Person Icon" height="20px;">
+                      <img src="/images/misc/svg/person_icon.svg" data-bs-toggle="tooltip" data-bs-placement="top" title="Type" alt="Person Icon" height="20px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{correctCapitalization type}}</p>
                     </div>
                     <div class="col-12 mb-1 card-data-4 d-flex align-items-center" style="">
-                      <img src="/images/misc/locations.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Location" alt="Location" height="20px;">
+                      <img src="/images/misc/webp/locations.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Location" alt="Location" height="20px;">
                       <p class="card-text pl-2" style="font-size: 0.8em;">{{location.name}}</p>
                     </div>
                     <div class="col-6 mb-2 card-data-5" style="height: 20px;">
-                      <img src="/images/ladder/trophy.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Required Trophies" alt="Required Trophies" height="20px;">
+                      <img src="/images/ladder/webp/trophy.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Required Trophies" alt="Required Trophies" height="20px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{requiredTrophies}}</p>
                     </div>
                     <div class="col-6 mb-2 card-data-6" style="height: 20px;">
-                      <img src="/images/misc/donations_given.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Weekly Donations" alt="Weekly Donations" height="20px;">
+                      <img src="/images/misc/webp/donations_given.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Weekly Donations" alt="Weekly Donations" height="20px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 20px;">{{donationsPerWeek}}</p>
                     </div>
                     <div class="col-6 mb-2 card-data-7" style="height: 25px;">
-                      <img src="/images/badges/Tournament.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Score" alt="Clan Score" height="25px;">
+                      <img src="/images/badges/webp/Tournament.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan Score" alt="Clan Score" height="25px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 25px;">{{clanScore}}</p>
                     </div>
                     <div class="col-6 mb-2 card-data-8" style="height: 25px;">
-                      <img src="/images/clans/Clan Trophies.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="25px;">
+                      <img src="/images/clans/webp/Clan Trophies.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Clan War Trophies" alt="Clan War Trophies" height="25px;">
                       <p class="card-text d-inline-block align-middle" style="line-height: 25px;">{{clanWarTrophies}}</p>
                     </div>
                     <div class="col-6 mb-2 card-data-9" style="height: 25px;">
-                      <img src="/images/clans/clans.png" data-bs-toggle="tooltip" data-bs-placement="top" title="Members" alt="Members" height="25px;">
+                      <img src="/images/clans/webp/clans.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Members" alt="Members" height="25px;">
                       <p class="card-text d-inline-block align-middle ml-1" style="line-height: 25px;">{{members}} / 50</p>
                     </div>
                   </div>
@@ -161,7 +157,7 @@
       <tbody>
         {{#each results.items}}
           <tr class="text-center">
-            <td class="align-middle"><img src="{{getClanBadge badgeId clanWarTrophies}}" class="" alt="Clan Badge" style="width: 50px;"></td>
+            <td class="align-middle"><img src="{{getClanBadge badgeId clanWarTrophies}}" alt="Clan Badge" style="width: 50px;" loading="lazy"></td>
             <td class="align-middle"><a href="/clans/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
             <td class="align-middle">{{tag}}</td>
             <td class="align-middle">{{correctCapitalization type}}</td>
@@ -177,6 +173,12 @@
     </table>
   </div>
 {{else}}
+  <div class="mt-4">
+    {{#each errors}}
+      <div class="alert alert-danger mx-4 text-center">{{this}}</div>
+    {{/each}}
+  </div>
+  
   <!--Displaying the Form-->
   <h1 class="mx-4 text-center mt-2 mb-4">Clan Search</h1>
 

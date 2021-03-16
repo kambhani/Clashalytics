@@ -20,12 +20,13 @@ const confidentialInfo = require("./config/confidentialInfo");
 
 // Use RoyaleAPI proxy in prod
 // Use direct API Link in dev
-let baseUrl;
-if (process.env.NODE_ENV === "production") {
-  baseUrl = "https://proxy.royaleapi.dev/";
-} else {
-  baseUrl = "https://api.clashroyale.com/";
-}
+let baseUrl = (process.env.NODE_ENV === "production") ? "https://proxy.royaleapi.dev" : "https://api.clashroyale.com/";
+
+// Store cardJson, gameModeJson, and locations in global variables
+// They are updated every two hours
+let cardJson;
+let gameModeJson;
+let locations;
 
 // Map global Promises
 mongoose.Promise = global.Promise;
@@ -158,7 +159,7 @@ app.get("/players/:tag/all", (req, res) => {
       "name": "All"
     }
   ];
-  let playerInfo = [0, 0, 0, 0, 0];
+  let playerInfo = [0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
   let playerIsTracked;
@@ -186,7 +187,8 @@ app.get("/players/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      playerInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url2, {
@@ -203,7 +205,8 @@ app.get("/players/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      playerInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url3, {
@@ -220,39 +223,19 @@ app.get("/players/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
-    });
-  
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
-    .then(res => res.json())
-    .then((json) => {
-      playerInfo[3] = json;
       playerInfoLogicalSize++;
       checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
-    });
-  
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
-    .then(res => res.json())
-    .then((json) => {
-      playerInfo[4] = json;
-      playerInfoLogicalSize++;
-      checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
     });
 
   function checkSend () {
-    if (playerInfoLogicalSize === 5) {
+    if (playerInfoLogicalSize === 3) {
       if(errors.length > 0) {
-        res.send("ERROR");
-      }
-      if (playerInfo[2].reason) {
+        let message = "";
+        for (let i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+        handleErrors(res, path, `Player #${tag} | ALL`, {reason: "Error", message: message});
+      } else if (playerInfo[2].reason) {
         // This area means that something is off with the JSON response
         handleErrors(res, path, `Player #${tag} | All`, playerInfo[2]);
       } else {
@@ -263,8 +246,8 @@ app.get("/players/:tag/all", (req, res) => {
           playerChests: playerInfo[2],
           isTracked: playerIsTracked,
           trackedBattles: trackedBattles,
-          gameModeJson: playerInfo[3],
-          cardJson: playerInfo[4]
+          gameModeJson: gameModeJson,
+          cardJson: cardJson
         });
       }
     }
@@ -285,7 +268,7 @@ app.post("/players/:tag/all", (req, res) => {
         res.redirect("/players/" + tag + "/all");
       })
       .catch((err) => {
-        console.log(err);
+        handleErrors(res, path, `Player #${tag} | ALL`, {reason: "Error", message: err});
       });
   }
 });
@@ -330,7 +313,7 @@ app.get("/players/:tag/general", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Player #${tag} | General`, {reason: "Error", message: err});
     });
 });
 
@@ -357,9 +340,6 @@ app.get("/players/:tag/battles", (req, res) => {
       "name": "Battles"
     }
   ];
-  let toSend = [0, 0, 0];
-  let toSendLogicalSize = 0;
-  let errors = [];
 
   fetch(url1, {
     headers: {
@@ -369,85 +349,45 @@ app.get("/players/:tag/battles", (req, res) => {
   })
     .then(res => res.json())
     .then((json) => {
-      toSend[0] = json;
-      toSendLogicalSize++;
-      checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
-    });
-  
-  
-  
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
-    .then(res => res.json())
-    .then((json) => {
-      toSend[1] = json;
-      toSendLogicalSize++;
-      checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
-    });
-
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
-    .then(res => res.json())
-    .then((json) => {
-      toSend[2] = json;
-      toSendLogicalSize++;
-      checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
-    });
-
-  function checkSend () {
-    if (toSendLogicalSize === 3) {
-      if(errors.length > 0) {
-        res.send("ERROR");
-      }
-      if (toSend[0].reason) {
-        handleErrors(res, path, `Player #${tag} | Battles`, toSend[0]);
-      } else {
-        if (toSend[0].length === 0) {
-          fetch(url2, {
-            headers: {
-              Accept: "application/json",
-              Authorization: auth
+      if (json.reason) {
+        handleErrors(res, path, `Player #${tag} | General`, json);
+      } else if (json.length === 0) {
+        // Fetching player chests since that endpoint shows whether or not the player tag exists
+        fetch(url2, {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        })
+          .then(res => res.json())
+          .then((json2) => {
+            if (json2.reason) {
+              handleErrors(res, path, `Player #${tag} | Battles`, json2);
+            } else {
+              res.render("playerInfoBattles", {
+                tag: "#" + req.params.tag.toUpperCase(),
+                playerBattles: json,
+                gameModeJson: gameModeJson,
+                cardJson: cardJson
+              });
             }
           })
-            .then(res => res.json())
-            .then((json) => {
-              if (json.reason) {
-                handleErrors(res, path, `Player #${tag} | Battles`, json);
-              } else {
-                res.render("playerInfoBattles", {
-                  tag: "#" + req.params.tag.toUpperCase(),
-                  playerBattles: toSend[0],
-                  gameModeJson: toSend[1],
-                  cardJson: toSend[2]
-                });
-              }
-            })
-            .catch((err) => {
-              errors.push(err);
-              console.log(err);
-            });
-        } else {
-          res.render("playerInfoBattles", {
-            path: path,
-            tag: "#" + req.params.tag.toUpperCase(),
-            playerBattles: toSend[0],
-            gameModeJson: toSend[1],
-            cardJson: toSend[2]
+          .catch((err) => {
+            handleErrors(res, path, `Player #${tag} | Battles`, {reason: "Error", message: err});
           });
-        }
+      } else {
+        res.render("playerInfoBattles", {
+          path: path,
+          tag: "#" + req.params.tag.toUpperCase(),
+          playerBattles: json,
+          gameModeJson: gameModeJson,
+          cardJson: cardJson
+        });
       }
-    }
-  }
+    })
+    .catch((err) => {
+      handleErrors(res, path, `Player #${tag} | Battles`, {reason: "Error", message: err});
+    });
 });
 
 app.get("/players/:tag/cards", (req, res) => {
@@ -491,7 +431,7 @@ app.get("/players/:tag/cards", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Player #${tag} | Cards`, {reason: "Error", message: err});
     });
 });
 
@@ -536,7 +476,7 @@ app.get("/players/:tag/chests", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Player #${tag} | Chests`, {reason: "Error", message: err});
     });
 });
 
@@ -561,7 +501,7 @@ app.get("/players/:tag/analysis", (req, res) => {
       "name": "Analysis"
     }
   ];
-  let toSend = [0, 0, 0, 0, 0];
+  let toSend = [0, 0, 0];
   let toSendLogicalSize = 0;
   let errors = [];
 
@@ -579,40 +519,17 @@ app.get("/players/:tag/analysis", (req, res) => {
       checkSend();
     })
     .catch((err) => {
-      console.log(err);
       errors.push(err);
-    });
-
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
-    .then(res => res.json())
-    .then((json) => {
-      toSend[1] = json;
       toSendLogicalSize++;
       checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
-    });
-
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
-    .then(res => res.json())
-    .then((json) => {
-      toSend[2] = json;
-      toSendLogicalSize++;
-      checkSend();
-    })
-    .catch((err) => {
-      errors.push(err);
-      console.log(err);
     });
 
   // Check if player is being tracked with my system
   (async function () {
-    toSend[3] = await Tracked_Player.exists({player: tag});
+    toSend[1] = await Tracked_Player.exists({player: tag});
     toSendLogicalSize++;
-    if (toSend[3]) {
-      toSend[4] = await Battle.find({player_tag: tag}).lean();
+    if (toSend[1]) {
+      toSend[2] = await Battle.find({player_tag: tag}).lean();
       toSendLogicalSize++;
     } else {
       toSendLogicalSize++;
@@ -621,20 +538,23 @@ app.get("/players/:tag/analysis", (req, res) => {
   }) ();
 
   function checkSend() {
-    if (toSendLogicalSize === 5) {
+    if (toSendLogicalSize === 3) {
       if(errors.length > 0) {
-        res.send("ERROR");
-      }
-      if (toSend[0].reason) {
-        handleErrors(res, path, `Player #${tag}`, toSend[0]);
+        let message = "";
+        for (let i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+        handleErrors(res, path, `Player #${tag} | Analysis`, {reason: "Error", message: message});
+      } else if (toSend[0].reason) {
+        handleErrors(res, path, `Player #${tag} | Analysis`, toSend[0]);
       } else {
         res.render("playerInfoAnalysis", {
           path: path,
           tag: "#" + tag,
-          gameModeJson: toSend[1],
-          cardJson: toSend[2],
-          isTracked: toSend[3],
-          trackedBattles: toSend[4]
+          gameModeJson: gameModeJson,
+          cardJson: cardJson,
+          isTracked: toSend[1],
+          trackedBattles: toSend[2]
         });
       }
     }
@@ -654,7 +574,7 @@ app.post("/players/:tag/analysis", (req, res) => {
         res.redirect("/players/" + tag + "/analysis");
       })
       .catch((err) => {
-        console.log(err);
+        handleErrors(res, path, `Player #${tag} | Analysis`, {reason: "Error", message: err});
       });
   }
 });
@@ -692,7 +612,8 @@ app.get("/players/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      playerInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url2, {
@@ -709,7 +630,8 @@ app.get("/players/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      playerInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url3, {
@@ -726,15 +648,17 @@ app.get("/players/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      playerInfoLogicalSize++;
+      checkSend();
     });
 
   function checkSend () {
     if (playerInfoLogicalSize === 3) {
       if(errors.length > 0) {
-        res.send("ERROR");
+        res.send(errors);
+      } else {
+        res.send(playerInfo);
       }
-      res.send(playerInfo);
     }
   }
 });
@@ -834,157 +758,165 @@ app.get("/clans", (req, res) => {
       "href": "/clans",
       "name": "Clans"
     }
-  ]
+  ];
 
-  fetch(baseUrl + "v1/locations", {
-    headers: {
-      Accept: "application/json",
-      Authorization: auth
+  if (Object.keys(req.query).length === 0) {
+    res.render("clans", {
+      path: path,
+      locations: locations,
+      results: []
+    });
+  } else {
+    // Initializing relevant variables
+    const name = req.query.name;
+    let locationId = decodeURIComponent(req.query.locationId);
+    const minMembers = req.query.minMembers;
+    const maxMembers = req.query.maxMembers;
+    const minScore = req.query.minScore;
+    const limit = req.query.limit;
+    let errors = [];
+    let validKeys = ["name", "locationId", "minMembers", "maxMembers", "minScore", "limit"];
+    let validSearch = true;
+
+    // Checks to make sure that the search is valid
+    if (typeof name === "undefined" && locationId === "undefined" && typeof minMembers === "undefined" && typeof maxMembers === "undefined" && typeof minScore === "undefined") {
+      errors.push("Must specify at least one filtering parameter (limit does not count)");
     }
-  })
-    .then(res => res.json())
-    .then((json) => {
-      if (Object.keys(req.query).length === 0) {
-        res.render("clans", {
-          path: path,
-          locations: json,
-          results: []
-        });
-      } else {
-        const name = req.query.name;
-        let locationId = decodeURIComponent(req.query.locationId);
-        const minMembers = req.query.minMembers;
-        const maxMembers = req.query.maxMembers;
-        const minScore = req.query.minScore;
-        const limit = req.query.limit;
-        let errors = [];
-        let validKeys = ["name", "locationId", "minMembers", "maxMembers", "minScore", "limit"];
-        let validSearch = true;
-        if (typeof name === "undefined" && locationId === "undefined" && typeof minMembers === "undefined" && typeof maxMembers === "undefined" && typeof minScore === "undefined") {
-          errors.push("Must specify at least one filtering parameter (limit does not count)");
-        }
-        Object.keys(req.query).forEach((key, index) => {
-          if(!validKeys.includes(key)) {
-            validSearch = false;
-          }
-        });
-        if (!validSearch) {
-          errors.push("Invalid Search Parameters");
-        }
-        if (typeof name !== "undefined" && name.length < 3) {
-          errors.push("Name must be at least three characters long");
-        }
-        if (typeof locationId !== "undefined" && locationId !== "undefined") {
-          let validLocation = false;
-          for (let i = 0; i < json.items.length; i++) {
-            if (locationId === json.items[i].name) {
-              validLocation = true;
-              locationId = json.items[i].id;
-            }
-          }
-          if (!validLocation && locationId !== "") {
-            errors.push("Entered location is not valid");
-          }
-        }
-        if (typeof minMembers !== "undefined") {
-          if (minMembers < 2) {
-            errors.push("Minimum members must be at least 2");
-          }
-          if (minMembers > 50) {
-            errors.push("Minimum members must be no more than 50");
-          }
-          if (!Number.isInteger(Number(minMembers))) {
-            errors.push("Minimum members must be an integer");
-          }
-        }
-        if (typeof maxMembers !== "undefined") {
-          if (maxMembers < 1) {
-            errors.push("Maximum members must be at least 1");
-          }
-          if (maxMembers > 50) {
-            errors.push("Maximum members must be no more than 50");
-          }
-          if (!Number.isInteger(Number(maxMembers))) {
-            errors.push("Maximum members must be an integer");
-          }
-        }
-        if (typeof maxMembers !== "undefined" && typeof minMembers !== "undefined") {
-          if (Number(maxMembers) < Number(minMembers)) {
-            errors.push("Maximum members must be equal to or greater than minimum members");
-          }
-        }
-        if (typeof minScore !== "undefined") {
-          if (minScore < 1) {
-            errors.push("Minimum clan score must be at least 1");
-          }
-          if (!Number.isInteger(Number(minScore))) {
-            errors.push("Minimum clan score must be an integer");
-          }
-        }
-        if (typeof limit !== "undefined") {
-          if (limit < 0) {
-            errors.push("Limit must be at least 0");
-          }
-          if (!Number.isInteger(Number(limit))) {
-            errors.push("Limit must be an integer");
-          }
-        }
-        if (errors.length > 0) {
-          res.render("clans", {
-            errors: errors,
-            locations: json,
-            results: []
-          });
-        } else {
-          let url = baseUrl + "v1/clans?";
-          if (typeof name !== "undefined") {
-            url = url + "&name=" + encodeURIComponent(name);
-          }
-          if (locationId !== "undefined") {
-            url = url + "&locationId=" + locationId;
-          }
-          if (typeof minMembers !== "undefined") {
-            url = url + "&minMembers=" + minMembers;
-          }
-          if (typeof maxMembers !== "undefined") {
-            url = url + "&maxMembers=" + maxMembers;
-          }
-          if (typeof minScore !== "undefined") {
-            url = url + "&minScore=" + minScore;
-          }
-          if (typeof limit !== "undefined") {
-            url = url + "&limit=" + limit;
-          }
-          // Remove first "&"
-          url = url.replace("&", "");
-          //console.log(url);
-          fetch(url, {
-            headers: {
-              Accept: "application/json",
-              Authorization: auth
-            }
-          })
-            .then(res => res.json())
-            .then((json2) => {
-              res.render("clans", {
-                path: path,
-                locations: json,
-                results: json2
-              });
-            })
-          .catch((err) => {
-            console.log(err);
-          })
+    Object.keys(req.query).forEach((key, index) => {
+      if(!validKeys.includes(key)) {
+        validSearch = false;
+      }
+    });
+    if (!validSearch) {
+      errors.push("Invalid Search Parameters");
+    }
+    if (typeof name !== "undefined" && name.length < 3) {
+      errors.push("Name must be at least three characters long");
+    }
+    if (typeof locationId !== "undefined" && locationId !== "undefined") {
+      let validLocation = false;
+      for (let i = 0; i < json.items.length; i++) {
+        if (locationId === json.items[i].name) {
+          validLocation = true;
+          locationId = json.items[i].id;
         }
       }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send("Server Error");
-    })
-})
+      if (!validLocation && locationId !== "") {
+        errors.push("Entered location is not valid");
+      }
+    }
+    if (typeof minMembers !== "undefined") {
+      if (minMembers < 2) {
+        errors.push("Minimum members must be at least 2");
+      }
+      if (minMembers > 50) {
+        errors.push("Minimum members must be no more than 50");
+      }
+      if (!Number.isInteger(Number(minMembers))) {
+        errors.push("Minimum members must be an integer");
+      }
+    }
+    if (typeof maxMembers !== "undefined") {
+      if (maxMembers < 1) {
+        errors.push("Maximum members must be at least 1");
+      }
+      if (maxMembers > 50) {
+        errors.push("Maximum members must be no more than 50");
+      }
+      if (!Number.isInteger(Number(maxMembers))) {
+        errors.push("Maximum members must be an integer");
+      }
+    }
+    if (typeof maxMembers !== "undefined" && typeof minMembers !== "undefined") {
+      if (Number(maxMembers) < Number(minMembers)) {
+        errors.push("Maximum members must be equal to or greater than minimum members");
+      }
+    }
+    if (typeof minScore !== "undefined") {
+      if (minScore < 1) {
+        errors.push("Minimum clan score must be at least 1");
+      }
+      if (!Number.isInteger(Number(minScore))) {
+        errors.push("Minimum clan score must be an integer");
+      }
+    }
+    if (typeof limit !== "undefined") {
+      if (limit < 0) {
+        errors.push("Limit must be at least 0");
+      }
+      if (!Number.isInteger(Number(limit))) {
+        errors.push("Limit must be an integer");
+      }
+    }
+
+    // If search request was invalid, show that to the user
+    // Otherwise, complete the search
+    if (errors.length > 0) {
+      res.render("clans", {
+        path: path,
+        errors: errors,
+        locations: json,
+        results: []
+      });
+    } else {
+      // Encode search parameters
+      let url = baseUrl + "v1/clans?";
+      if (typeof name !== "undefined") {
+        url = url + "&name=" + encodeURIComponent(name);
+      }
+      if (locationId !== "undefined") {
+        url = url + "&locationId=" + locationId;
+      }
+      if (typeof minMembers !== "undefined") {
+        url = url + "&minMembers=" + minMembers;
+      }
+      if (typeof maxMembers !== "undefined") {
+        url = url + "&maxMembers=" + maxMembers;
+      }
+      if (typeof minScore !== "undefined") {
+        url = url + "&minScore=" + minScore;
+      }
+      if (typeof limit !== "undefined") {
+        url = url + "&limit=" + limit;
+      }
+
+      // Remove first "&"
+      url = url.replace("&", "");
+
+      // Send request to API
+      fetch(url, {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      })
+        .then(res => res.json())
+        .then((json) => {
+          res.render("clans", {
+            path: path,
+            locations: locations,
+            results: json
+          });
+        })
+      .catch((err) => {
+        handleErrors(res, path, `Clans`, {reason: "Error", message: err});
+      });
+    }
+  }
+});
 
 app.post("/clans", (req, res) => {
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/clans",
+      "name": "Clans"
+    }
+  ]
+
   let errors = [];
   if ("tag" in req.body) {
     // User searched by tag
@@ -1004,11 +936,15 @@ app.post("/clans", (req, res) => {
         .then(res => res.json())
         .then((json) => {
           res.render("clans", {
+            path: path,
             errors: errors,
             locations: json,
             results: []
           });
         })
+        .catch((err) => {
+          handleErrors(res, path, `Clans`, {reason: "Error", message: err});
+        });
     }
   } else {
     // User searched by filters
@@ -1073,20 +1009,7 @@ app.get("/clans/:tag/all", (req, res) => {
   let clanInfo = [0, 0, 0];
   let clanInfoLogicalSize = 0;
   let errors = [];
-
-  /*let playerIsTracked;
-  let trackedBattles;
-  // Check if player is being tracked with my system
-  (async function () {
-    playerIsTracked = await Tracked_Player.exists({player: tag});
-    if (playerIsTracked) {
-      (async function () {
-        trackedBattles = await Battle.find({player_tag: tag}).lean();
-      }) ();
-    }
-  }) ();*/
   
-
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -1101,7 +1024,8 @@ app.get("/clans/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url2, {
@@ -1118,7 +1042,8 @@ app.get("/clans/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url3, {
@@ -1135,15 +1060,19 @@ app.get("/clans/:tag/all", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   function checkSend () {
     if (clanInfoLogicalSize === 3) {
       if(errors.length > 0) {
-        res.send("ERROR");
-      }
-      if (clanInfo[0].reason) {
+        let message = "";
+        for (let i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+        handleErrors(res, path, `Clan #${tag} | ALL`, {reason: "Error", message: message});
+      } else if (clanInfo[0].reason) {
         handleErrors(res, path, `Clan #${tag} | All`, clanInfo[0]);
       } else {
         res.render("clanInfo", {
@@ -1197,7 +1126,7 @@ app.get("/clans/:tag/description", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Clan #${tag} | Description`, {reason: "Error", message: err});
     });
 });
 
@@ -1241,7 +1170,7 @@ app.get("/clans/:tag/members", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Clan #${tag} | Members`, {reason: "Error", message: err});
     });
 });
 
@@ -1299,7 +1228,7 @@ app.get("/clans/:tag/war/race", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Clan #${tag} | Race`, {reason: "Error", message: err});
     });
 });
 
@@ -1380,7 +1309,7 @@ app.get("/clans/:tag/war/log/:num", (req, res) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        handleErrors(res, path, `Clan #${tag} | Log`, {reason: "Error", message: err});
       });
   }
 });
@@ -1430,7 +1359,7 @@ app.get("/clans/:tag/war/insights", (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleErrors(res, path, `Clan #${tag} | Insights`, {reason: "Error", message: err});
     });
 });
 
@@ -1442,19 +1371,6 @@ app.get("/clans/:tag/data", (req, res) => {
   let clanInfo = [0, 0, 0];
   let clanInfoLogicalSize = 0;
   let errors = [];
-
-  /*let playerIsTracked;
-  let trackedBattles;
-  // Check if player is being tracked with my system
-  (async function () {
-    playerIsTracked = await Tracked_Player.exists({player: tag});
-    if (playerIsTracked) {
-      (async function () {
-        trackedBattles = await Battle.find({player_tag: tag}).lean();
-      }) ();
-    }
-  }) ();*/
-  
 
   fetch(url1, {
     headers: {
@@ -1470,7 +1386,8 @@ app.get("/clans/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url2, {
@@ -1487,7 +1404,8 @@ app.get("/clans/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   fetch(url3, {
@@ -1504,15 +1422,17 @@ app.get("/clans/:tag/data", (req, res) => {
     })
     .catch((err) => {
       errors.push(err);
-      console.log(err);
+      clanInfoLogicalSize++;
+      checkSend();
     });
 
   function checkSend () {
     if (clanInfoLogicalSize === 3) {
       if(errors.length > 0) {
-        res.send("ERROR");
+        res.send(errors);
+      } else {
+        res.send(clanInfo);
       }
-      res.send(clanInfo);
     }
   }
 });
@@ -1550,7 +1470,139 @@ app.get("/guides", (req, res) => {
 });
 
 app.get("/tournaments", (req, res) => {
-  const url = baseUrl + "v1/locations/global/rankings/players";
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/tournaments",
+      "name": "Tournaments"
+    }
+  ];
+  let errors = [];
+
+  if (Object.keys(req.query).length === 0) {
+    res.render("tournaments", {
+      path: path
+    });
+  } else {
+    const name = req.query.name;
+    // Only valid search parameter is by name
+    Object.keys(req.query).forEach((key, index) => {
+      if (key !== "name") {
+        errors.push("Invalid search parameters");
+      }
+    });
+    if (typeof name !== "undefined" && name.length < 3) {
+      errors.push("Name must be at least three characters long");
+    }
+    if (errors.length > 0) {
+      res.render("tournaments", {
+        path: path,
+        errors: errors
+      });
+    } else {
+      let url = baseUrl + "v1/tournaments?name=" + name;
+      fetch(url, {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      })
+        .then(res => res.json())
+        .then((json) => {
+          res.render("tournaments", {
+            path: path,
+            results: json,
+            gameModeJson: gameModeJson
+          });
+        })
+        .catch((err) => {
+          handleErrors(res, path, `Tournaments`, {reason: "Error", message: err});
+        });
+    }
+  }
+});
+
+app.post("/tournaments", (req, res) => {
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/tournaments",
+      "name": "Tournaments"
+    }
+  ];
+  let errors = [];
+  if ("tag" in req.body) {
+    // User searched by tag
+    let pattern = new RegExp(/[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/);
+    if (pattern.test(req.body.tag)) {
+      errors.push("Please remove special characters from the tag, including the initial pound (#) sign");
+    }
+    if (errors.length === 0) {
+      res.redirect(`/tournaments/${req.body.tag.toUpperCase()}`);
+    } else {
+      res.render("tournaments", {
+        path: path,
+        errors: errors
+      });
+    }
+  } else if ("name" in req.body) {
+    // User searched by name
+    res.redirect(`/tournaments?name=${req.body.name}`);
+  }
+});
+
+// This comes before '/tournaments/:tag'
+// Otherwise, gt would be interpreted as a tag
+app.get("/tournaments/gt", (req, res) => {
+  res.send("GLOBAL TOURNAMENT INFO");
+});
+
+app.get("/tournaments/:tag", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/tournaments/%23" + tag;
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/tournaments",
+      "name": "Tournaments"
+    },
+    {
+      "href": `/tournaments/${tag}`,
+      "name": "#" + tag
+    }
+  ];
+
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      res.render("tournamentInfo", {
+        path: path,
+        tournamentStats: json
+      });
+    })
+    .catch((err) => {
+      handleErrors(res, path, `Tournament #${tag}`, {reason: "Error", message: err});
+    });
+});
+
+app.get("/tournaments/:tag/data", (req, res) => {
+  const tag = req.params.tag.toUpperCase();
+  const url = baseUrl + "v1/tournaments/%23" + tag;
+
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1562,7 +1614,7 @@ app.get("/tournaments", (req, res) => {
       res.send(json);
     })
     .catch((err) => {
-      console.log(err);
+      res.send(err);
     });
 });
 
@@ -1587,9 +1639,51 @@ app.use((req, res) => {
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
 // I'm updating every two hours (not one) to lighten server load
 // I also clear old battles every two days
+// cardJson and gameModeJson are also updated here
 let clearTime = -2;
-const updateBattleLog = async function () {
+const performAsyncTasks = async function () {
+  // Update clearTime
   clearTime = (clearTime + 2) % 48;
+
+  // Update cardJson
+  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
+    .then(res => res.json())
+    .then((json) => {
+      cardJson = json;
+    })
+    .catch((err) => {
+      // Do something better
+      console.log(err);
+    });
+  
+  // Update gameModeJson
+  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json")
+    .then(res => res.json())
+    .then((json) => {
+      gameModeJson = json;
+    })
+    .catch((err) => {
+      // Do something better
+      console.log(err);
+    });
+
+  // Update locations
+  fetch(baseUrl + "v1/locations", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      locations = json;
+    })
+    .catch((err) => {
+      // Do something better
+      console.log(err);
+    });
+  
+  // Update player logs
   let players = await Tracked_Player.find({}, "player -_id").exec();
   let errors = [];
   players.forEach(playerObject => {
@@ -1672,6 +1766,8 @@ const updateBattleLog = async function () {
       });
     //console.log(player);
   });
+
+  // Delete old records
   if (clearTime === 0) {
     let deletionDate = new Date(Date.now() - (daysToDeletion * 24 * 60 * 60 * 1000)).toISOString();
     Battle.deleteMany({time: {$lte: deletionDate}}, function(err, result) {
@@ -1743,7 +1839,7 @@ function sendError(res, path, title, message) {
   });
 }
 
-let updatingBattleLog = doEveryHour(updateBattleLog);
+let updatingBattleLog = doEveryHour(performAsyncTasks);
 updatingBattleLog.exec();
 
 const port = process.env.PORT || 5000;

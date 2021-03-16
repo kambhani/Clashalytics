@@ -30,14 +30,12 @@ var confidentialInfo = require("./config/confidentialInfo"); // Use RoyaleAPI pr
 // Use direct API Link in dev
 
 
-var baseUrl;
+var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.dev" : "https://api.clashroyale.com/"; // Store cardJson, gameModeJson, and locations in global variables
+// They are updated every two hours
 
-if (process.env.NODE_ENV === "production") {
-  baseUrl = "https://proxy.royaleapi.dev/";
-} else {
-  baseUrl = "https://api.clashroyale.com/";
-} // Map global Promises
-
+var cardJson;
+var gameModeJson;
+var locations; // Map global Promises
 
 mongoose.Promise = global.Promise; // Mongoose Connection
 
@@ -155,7 +153,7 @@ app.get("/players/:tag/all", function (req, res) {
     "href": "/players/".concat(tag, "/all"),
     "name": "All"
   }];
-  var playerInfo = [0, 0, 0, 0, 0];
+  var playerInfo = [0, 0, 0];
   var playerInfoLogicalSize = 0;
   var errors = [];
   var playerIsTracked;
@@ -208,7 +206,8 @@ app.get("/players/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    playerInfoLogicalSize++;
+    checkSend();
   });
   fetch(url2, {
     headers: {
@@ -223,7 +222,8 @@ app.get("/players/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    playerInfoLogicalSize++;
+    checkSend();
   });
   fetch(url3, {
     headers: {
@@ -238,36 +238,24 @@ app.get("/players/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    playerInfo[3] = json;
     playerInfoLogicalSize++;
     checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    playerInfo[4] = json;
-    playerInfoLogicalSize++;
-    checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
   });
 
   function checkSend() {
-    if (playerInfoLogicalSize === 5) {
+    if (playerInfoLogicalSize === 3) {
       if (errors.length > 0) {
-        res.send("ERROR");
-      }
+        var message = "";
 
-      if (playerInfo[2].reason) {
+        for (var i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+
+        handleErrors(res, path, "Player #".concat(tag, " | ALL"), {
+          reason: "Error",
+          message: message
+        });
+      } else if (playerInfo[2].reason) {
         // This area means that something is off with the JSON response
         handleErrors(res, path, "Player #".concat(tag, " | All"), playerInfo[2]);
       } else {
@@ -278,8 +266,8 @@ app.get("/players/:tag/all", function (req, res) {
           playerChests: playerInfo[2],
           isTracked: playerIsTracked,
           trackedBattles: trackedBattles,
-          gameModeJson: playerInfo[3],
-          cardJson: playerInfo[4]
+          gameModeJson: gameModeJson,
+          cardJson: cardJson
         });
       }
     }
@@ -295,7 +283,10 @@ app.post("/players/:tag/all", function (req, res) {
       //console.log(idea);
       res.redirect("/players/" + tag + "/all");
     })["catch"](function (err) {
-      console.log(err);
+      handleErrors(res, path, "Player #".concat(tag, " | ALL"), {
+        reason: "Error",
+        message: err
+      });
     });
   }
 });
@@ -332,7 +323,10 @@ app.get("/players/:tag/general", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Player #".concat(tag, " | General"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/players/:tag/battles", function (req, res) {
@@ -353,9 +347,6 @@ app.get("/players/:tag/battles", function (req, res) {
     "href": "/players/".concat(tag, "/battles"),
     "name": "Battles"
   }];
-  var toSend = [0, 0, 0];
-  var toSendLogicalSize = 0;
-  var errors = [];
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -364,78 +355,49 @@ app.get("/players/:tag/battles", function (req, res) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    toSend[0] = json;
-    toSendLogicalSize++;
-    checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    toSend[1] = json;
-    toSendLogicalSize++;
-    checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    toSend[2] = json;
-    toSendLogicalSize++;
-    checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
-  });
-
-  function checkSend() {
-    if (toSendLogicalSize === 3) {
-      if (errors.length > 0) {
-        res.send("ERROR");
-      }
-
-      if (toSend[0].reason) {
-        handleErrors(res, path, "Player #".concat(tag, " | Battles"), toSend[0]);
-      } else {
-        if (toSend[0].length === 0) {
-          fetch(url2, {
-            headers: {
-              Accept: "application/json",
-              Authorization: auth
-            }
-          }).then(function (res) {
-            return res.json();
-          }).then(function (json) {
-            if (json.reason) {
-              handleErrors(res, path, "Player #".concat(tag, " | Battles"), json);
-            } else {
-              res.render("playerInfoBattles", {
-                tag: "#" + req.params.tag.toUpperCase(),
-                playerBattles: toSend[0],
-                gameModeJson: toSend[1],
-                cardJson: toSend[2]
-              });
-            }
-          })["catch"](function (err) {
-            errors.push(err);
-            console.log(err);
-          });
+    if (json.reason) {
+      handleErrors(res, path, "Player #".concat(tag, " | General"), json);
+    } else if (json.length === 0) {
+      // Fetching player chests since that endpoint shows whether or not the player tag exists
+      fetch(url2, {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (json2) {
+        if (json2.reason) {
+          handleErrors(res, path, "Player #".concat(tag, " | Battles"), json2);
         } else {
           res.render("playerInfoBattles", {
-            path: path,
             tag: "#" + req.params.tag.toUpperCase(),
-            playerBattles: toSend[0],
-            gameModeJson: toSend[1],
-            cardJson: toSend[2]
+            playerBattles: json,
+            gameModeJson: gameModeJson,
+            cardJson: cardJson
           });
         }
-      }
+      })["catch"](function (err) {
+        handleErrors(res, path, "Player #".concat(tag, " | Battles"), {
+          reason: "Error",
+          message: err
+        });
+      });
+    } else {
+      res.render("playerInfoBattles", {
+        path: path,
+        tag: "#" + req.params.tag.toUpperCase(),
+        playerBattles: json,
+        gameModeJson: gameModeJson,
+        cardJson: cardJson
+      });
     }
-  }
+  })["catch"](function (err) {
+    handleErrors(res, path, "Player #".concat(tag, " | Battles"), {
+      reason: "Error",
+      message: err
+    });
+  });
 });
 app.get("/players/:tag/cards", function (req, res) {
   var tag = req.params.tag.toUpperCase();
@@ -471,7 +433,10 @@ app.get("/players/:tag/cards", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Player #".concat(tag, " | Cards"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/players/:tag/chests", function (req, res) {
@@ -508,7 +473,10 @@ app.get("/players/:tag/chests", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Player #".concat(tag, " | Chests"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/players/:tag/analysis", function (req, res) {
@@ -527,7 +495,7 @@ app.get("/players/:tag/analysis", function (req, res) {
     "href": "/players/".concat(tag, "/analysis"),
     "name": "Analysis"
   }];
-  var toSend = [0, 0, 0, 0, 0];
+  var toSend = [0, 0, 0];
   var toSendLogicalSize = 0;
   var errors = []; // I send a request for chests just to see if the player tag is valid
 
@@ -543,28 +511,9 @@ app.get("/players/:tag/analysis", function (req, res) {
     toSendLogicalSize++;
     checkSend();
   })["catch"](function (err) {
-    console.log(err);
     errors.push(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    toSend[1] = json;
     toSendLogicalSize++;
     checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
-  });
-  fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    toSend[2] = json;
-    toSendLogicalSize++;
-    checkSend();
-  })["catch"](function (err) {
-    errors.push(err);
-    console.log(err);
   }); // Check if player is being tracked with my system
 
   (function _callee2() {
@@ -578,10 +527,10 @@ app.get("/players/:tag/analysis", function (req, res) {
             }));
 
           case 2:
-            toSend[3] = _context2.sent;
+            toSend[1] = _context2.sent;
             toSendLogicalSize++;
 
-            if (!toSend[3]) {
+            if (!toSend[1]) {
               _context2.next = 11;
               break;
             }
@@ -592,7 +541,7 @@ app.get("/players/:tag/analysis", function (req, res) {
             }).lean());
 
           case 7:
-            toSend[4] = _context2.sent;
+            toSend[2] = _context2.sent;
             toSendLogicalSize++;
             _context2.next = 12;
             break;
@@ -612,21 +561,28 @@ app.get("/players/:tag/analysis", function (req, res) {
   })();
 
   function checkSend() {
-    if (toSendLogicalSize === 5) {
+    if (toSendLogicalSize === 3) {
       if (errors.length > 0) {
-        res.send("ERROR");
-      }
+        var message = "";
 
-      if (toSend[0].reason) {
-        handleErrors(res, path, "Player #".concat(tag), toSend[0]);
+        for (var i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+
+        handleErrors(res, path, "Player #".concat(tag, " | Analysis"), {
+          reason: "Error",
+          message: message
+        });
+      } else if (toSend[0].reason) {
+        handleErrors(res, path, "Player #".concat(tag, " | Analysis"), toSend[0]);
       } else {
         res.render("playerInfoAnalysis", {
           path: path,
           tag: "#" + tag,
-          gameModeJson: toSend[1],
-          cardJson: toSend[2],
-          isTracked: toSend[3],
-          trackedBattles: toSend[4]
+          gameModeJson: gameModeJson,
+          cardJson: cardJson,
+          isTracked: toSend[1],
+          trackedBattles: toSend[2]
         });
       }
     }
@@ -642,7 +598,10 @@ app.post("/players/:tag/analysis", function (req, res) {
       //console.log(idea);
       res.redirect("/players/" + tag + "/analysis");
     })["catch"](function (err) {
-      console.log(err);
+      handleErrors(res, path, "Player #".concat(tag, " | Analysis"), {
+        reason: "Error",
+        message: err
+      });
     });
   }
 });
@@ -713,7 +672,8 @@ app.get("/players/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    playerInfoLogicalSize++;
+    checkSend();
   });
   fetch(url2, {
     headers: {
@@ -728,7 +688,8 @@ app.get("/players/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    playerInfoLogicalSize++;
+    checkSend();
   });
   fetch(url3, {
     headers: {
@@ -743,16 +704,17 @@ app.get("/players/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    playerInfoLogicalSize++;
+    checkSend();
   });
 
   function checkSend() {
     if (playerInfoLogicalSize === 3) {
       if (errors.length > 0) {
-        res.send("ERROR");
+        res.send(errors);
+      } else {
+        res.send(playerInfo);
       }
-
-      res.send(playerInfo);
     }
   }
 });
@@ -824,178 +786,182 @@ app.get("/clans", function (req, res) {
     "href": "/clans",
     "name": "Clans"
   }];
-  fetch(baseUrl + "v1/locations", {
-    headers: {
-      Accept: "application/json",
-      Authorization: auth
+
+  if (Object.keys(req.query).length === 0) {
+    res.render("clans", {
+      path: path,
+      locations: locations,
+      results: []
+    });
+  } else {
+    // Initializing relevant variables
+    var name = req.query.name;
+    var locationId = decodeURIComponent(req.query.locationId);
+    var minMembers = req.query.minMembers;
+    var maxMembers = req.query.maxMembers;
+    var minScore = req.query.minScore;
+    var limit = req.query.limit;
+    var errors = [];
+    var validKeys = ["name", "locationId", "minMembers", "maxMembers", "minScore", "limit"];
+    var validSearch = true; // Checks to make sure that the search is valid
+
+    if (typeof name === "undefined" && locationId === "undefined" && typeof minMembers === "undefined" && typeof maxMembers === "undefined" && typeof minScore === "undefined") {
+      errors.push("Must specify at least one filtering parameter (limit does not count)");
     }
-  }).then(function (res) {
-    return res.json();
-  }).then(function (json) {
-    if (Object.keys(req.query).length === 0) {
+
+    Object.keys(req.query).forEach(function (key, index) {
+      if (!validKeys.includes(key)) {
+        validSearch = false;
+      }
+    });
+
+    if (!validSearch) {
+      errors.push("Invalid Search Parameters");
+    }
+
+    if (typeof name !== "undefined" && name.length < 3) {
+      errors.push("Name must be at least three characters long");
+    }
+
+    if (typeof locationId !== "undefined" && locationId !== "undefined") {
+      var validLocation = false;
+
+      for (var i = 0; i < json.items.length; i++) {
+        if (locationId === json.items[i].name) {
+          validLocation = true;
+          locationId = json.items[i].id;
+        }
+      }
+
+      if (!validLocation && locationId !== "") {
+        errors.push("Entered location is not valid");
+      }
+    }
+
+    if (typeof minMembers !== "undefined") {
+      if (minMembers < 2) {
+        errors.push("Minimum members must be at least 2");
+      }
+
+      if (minMembers > 50) {
+        errors.push("Minimum members must be no more than 50");
+      }
+
+      if (!Number.isInteger(Number(minMembers))) {
+        errors.push("Minimum members must be an integer");
+      }
+    }
+
+    if (typeof maxMembers !== "undefined") {
+      if (maxMembers < 1) {
+        errors.push("Maximum members must be at least 1");
+      }
+
+      if (maxMembers > 50) {
+        errors.push("Maximum members must be no more than 50");
+      }
+
+      if (!Number.isInteger(Number(maxMembers))) {
+        errors.push("Maximum members must be an integer");
+      }
+    }
+
+    if (typeof maxMembers !== "undefined" && typeof minMembers !== "undefined") {
+      if (Number(maxMembers) < Number(minMembers)) {
+        errors.push("Maximum members must be equal to or greater than minimum members");
+      }
+    }
+
+    if (typeof minScore !== "undefined") {
+      if (minScore < 1) {
+        errors.push("Minimum clan score must be at least 1");
+      }
+
+      if (!Number.isInteger(Number(minScore))) {
+        errors.push("Minimum clan score must be an integer");
+      }
+    }
+
+    if (typeof limit !== "undefined") {
+      if (limit < 0) {
+        errors.push("Limit must be at least 0");
+      }
+
+      if (!Number.isInteger(Number(limit))) {
+        errors.push("Limit must be an integer");
+      }
+    } // If search request was invalid, show that to the user
+    // Otherwise, complete the search
+
+
+    if (errors.length > 0) {
       res.render("clans", {
         path: path,
+        errors: errors,
         locations: json,
         results: []
       });
     } else {
-      var name = req.query.name;
-      var locationId = decodeURIComponent(req.query.locationId);
-      var minMembers = req.query.minMembers;
-      var maxMembers = req.query.maxMembers;
-      var minScore = req.query.minScore;
-      var limit = req.query.limit;
-      var errors = [];
-      var validKeys = ["name", "locationId", "minMembers", "maxMembers", "minScore", "limit"];
-      var validSearch = true;
+      // Encode search parameters
+      var url = baseUrl + "v1/clans?";
 
-      if (typeof name === "undefined" && locationId === "undefined" && typeof minMembers === "undefined" && typeof maxMembers === "undefined" && typeof minScore === "undefined") {
-        errors.push("Must specify at least one filtering parameter (limit does not count)");
+      if (typeof name !== "undefined") {
+        url = url + "&name=" + encodeURIComponent(name);
       }
 
-      Object.keys(req.query).forEach(function (key, index) {
-        if (!validKeys.includes(key)) {
-          validSearch = false;
-        }
-      });
-
-      if (!validSearch) {
-        errors.push("Invalid Search Parameters");
-      }
-
-      if (typeof name !== "undefined" && name.length < 3) {
-        errors.push("Name must be at least three characters long");
-      }
-
-      if (typeof locationId !== "undefined" && locationId !== "undefined") {
-        var validLocation = false;
-
-        for (var i = 0; i < json.items.length; i++) {
-          if (locationId === json.items[i].name) {
-            validLocation = true;
-            locationId = json.items[i].id;
-          }
-        }
-
-        if (!validLocation && locationId !== "") {
-          errors.push("Entered location is not valid");
-        }
+      if (locationId !== "undefined") {
+        url = url + "&locationId=" + locationId;
       }
 
       if (typeof minMembers !== "undefined") {
-        if (minMembers < 2) {
-          errors.push("Minimum members must be at least 2");
-        }
-
-        if (minMembers > 50) {
-          errors.push("Minimum members must be no more than 50");
-        }
-
-        if (!Number.isInteger(Number(minMembers))) {
-          errors.push("Minimum members must be an integer");
-        }
+        url = url + "&minMembers=" + minMembers;
       }
 
       if (typeof maxMembers !== "undefined") {
-        if (maxMembers < 1) {
-          errors.push("Maximum members must be at least 1");
-        }
-
-        if (maxMembers > 50) {
-          errors.push("Maximum members must be no more than 50");
-        }
-
-        if (!Number.isInteger(Number(maxMembers))) {
-          errors.push("Maximum members must be an integer");
-        }
-      }
-
-      if (typeof maxMembers !== "undefined" && typeof minMembers !== "undefined") {
-        if (Number(maxMembers) < Number(minMembers)) {
-          errors.push("Maximum members must be equal to or greater than minimum members");
-        }
+        url = url + "&maxMembers=" + maxMembers;
       }
 
       if (typeof minScore !== "undefined") {
-        if (minScore < 1) {
-          errors.push("Minimum clan score must be at least 1");
-        }
-
-        if (!Number.isInteger(Number(minScore))) {
-          errors.push("Minimum clan score must be an integer");
-        }
+        url = url + "&minScore=" + minScore;
       }
 
       if (typeof limit !== "undefined") {
-        if (limit < 0) {
-          errors.push("Limit must be at least 0");
-        }
+        url = url + "&limit=" + limit;
+      } // Remove first "&"
 
-        if (!Number.isInteger(Number(limit))) {
-          errors.push("Limit must be an integer");
-        }
-      }
 
-      if (errors.length > 0) {
+      url = url.replace("&", ""); // Send request to API
+
+      fetch(url, {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (json) {
         res.render("clans", {
-          errors: errors,
-          locations: json,
-          results: []
+          path: path,
+          locations: locations,
+          results: json
         });
-      } else {
-        var url = baseUrl + "v1/clans?";
-
-        if (typeof name !== "undefined") {
-          url = url + "&name=" + encodeURIComponent(name);
-        }
-
-        if (locationId !== "undefined") {
-          url = url + "&locationId=" + locationId;
-        }
-
-        if (typeof minMembers !== "undefined") {
-          url = url + "&minMembers=" + minMembers;
-        }
-
-        if (typeof maxMembers !== "undefined") {
-          url = url + "&maxMembers=" + maxMembers;
-        }
-
-        if (typeof minScore !== "undefined") {
-          url = url + "&minScore=" + minScore;
-        }
-
-        if (typeof limit !== "undefined") {
-          url = url + "&limit=" + limit;
-        } // Remove first "&"
-
-
-        url = url.replace("&", ""); //console.log(url);
-
-        fetch(url, {
-          headers: {
-            Accept: "application/json",
-            Authorization: auth
-          }
-        }).then(function (res) {
-          return res.json();
-        }).then(function (json2) {
-          res.render("clans", {
-            path: path,
-            locations: json,
-            results: json2
-          });
-        })["catch"](function (err) {
-          console.log(err);
+      })["catch"](function (err) {
+        handleErrors(res, path, "Clans", {
+          reason: "Error",
+          message: err
         });
-      }
+      });
     }
-  })["catch"](function (err) {
-    console.log(err);
-    res.send("Server Error");
-  });
+  }
 });
 app.post("/clans", function (req, res) {
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/clans",
+    "name": "Clans"
+  }];
   var errors = [];
 
   if ("tag" in req.body) {
@@ -1018,9 +984,15 @@ app.post("/clans", function (req, res) {
         return res.json();
       }).then(function (json) {
         res.render("clans", {
+          path: path,
           errors: errors,
           locations: json,
           results: []
+        });
+      })["catch"](function (err) {
+        handleErrors(res, path, "Clans", {
+          reason: "Error",
+          message: err
         });
       });
     }
@@ -1087,18 +1059,6 @@ app.get("/clans/:tag/all", function (req, res) {
   var clanInfo = [0, 0, 0];
   var clanInfoLogicalSize = 0;
   var errors = [];
-  /*let playerIsTracked;
-  let trackedBattles;
-  // Check if player is being tracked with my system
-  (async function () {
-    playerIsTracked = await Tracked_Player.exists({player: tag});
-    if (playerIsTracked) {
-      (async function () {
-        trackedBattles = await Battle.find({player_tag: tag}).lean();
-      }) ();
-    }
-  }) ();*/
-
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -1112,7 +1072,8 @@ app.get("/clans/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
   fetch(url2, {
     headers: {
@@ -1127,7 +1088,8 @@ app.get("/clans/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
   fetch(url3, {
     headers: {
@@ -1142,16 +1104,24 @@ app.get("/clans/:tag/all", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
 
   function checkSend() {
     if (clanInfoLogicalSize === 3) {
       if (errors.length > 0) {
-        res.send("ERROR");
-      }
+        var message = "";
 
-      if (clanInfo[0].reason) {
+        for (var i = 0; i < errors.length; i++) {
+          message += errors[i] + "\n";
+        }
+
+        handleErrors(res, path, "Clan #".concat(tag, " | ALL"), {
+          reason: "Error",
+          message: message
+        });
+      } else if (clanInfo[0].reason) {
         handleErrors(res, path, "Clan #".concat(tag, " | All"), clanInfo[0]);
       } else {
         res.render("clanInfo", {
@@ -1197,7 +1167,10 @@ app.get("/clans/:tag/description", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Clan #".concat(tag, " | Description"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/clans/:tag/members", function (req, res) {
@@ -1233,7 +1206,10 @@ app.get("/clans/:tag/members", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Clan #".concat(tag, " | Members"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/clans/:tag/war", function (req, res) {
@@ -1282,7 +1258,10 @@ app.get("/clans/:tag/war/race", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Clan #".concat(tag, " | Race"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/clans/:tag/war/log", function (req, res) {
@@ -1364,7 +1343,10 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
         }
       }
     })["catch"](function (err) {
-      console.log(err);
+      handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+        reason: "Error",
+        message: err
+      });
     });
   }
 });
@@ -1405,7 +1387,10 @@ app.get("/clans/:tag/war/insights", function (req, res) {
       });
     }
   })["catch"](function (err) {
-    console.log(err);
+    handleErrors(res, path, "Clan #".concat(tag, " | Insights"), {
+      reason: "Error",
+      message: err
+    });
   });
 });
 app.get("/clans/:tag/data", function (req, res) {
@@ -1416,18 +1401,6 @@ app.get("/clans/:tag/data", function (req, res) {
   var clanInfo = [0, 0, 0];
   var clanInfoLogicalSize = 0;
   var errors = [];
-  /*let playerIsTracked;
-  let trackedBattles;
-  // Check if player is being tracked with my system
-  (async function () {
-    playerIsTracked = await Tracked_Player.exists({player: tag});
-    if (playerIsTracked) {
-      (async function () {
-        trackedBattles = await Battle.find({player_tag: tag}).lean();
-      }) ();
-    }
-  }) ();*/
-
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -1441,7 +1414,8 @@ app.get("/clans/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
   fetch(url2, {
     headers: {
@@ -1456,7 +1430,8 @@ app.get("/clans/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
   fetch(url3, {
     headers: {
@@ -1471,16 +1446,17 @@ app.get("/clans/:tag/data", function (req, res) {
     checkSend();
   })["catch"](function (err) {
     errors.push(err);
-    console.log(err);
+    clanInfoLogicalSize++;
+    checkSend();
   });
 
   function checkSend() {
     if (clanInfoLogicalSize === 3) {
       if (errors.length > 0) {
-        res.send("ERROR");
+        res.send(errors);
+      } else {
+        res.send(clanInfo);
       }
-
-      res.send(clanInfo);
     }
   }
 });
@@ -1511,7 +1487,132 @@ app.get("/guides", function (req, res) {
   });
 });
 app.get("/tournaments", function (req, res) {
-  var url = baseUrl + "v1/locations/global/rankings/players";
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/tournaments",
+    "name": "Tournaments"
+  }];
+  var errors = [];
+
+  if (Object.keys(req.query).length === 0) {
+    res.render("tournaments", {
+      path: path
+    });
+  } else {
+    var name = req.query.name; // Only valid search parameter is by name
+
+    Object.keys(req.query).forEach(function (key, index) {
+      if (key !== "name") {
+        errors.push("Invalid search parameters");
+      }
+    });
+
+    if (typeof name !== "undefined" && name.length < 3) {
+      errors.push("Name must be at least three characters long");
+    }
+
+    if (errors.length > 0) {
+      res.render("tournaments", {
+        path: path,
+        errors: errors
+      });
+    } else {
+      var url = baseUrl + "v1/tournaments?name=" + name;
+      fetch(url, {
+        headers: {
+          Accept: "application/json",
+          Authorization: auth
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (json) {
+        res.render("tournaments", {
+          path: path,
+          results: json,
+          gameModeJson: gameModeJson
+        });
+      })["catch"](function (err) {
+        handleErrors(res, path, "Tournaments", {
+          reason: "Error",
+          message: err
+        });
+      });
+    }
+  }
+});
+app.post("/tournaments", function (req, res) {
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/tournaments",
+    "name": "Tournaments"
+  }];
+  var errors = [];
+
+  if ("tag" in req.body) {
+    // User searched by tag
+    var pattern = new RegExp(/[\s~`!@#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?()\._]/);
+
+    if (pattern.test(req.body.tag)) {
+      errors.push("Please remove special characters from the tag, including the initial pound (#) sign");
+    }
+
+    if (errors.length === 0) {
+      res.redirect("/tournaments/".concat(req.body.tag.toUpperCase()));
+    } else {
+      res.render("tournaments", {
+        path: path,
+        errors: errors
+      });
+    }
+  } else if ("name" in req.body) {
+    // User searched by name
+    res.redirect("/tournaments?name=".concat(req.body.name));
+  }
+}); // This comes before '/tournaments/:tag'
+// Otherwise, gt would be interpreted as a tag
+
+app.get("/tournaments/gt", function (req, res) {
+  res.send("GLOBAL TOURNAMENT INFO");
+});
+app.get("/tournaments/:tag", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/tournaments/%23" + tag;
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/tournaments",
+    "name": "Tournaments"
+  }, {
+    "href": "/tournaments/".concat(tag),
+    "name": "#" + tag
+  }];
+  fetch(url, {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    res.render("tournamentInfo", {
+      path: path,
+      tournamentStats: json
+    });
+  })["catch"](function (err) {
+    handleErrors(res, path, "Tournament #".concat(tag), {
+      reason: "Error",
+      message: err
+    });
+  });
+});
+app.get("/tournaments/:tag/data", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  var url = baseUrl + "v1/tournaments/%23" + tag;
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1522,7 +1623,7 @@ app.get("/tournaments", function (req, res) {
   }).then(function (json) {
     res.send(json);
   })["catch"](function (err) {
-    console.log(err);
+    res.send(err);
   });
 }); // This is for 404 errors
 
@@ -1556,20 +1657,55 @@ app.use(function (req, res) {
 // The "doEveryHour" code is taken from https://stackoverflow.com/a/58767632
 // I'm updating every two hours (not one) to lighten server load
 // I also clear old battles every two days
+// cardJson and gameModeJson are also updated here
 
 var clearTime = -2;
 
-var updateBattleLog = function updateBattleLog() {
+var performAsyncTasks = function performAsyncTasks() {
   var players, errors, deletionDate;
-  return regeneratorRuntime.async(function updateBattleLog$(_context6) {
+  return regeneratorRuntime.async(function performAsyncTasks$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
-          clearTime = (clearTime + 2) % 48;
-          _context6.next = 3;
+          // Update clearTime
+          clearTime = (clearTime + 2) % 48; // Update cardJson
+
+          fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            cardJson = json;
+          })["catch"](function (err) {
+            // Do something better
+            console.log(err);
+          }); // Update gameModeJson
+
+          fetch("https://royaleapi.github.io/cr-api-data/json/game_modes.json").then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            gameModeJson = json;
+          })["catch"](function (err) {
+            // Do something better
+            console.log(err);
+          }); // Update locations
+
+          fetch(baseUrl + "v1/locations", {
+            headers: {
+              Accept: "application/json",
+              Authorization: auth
+            }
+          }).then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            locations = json;
+          })["catch"](function (err) {
+            // Do something better
+            console.log(err);
+          }); // Update player logs
+
+          _context6.next = 6;
           return regeneratorRuntime.awrap(Tracked_Player.find({}, "player -_id").exec());
 
-        case 3:
+        case 6:
           players = _context6.sent;
           errors = [];
           players.forEach(function (playerObject) {
@@ -1678,7 +1814,7 @@ var updateBattleLog = function updateBattleLog() {
             })["catch"](function (err) {
               console.log(err);
             }); //console.log(player);
-          });
+          }); // Delete old records
 
           if (clearTime === 0) {
             deletionDate = new Date(Date.now() - daysToDeletion * 24 * 60 * 60 * 1000).toISOString();
@@ -1693,7 +1829,7 @@ var updateBattleLog = function updateBattleLog() {
             });
           }
 
-        case 7:
+        case 10:
         case "end":
           return _context6.stop();
       }
@@ -1773,7 +1909,7 @@ function sendError(res, path, title, message) {
   });
 }
 
-var updatingBattleLog = doEveryHour(updateBattleLog);
+var updatingBattleLog = doEveryHour(performAsyncTasks);
 updatingBattleLog.exec();
 var port = process.env.PORT || 5000;
 app.listen(port, function () {

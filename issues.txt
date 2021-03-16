@@ -1,15 +1,27 @@
 This file is where I store things to get done
 No guarantee that I will ever finish these things
 
+- Make a better logo than a Bootstrap SVG
 - Improve playerInfo.handlebars analysis tab search
   - Also add a button where analysis will be done upon pressing it
 - Add "Leaderboard Royale" to playerInfo.handlebars, general tab
 - Do something with fetch error that is NOT console.log
   - Maybe a logging db?
+  - Also inform the user of an error
 - Convert images to webp or svg for faster load times
 - When errors.length > 0, do something other than: res.send("Error")
+- Player Info General tab
+  - Add search so you don't have to go through the entire accordion
+  - Add pie chart with player card levels
 - Add dark mode (idk if I can ever do this)
+- Player Compare feature
+- Add [loading="lazy"] to all desired pictures
 
 Useful Links
 https://nsspot.herokuapp.com/imagetowebp/
 https://gist.github.com/mozeago/8c6bfbfda8a5931ce97e48beb081ee6b
+
+API Endpoints
+Global Player Leaderboard: v1/locations/global/rankings/players
+Global Clan Leaderboard: v1/locations/global/rankings/clans
+Global Clan Wars Leaderbard: v1/locations/global/rankings/clanwars

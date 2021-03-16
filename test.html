@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+
+    <style>
+      /*.test {
+        background: rgb(0,0,119);
+        background: radial-gradient(circle, rgba(0,0,119,1) 0%, rgba(176,0,255,1) 100%);
+        clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      }*/
+
+    </style>
+  </head>
+
+  <body> 
+    <div class="test" style="width: 300px; height: 300px;">
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+  </body>
+
+  <script>
+    var sketchProc = function(processingInstance) {
+      with (processingInstance) {
+        size(400, 400); 
+        frameRate(60);
+        
+        
+        // Logo for a website that I'm making
+        // ls is the Logo Scale
+
+        // TODO - add variables for color scheme, add something else instead of the C
+
+        var ls = 100;
+
+        for(var i = 0; i < 500; i++) {
+          for(var j = 0; j < 500; j++) {
+            stroke(i/4+20, j/4-50, 200-50);
+            point(i, j);
+          }
+        }
+
+        noStroke();
+        fill(255);
+        triangle(38, 106, 38, 0, 224, 0);
+        triangle(362, 106, 362, 0, 176, 0);
+        triangle(38, 294, 38, 400, 224, 400);
+        triangle(362, 294, 362, 400, 176, 400);
+        rect(0, 0, 38, 400);
+        rect(362, 0, 38, 400);
+
+        // Hexagon 2
+        fill(0, 0, 119);
+        stroke(0, 0, 0);
+        strokeWeight(ls/5);
+        ls *= 1.5;
+        beginShape();
+        vertex(200-ls, 200);
+        vertex(200-ls + ls/2, 200 - ls*sqrt(3)/2);
+        vertex(200-ls + ls*3/2, 200 - ls*sqrt(3)/2);
+        vertex(200-ls + ls*2, 200);
+        vertex(200+ls, 200);
+        endShape();
+
+        beginShape();
+        vertex(200-ls, 200);
+        vertex(200-ls + ls/2, 200 + ls*sqrt(3)/2);
+        vertex(200-ls + ls*3/2, 200 + ls*sqrt(3)/2);
+        vertex(200-ls + ls*2, 200);
+        vertex(200+ls, 200);
+        endShape();
+        ls /= 1.5;
+
+
+        // Hexagon 1
+        strokeWeight(0);
+        fill(0);
+        beginShape();
+        vertex(200-ls, 200);
+        vertex(200-ls + ls/2, 200 - ls*sqrt(3)/2);
+        vertex(200-ls + ls*3/2, 200 - ls*sqrt(3)/2);
+        vertex(200-ls + ls*2, 200);
+        vertex(200+ls, 200);
+        endShape();
+
+        beginShape();
+        vertex(200-ls, 200);
+        vertex(200-ls + ls/2, 200 + ls*sqrt(3)/2);
+        vertex(200-ls + ls*3/2, 200 + ls*sqrt(3)/2);
+        vertex(200-ls + ls*2, 200);
+        vertex(200+ls, 200);
+        endShape();
+
+        // Letter
+        stroke(255, 255, 255);
+        strokeWeight(ls/8);
+        arc(200, 200, ls, ls*1.2, radians(30), radians(330));
+        //arc(200, 200, ls, ls, 180, 270);
+        //line(200-ls/2, 200+ls/2, 200+ls/2, 200-ls/2);
+      }
+    };
+
+    // Get the canvas that Processing-js will use
+    var canvas = document.getElementById("canvas"); 
+    // Pass the function sketchProc (defined in myCode.js) to Processing's constructor.
+    var processingInstance = new Processing(canvas, sketchProc);
+    //document.getElementById("canvas").setAttribute("width", 20);
+    canvas.style.width = "30px";
+    canvas.style.height = "30px";
+    canvas.style.position = "absolute";
+    canvas.style.top = "0px";
+    canvas.style.left = "0px";
+  </script>
+</html>

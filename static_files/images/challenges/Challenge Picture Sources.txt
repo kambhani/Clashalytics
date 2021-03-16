@@ -1,3 +1,0 @@
-Photos were taken from RoyaleAPI. For example, the GC picture was taken from: https://cdn.royaleapi.com/static/img/ui/challenge-grand.png?t=d338f299
-
-One exception is the one labeled Tournament. I got that from here: https://www.dropbox.com/sh/0mdu6zwzlkncu5a/AAB6bZOepV1iB3wDnNJI168aa/Misc/tournament/KeyArt/Style_2?dl=0&preview=Style_2_Logo.psd&subfolder_nav_tracking=1

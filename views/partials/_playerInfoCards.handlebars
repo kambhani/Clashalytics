@@ -38,7 +38,7 @@
               <p class="my-0 font-weight-light card-count" style="text-align: center;">{{findCardsNeeded level maxLevel}}</p>
               <div class="container-fluid mx-0 px-0">
                 <div class="row justify-content-center">
-                  {{{loopHTML starLevel "<img src=\"/images/misc/star_points.png\" class = \"mb-0 mt-3 mx-0\" style = \"width: 25px;\" alt=\"star_points_icon\">"}}}
+                  {{{loopHTML starLevel "<img src=\"/images/misc/webp/star_level.webp\" class = \"mb-0 mt-3 mx-1\" style = \"width: 25px;\" alt=\"star_points_icon\">"}}}
                 </div>
               </div>
             {{else}}
@@ -108,7 +108,7 @@
         {{#each playerStats.cards}}
           <tr class="text-center">
             <td class="align-middle" style="font-size: 0.9rem;">{{name}}</td>
-            <td class="align-middle"><img src="/images/cards/webp/{{name}}.webp" style="width: 50px;"></td>
+            <td class="align-middle"><img src="/images/cards/webp/{{name}}.webp" style="width: 50px;" alt={{name}}></td>
             <td class="align-middle" style="font-size: 0.9rem;">{{calculateCardLevel level maxLevel}}</td>
             {{#if (compare level "===" maxLevel)}}
               <td class="align-middle" style="font-size: 0.9rem;">{{findCardsNeeded level maxLevel}}</td>

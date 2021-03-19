@@ -7,7 +7,6 @@ $(".dropdown-item").on("click", function (e) {
 
   if (parentButton.text() !== selectedText) {
     parentButton.text(selectedText);
-    var parentDropdown = $(this).parent().parent().get(0);
     var dropdowns = $(this).parent().parent().parent().children();
     var sortOrder, sortType;
     dropdowns.each(function (index) {

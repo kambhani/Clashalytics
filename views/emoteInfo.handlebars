@@ -1,0 +1,36 @@
+<title>Emote #{{emoteId}}</title>
+
+{{> _breadcrumbPath path=path rawData=""}}
+
+<h1 id="emoteTitle" class="ml-3 mt-1 text-center">{{emoteId}}</h1>
+
+<p id="emoteId" class="d-none">{{emoteId}}</p>
+
+<div id="emoteDisplayDiv" class="row justify-content-center mx-0 mb-3">
+  <iframe id="emoteDisplay" class="bg-dark d-none" id="emote_iframe"></iframe>
+</div>
+
+<img id="cryingKing" src="/images/emotes/Crying King.png" alt="Crying King Emote" style="width: 90%; max-width: 600px; display: block; margin-left: auto; margin-right: auto" class="mb-4 d-none">
+
+<script>
+  // Checks if the emote exists
+  let emoteId = parseInt($("#emoteId").text());
+  fetch("/json/emotes.json")
+    .then((res) => res.json())
+    .then((json) => {
+      for (let i = 0; i < json.length; i++) {
+        if (json[i].id === emoteId) {
+          document.getElementById("emoteDisplay").src = `/videos/emotes/${emoteId}.mp4`;
+          $("#emoteDisplay").removeClass("d-none");
+          $("#emoteTitle").text(json[i].name);
+          document.title = `Emote #${emoteId} | ${json[i].name}`;
+        }
+      }
+      if ($("#emoteDisplay").hasClass("d-none")) {
+        $("#cryingKing").removeClass("d-none");
+      }
+    })
+    .catch((err) => {
+      $("#cryingKing").removeClass("d-none");
+    });
+</script>

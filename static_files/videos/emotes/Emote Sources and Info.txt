@@ -1,5 +1,5 @@
 Emotes are labeled according to the number scheme at: https://clashroyale.fandom.com/wiki/Emotes
 
-Emote contributions are as follows:
+Background color of emotes is: #38507c
 
-18 --> github.com/kambhani
+Emote contributions and emote names can be found in the json folder of the static_files folder. The file name is emotes.json

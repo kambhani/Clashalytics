@@ -1,9 +1,196 @@
 <title>Tournament | {{tournamentStats.name}}</title>
 
+<!--This script contains the page-specific javascript necessary to run the page-->
+<script defer src="/js/tournamentInfo.js"></script>
+
 {{> _breadcrumbPath path=path rawData=(concat "/tournaments/" (removeFirstCharacter tournamentStats.tag) "/data")}}
 
-<div class="container-xl bg-light">
-  asdf
-</div>
-
-<p>{{tournamentStats.description}}</p>
+{{#with tournamentStats}}
+  <div class="card border-primary mx-2 mb-5" style="background-color: ghostwhite;">
+    <div class="card-header">
+      <h3 class="font-weight-bold">{{name}}</h3>
+    </div>
+    <div class="container-fluid p-2">
+      <div class="row justify-content-center">
+        <div class="card border-info" style="width: 21em; margin: 10px; background-color: #fef;">
+          <div class="card-header" style="background-color: #eef;">
+            <h5 class="text-center font-weight-bold mb-0">Times</h5>
+          </div>
+          <div class="row no-gutters p-2">
+            <div class="col-4 d-flex align-items-center">
+              <img src="/images/misc/svg/clock.svg" width="90%">
+            </div>
+            <div class="col-8">
+              <span><strong>Created</strong> {{dateDifference createdTime 0}} ago</span>
+              <br>
+              {{#if startedTime}}
+                <span><strong>Started</strong> {{dateDifference startedTime 0}} ago</span>
+              {{else}}
+                <span><strong>Not Started</strong></span>
+              {{/if}}
+              {{#if (getTimeSinceTournamentEnd startedTime duration)}}
+                <br>
+                <span><strong>Ended</strong> {{getTimeSinceTournamentEnd startedTime duration}} ago</span>
+              {{/if}}
+              <br>
+              <span><strong>Duration</strong> {{math duration "/" 3600}}h</span>
+            </div>
+          </div>
+        </div>
+        <div class="card border-info" style="width: 21em; margin: 10px; background-color: #fef;">
+          <div class="card-header" style="background-color: #eef;">
+            <h5 class="text-center font-weight-bold mb-0">Tournament Info</h5>
+          </div>
+          <div class="row no-gutters p-2">
+            <div class="col-4 d-flex align-items-center">
+              <!--Material Design Icon: https://materialdesignicons.com/icon/sword-cross-->
+              <!--License: https://github.com/Templarian/MaterialDesign/blob/master/LICENSE-->
+              <svg width="100%" height="90%" viewBox="0 0 24 24" data-bs-toggle="tooltip" data-bs-placement="top" title="Game Mode">
+                <path fill="#000" d="M6.2,2.44L18.1,14.34L20.22,12.22L21.63,13.63L19.16,16.1L22.34,19.28C22.73,19.67 22.73,20.3 22.34,20.69L21.63,21.4C21.24,21.79 20.61,21.79 20.22,21.4L17,18.23L14.56,20.7L13.15,19.29L15.27,17.17L3.37,5.27V2.44H6.2M15.89,10L20.63,5.26V2.44H17.8L13.06,7.18L15.89,10M10.94,15L8.11,12.13L5.9,14.34L3.78,12.22L2.37,13.63L4.84,16.1L1.66,19.29C1.27,19.68 1.27,20.31 1.66,20.7L2.37,21.41C2.76,21.8 3.39,21.8 3.78,21.41L7,18.23L9.44,20.7L10.85,19.29L8.73,17.17L10.94,15Z" />
+              </svg>
+            </div>
+            <div class="col-8">
+              <span><strong>Gamemode</strong> {{gameModeName gameMode.id ../gameModeJson ""}}</span>
+              <span><strong>Level Cap</strong> {{levelCap}}</span>
+              <br>
+              {{#if (compare type "===" "open")}}
+                <span style="color: #28a745"><strong style="color: #000">Type</strong> Open</span>
+              {{else}}
+                <span style="color: #dc3545"><strong style="color: #000">Type</strong> Password Protected</span>
+              {{/if}}
+              <br>
+              <span><strong>Status</strong> {{correctCapitalization status}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card border-info" style="width: 21em; margin: 10px; background-color: #fef;">
+          <div class="card-header" style="background-color: #eef;">
+            <h5 class="text-center font-weight-bold mb-0">Description</h5>
+          </div>
+          <div class="row no-gutters p-2">
+            <div class="col-4 d-flex align-items-center">
+              <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/pencil-square/-->
+              <svg xmlns="http://www.w3.org/2000/svg" width="90%" height="90%" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+              </svg>
+            </div>
+            <div class="col-8">
+              <span>{{description}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card border-info" style="width: 21em; margin: 10px; background-color: #fef;">
+          <div class="card-header" style="background-color: #eef;">
+            <h5 class="text-center font-weight-bold mb-0">People</h5>
+          </div>
+          <div class="row no-gutters p-2">
+            <div class="col-4 d-flex align-items-center">
+              <!--Bootstrap Icon: https://icons.getbootstrap.com/icons/people-fill/-->
+              <svg xmlns="http://www.w3.org/2000/svg" width="90%" height="90%" fill="#000" class="bi bi-people-fill" viewBox="0 0 16 16" data-bs-toggle="tooltip" data-bs-placement="top" title="Capacity">
+                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+              </svg>
+            </div>
+            <div class="col-8">
+              <span><strong>Players</strong> {{capacity}}</span>
+              <br>
+              <span><strong>Max Capacity</strong> {{maxCapacity}}</span>
+              <br>
+              <span><strong>Creator</strong> <a href="/players/{{removeFirstCharacter creatorTag}}" class="text-decoration-none">{{creatorTag}}</a></span>
+            </div>
+          </div>
+        </div>
+        <div class="card border-info" style="width: 100%; margin: 10px; background-color: #fef">
+          <div class="card-header" style="background-color: #eef;">
+            <h5 class="text-center font-weight-bold mb-0">Participants</h5>
+          </div>
+          <div class="card-body">
+            <div id="filterDisplay" class="alert alert-info text-center mx-2 my-3">
+              Showing {{objectLength membersList}} of {{objectLength membersList}} participants
+            </div>
+            <div class="row mb-3 justify-content-center">
+              <div class="dropdown mx-auto mb-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Sort Type
+                </button>
+                <div class="dropdown-menu">
+                  <p class="dropdown-item dropdown-item-sort">Name</p>
+                  <p class="dropdown-item dropdown-item-sort">Clan</p>
+                  <p class="dropdown-item dropdown-item-sort mb-0">Rank</p>
+                </div>
+              </div>
+              <div class="input-group mb-2 d-none d-md-flex" style="width: 300px;">
+                <input id="tournamentFilter1" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Filter Standings" onkeyup="filterTournamentStandings(1)">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter By</button>
+                  <span class="d-none">1</span>
+                  <div class="dropdown-menu tournament-filter-dropdown">
+                    <p class="dropdown-item mb-0">All</p>
+                    <div role="separator" class="dropdown-divider"></div>
+                    <p class="dropdown-item">Name</p>
+                    <p class="dropdown-item">Clan</p>
+                    <p class="dropdown-item">Rank</p>
+                    <p class="dropdown-item mb-0">Wins</p>
+                  </div>
+                </div>
+              </div>
+              <div class="dropdown mx-auto mb-2">
+                <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Sort Order
+                </button>
+                <div class="dropdown-menu">
+                  <p class="dropdown-item dropdown-item-sort">Ascending</p>
+                  <p class="dropdown-item dropdown-item-sort mb-0">Descending</p>
+                </div>
+              </div>
+              <div class="input-group mb-2 d-flex d-md-none" style="width: 90%;">
+                <input id="tournamentFilter2" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Filter Standings" onkeyup="filterTournamentStandings(2)">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter By</button>
+                  <span class="d-none">2</span>
+                  <div class="dropdown-menu tournament-filter-dropdown">
+                    <p class="dropdown-item mb-0">All</p>
+                    <div role="separator" class="dropdown-divider"></div>
+                    <p class="dropdown-item">Name</p>
+                    <p class="dropdown-item">Clan</p>
+                    <p class="dropdown-item">Rank</p>
+                    <p class="dropdown-item mb-0">Wins</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="tournamentParticipants">
+              {{#each membersList}}
+                <div class="card border-success mb-2" style="background-color: #eee;">
+                  <div class="row no-gutters p-2">
+                    <h5 class="font-weight-bold" style="position: absolute; right: 10px;">#{{rank}}</h5>
+                    <div class="col-4 col-sm-3 col-md-2 col-xl-1 d-flex align-items-center">
+                      {{#if clan.badgeId}}
+                        <img src="https://royaleapi.github.io/cr-api-assets/badges/{{getClanBadgeNameFromId clan.badgeId ../../clanBadgeJson}}.png" alt="Clan Badge" width="90%">
+                      {{else}}
+                        <img src="https://royaleapi.github.io/cr-api-assets/badges/no_clan.png" alt="Clan Badge" width="90%">
+                      {{/if}}
+                    </div>
+                    <div class="col-8 col-sm-9 col-md-10 col-xl-11">
+                      <div class="card-body">
+                        <h5 class="card-title tournament-player-name"><a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></h5>
+                        <h6 class="card-subtitle mb-2 tournament-clan-name"><a href="/clans/{{removeFirstCharacter clan.tag}}" class="text-decoration-none text-muted">{{clan.name}}</a></h6>
+                        <span class="d-none tournament-rank">{{rank}}</span>
+                        <div class="d-flex" style="height: 35px;">
+                          <img src="/images/badges/webp/Tournament.webp" alt="Tournament Icon" height="35px;">
+                          <h5 class="d-inline-block align-middle ml-2 font-weight-light tournament-wins" style="line-height: 35px;">{{score}}</h5>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/with}}

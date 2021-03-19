@@ -132,6 +132,66 @@ var register = function register(Handlebars) {
     }
   }
 
+  function getDateDifference(oldDate, newDate, returnExpanded) {
+    var timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
+    var seconds = timeDiffSec % 60;
+    var minutes = Math.floor(timeDiffSec / 60);
+    var hours = Math.floor(minutes / 60);
+    minutes = minutes % 60;
+    var days = Math.floor(hours / 24);
+    hours = hours % 24;
+    var hourWord = "hours";
+    var minuteWord = "minutes";
+    var secondWord = "seconds";
+    var dayWord = "days"; // Use abbreviations on a small screen
+
+    if (returnExpanded === 0) {
+      if (days === 0) {
+        if (hours === 0) {
+          if (minutes === 0) {
+            return "".concat(seconds, "s");
+          } else {
+            return "".concat(minutes, "m ").concat(seconds, "s");
+          }
+        } else {
+          return "".concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
+        }
+      } else {
+        return "".concat(days, "d ").concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
+      }
+    }
+
+    if (hours === 1) {
+      hourWord = "hour";
+    }
+
+    if (minutes === 1) {
+      minuteWord = "minute";
+    }
+
+    if (seconds === 1) {
+      secondWord = "second";
+    }
+
+    if (days === 1) {
+      dayWord = "day";
+    }
+
+    if (days === 0) {
+      if (hours === 0) {
+        if (minutes === 0) {
+          return "".concat(seconds, " ").concat(secondWord, " ago");
+        } else {
+          return "".concat(minutes, " ").concat(minuteWord, " and ").concat(seconds, " ").concat(secondWord, " ago");
+        }
+      } else {
+        return "".concat(hours, " ").concat(hourWord, ", ").concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
+      }
+    } else {
+      return "".concat(days, " ").concat(dayWord, ", ").concat(hours, " ").concat(hourWord, ", ").concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
+    }
+  }
+
   var helpers = {
     // Calculates the acutal card level (since the API uses outdated ones)
     calculateCardLevel: function calculateCardLevel(oldLevel, oldMaxLevel) {
@@ -147,63 +207,7 @@ var register = function register(Handlebars) {
 
       var oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
       var newDate = new Date();
-      var timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
-      var seconds = timeDiffSec % 60;
-      var minutes = Math.floor(timeDiffSec / 60);
-      var hours = Math.floor(minutes / 60);
-      minutes = minutes % 60;
-      var days = Math.floor(hours / 24);
-      hours = hours % 24;
-      var hourWord = "hours";
-      var minuteWord = "minutes";
-      var secondWord = "seconds";
-      var dayWord = "days"; // Use abbreviations on a small screen
-
-      if (isLargeScreen === 0) {
-        if (days === 0) {
-          if (hours === 0) {
-            if (minutes === 0) {
-              return "".concat(seconds, "s");
-            } else {
-              return "".concat(minutes, "m ").concat(seconds, "s");
-            }
-          } else {
-            return "".concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
-          }
-        } else {
-          return "".concat(days, "d ").concat(hours, "h ").concat(minutes, "m ").concat(seconds, "s");
-        }
-      }
-
-      if (hours === 1) {
-        hourWord = "hour";
-      }
-
-      if (minutes === 1) {
-        minuteWord = "minute";
-      }
-
-      if (seconds === 1) {
-        secondWord = "second";
-      }
-
-      if (days === 1) {
-        dayWord = "day";
-      }
-
-      if (days === 0) {
-        if (hours === 0) {
-          if (minutes === 0) {
-            return "".concat(seconds, " ").concat(secondWord, " ago");
-          } else {
-            return "".concat(minutes, " ").concat(minuteWord, " and ").concat(seconds, " ").concat(secondWord, " ago");
-          }
-        } else {
-          return "".concat(hours, " ").concat(hourWord, ", ").concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
-        }
-      } else {
-        return "".concat(days, " ").concat(dayWord, ", ").concat(hours, " ").concat(hourWord, ", ").concat(minutes, " ").concat(minuteWord, ", and ").concat(seconds, " ").concat(secondWord, " ago");
-      }
+      return getDateDifference(oldDate, newDate, isLargeScreen);
     },
     // Calculates the average level difference between the team and the opponent
     levelDifference: function levelDifference(t0, t1, opp0, opp1) {
@@ -2510,6 +2514,31 @@ var register = function register(Handlebars) {
       }
 
       return totalDecksUsed;
+    },
+    // This function returns the time elapsed since the end of a tournament
+    getTimeSinceTournamentEnd: function getTimeSinceTournamentEnd(startedTime, duration) {
+      if (startedTime) {
+        var startDate = new Date(Date.UTC(startedTime.substring(0, 4), startedTime.substring(4, 6) - 1, startedTime.substring(6, 8), startedTime.substring(9, 11), startedTime.substring(11, 13), startedTime.substring(13, 15)));
+
+        if (Date.now() > startDate.getTime() + duration * 1000) {
+          var endDate = new Date(startDate.getTime() + duration * 1000);
+          return getDateDifference(endDate, new Date(), 0);
+        } else {
+          return "";
+        }
+      } else {
+        return "";
+      }
+    },
+    // This function
+    getClanBadgeNameFromId: function getClanBadgeNameFromId(badgeId, clanBadgeJson) {
+      for (var i = 0; i < clanBadgeJson.length; i++) {
+        if (clanBadgeJson[i].id === badgeId) {
+          return clanBadgeJson[i].name;
+        }
+      }
+
+      return "Unknown";
     }
   };
 

@@ -35,7 +35,8 @@ var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.d
 
 var cardJson;
 var gameModeJson;
-var locations; // Map global Promises
+var locations;
+var clanBadgeJson; // Map global Promises
 
 mongoose.Promise = global.Promise; // Mongoose Connection
 
@@ -1601,7 +1602,9 @@ app.get("/tournaments/:tag", function (req, res) {
   }).then(function (json) {
     res.render("tournamentInfo", {
       path: path,
-      tournamentStats: json
+      tournamentStats: json,
+      gameModeJson: gameModeJson,
+      clanBadgeJson: clanBadgeJson
     });
   })["catch"](function (err) {
     handleErrors(res, path, "Tournament #".concat(tag), {
@@ -1625,6 +1628,44 @@ app.get("/tournaments/:tag/data", function (req, res) {
   })["catch"](function (err) {
     res.send(err);
   });
+});
+app.get("/emotes", function (req, res) {
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/emotes",
+    "name": "Emotes"
+  }];
+  res.render("emotes", {
+    path: path
+  });
+});
+app.get("/emotes/:id", function (req, res) {
+  var id = req.params.id;
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/emotes",
+    "name": "Emotes"
+  }, {
+    "href": "/emotes/".concat(id),
+    "name": id
+  }]; // The final condition is constantly changing as new emotes are added into the game
+  // Update this value frequently
+
+  if (isNaN(parseInt(id)) || parseInt(id) !== parseFloat(id) || id < 1 || id > 192) {
+    handleErrors(res, path, "Emote #".concat(id), {
+      reason: "Error",
+      message: "Requested emote ID is not valid"
+    });
+  } else {
+    res.render("emoteInfo", {
+      path: path,
+      emoteId: id
+    });
+  }
 }); // This is for 404 errors
 
 app.use(function (req, res) {
@@ -1700,12 +1741,21 @@ var performAsyncTasks = function performAsyncTasks() {
           })["catch"](function (err) {
             // Do something better
             console.log(err);
+          }); // Update clan badges
+
+          fetch("https://royaleapi.github.io/cr-api-data/json/alliance_badges.json").then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            clanBadgeJson = json;
+          })["catch"](function (err) {
+            // Do something better
+            console.log(err);
           }); // Update player logs
 
-          _context6.next = 6;
+          _context6.next = 7;
           return regeneratorRuntime.awrap(Tracked_Player.find({}, "player -_id").exec());
 
-        case 6:
+        case 7:
           players = _context6.sent;
           errors = [];
           players.forEach(function (playerObject) {
@@ -1829,7 +1879,7 @@ var performAsyncTasks = function performAsyncTasks() {
             });
           }
 
-        case 10:
+        case 11:
         case "end":
           return _context6.stop();
       }

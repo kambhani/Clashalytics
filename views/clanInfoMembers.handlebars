@@ -21,3 +21,10 @@
 <div class="tab-content">
   {{>_clanInfoMembers clanStats=clanStats}}
 </div>
+
+<script>
+  // Quick script to display the members tab
+  $(document).ready(function() {
+    $("#members").tab("show");
+  });
+</script>

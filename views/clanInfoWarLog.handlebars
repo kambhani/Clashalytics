@@ -38,7 +38,7 @@
             {{#each riverRaceLog.items}}
               {{#if (compare ../index "===" @index)}}
                 {{#each standings}}
-                  {{> _riverRace clan=this.clan base=(concat "rrlog_" ../seasonId "_" (math ../sectionIndex "+" 1)) startTime=../createdDate rank=rank trophyChange=trophyChange}}
+                  {{> _riverRace clan=this.clan base=(concat "rrlog_" ../seasonId "_" (math ../sectionIndex "+" 1)) startTime=../createdDate rank=rank trophyChange=trophyChange clanBadgeJson=../../clanBadgeJson}}
                 {{/each}}
               {{/if}}
             {{/each}}

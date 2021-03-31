@@ -1,7 +1,4 @@
 $(document).ready(function () {
-  // Displays the member tab
-  $("#members").tab("show");
-
   let memberTable = $("#memberTable").DataTable({
     // Set options here if necessary
   });

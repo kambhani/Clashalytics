@@ -4,8 +4,6 @@ No guarantee that I will ever finish these things
 - Improve playerInfo.handlebars analysis tab search
   - Also add a button where analysis will be done upon pressing it
 - Add "Leaderboard Royale" to playerInfo.handlebars, general tab
-- Convert images to webp or svg for faster load times
-- When errors.length > 0, do something other than: res.send("Error")
 - Player Info General tab
   - Add search so you don't have to go through the entire accordion
   - Add pie chart with player card levels
@@ -13,7 +11,11 @@ No guarantee that I will ever finish these things
 - Player Compare feature
 - Add [loading="lazy"] to all desired pictures
 - Continue to work on Global Tournament Endpoints
+- Add tags to emotes (like 'Magic Archer', 'BM', etc.)
+  - Let user search emotes by tags on emotes.handlebars
 - Add more emotes
+- Work on leaderboards
+- Make a better footer
 
 Useful Links
 https://nsspot.herokuapp.com/imagetowebp/

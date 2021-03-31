@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row justify-content-center">
       {{#each currentRiverRace.clans}}
-        {{> _riverRace clan=this base="currentRiverRace" startTime="" rank="" trophyChange=""}}
+        {{> _riverRace clan=this base="currentRiverRace" startTime="" rank="" trophyChange="" clanBadgeJson=../clanBadgeJson}}
       {{/each}}
     </div>
   </div>

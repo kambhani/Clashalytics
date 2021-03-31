@@ -1,7 +1,37 @@
 <title>Emotes</title>
 
-<p>here</p>
+{{> _breadcrumbPath path=path rawData=""}}
 
-<div class="row justify-content-center mx-0">
-  <iframe class="bg-dark" id="emote_iframe" src="/videos/emotes/18.mp4" ></iframe>
+<div class="container-fluid px-2 mt-5">
+  <div class="jumbotron" style="background-color: lavenderblush;">
+    <h1 class="display-4">Emotes</h1>
+    <p class="lead">This website section contains many emote recordings from the game. View one today!</p>
+    <hr class="my-4">
+    <a id="randomEmoteLink" class="btn btn-primary btn-lg mr-3 my-3" href="/players" role="button">View random emote</a>
+    <a class="btn btn-primary btn-lg mr-3 my-3" href="/clans" role="button">Search Emotes</a>
+  </div>
 </div>
+
+<script>
+  // Fetches the emotes.json to find out how many emotes there are (ideally)
+  let numEmotes;
+  fetch("/json/emotes.json")
+    .then((res) => res.json())
+    .then((json) => {
+      numEmotes = json.length;
+    })
+    .catch((err) => {
+      // Arbitrary value in case the XHR request fails
+      numEmotes = 300;
+    });
+
+  // Contains the JS for the random emote link
+  $("#randomEmoteLink").click(function() {
+    // Because I have indexed so few emotes, I will just set numEmotes here
+    // Once I gather enough emotes, I can remove these lines
+    numEmotes = 200;
+
+    const randomEmoteId = Math.floor(Math.random() * numEmotes + 1);
+    $("#randomEmoteLink").attr("href", `/emotes/${randomEmoteId}`);
+  });
+</script>

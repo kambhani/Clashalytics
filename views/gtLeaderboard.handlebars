@@ -1,0 +1,113 @@
+<div id="filterDisplay" class="alert alert-info text-center mx-2 my-3">
+  Showing {{objectLength leaderboardInfo.items}} of {{objectLength leaderboardInfo.items}} placements
+</div>
+<div class="row mb-3 justify-content-center">
+  <div class="dropdown mx-auto mb-2">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Sort Type
+    </button>
+    <div class="dropdown-menu">
+      <p class="dropdown-item dropdown-item-sort">Name</p>
+      <p class="dropdown-item dropdown-item-sort">Clan</p>
+      <p class="dropdown-item dropdown-item-sort">Rank</p>
+      <p class="dropdown-item dropdown-item-sort">Losses</p>
+      <p class="dropdown-item dropdown-item-sort mb-0">Rank Change</p>
+    </div>
+  </div>
+  <div class="input-group mb-2 d-none d-md-flex" style="width: 300px;">
+    <input id="gtLeaderboardFilter1" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Filter Standings" onkeyup="filterLeaderboard(1)">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter By</button>
+      <span class="d-none">1</span>
+      <div class="dropdown-menu gt-leaderboard-filter-dropdown">
+        <p class="dropdown-item mb-0">All</p>
+        <div role="separator" class="dropdown-divider"></div>
+        <p class="dropdown-item">Name</p>
+        <p class="dropdown-item">Clan</p>
+        <p class="dropdown-item">Rank</p>
+        <p class="dropdown-item">Wins</p>
+        <p class="dropdown-item">Losses</p>
+        <p class="dropdown-item mb-0">Rank Change</p>
+      </div>
+    </div>
+  </div>
+  <div class="dropdown mx-auto mb-2">
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Sort Order
+    </button>
+    <div class="dropdown-menu">
+      <p class="dropdown-item dropdown-item-sort">Ascending</p>
+      <p class="dropdown-item dropdown-item-sort mb-0">Descending</p>
+    </div>
+  </div>
+  <div class="input-group mb-2 d-flex d-md-none" style="width: 90%;">
+    <input id="gtLeaderboardFilter2" type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Filter Standings" onkeyup="filterLeaderboard(2)">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filter By</button>
+      <span class="d-none">2</span>
+      <div class="dropdown-menu gt-leaderboard-filter-dropdown">
+        <p class="dropdown-item mb-0">All</p>
+        <div role="separator" class="dropdown-divider"></div>
+        <p class="dropdown-item">Name</p>
+        <p class="dropdown-item">Clan</p>
+        <p class="dropdown-item">Rank</p>
+        <p class="dropdown-item">Wins</p>
+        <p class="dropdown-item">Losses</p>
+        <p class="dropdown-item mb-0">Rank Change</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="gtLeaderboard">
+  {{#each leaderboardInfo.items}}
+    <div class="card border-success mb-2" style="background-color: #eee;">
+      <div class="row no-gutters p-2">
+        <h5 class="font-weight-bold" style="position: absolute; right: 10px;">#{{rank}}</h5>
+        <div class="col-3 col-sm-2 col-md-2 col-lg-1 d-flex align-items-center">
+          {{#if clan.badgeId}}
+            <img src="https://royaleapi.github.io/cr-api-assets/badges/{{getClanBadgeNameFromId clan.badgeId ../clanBadgeJson}}.png" alt="Clan Badge" width="90%">
+          {{else}}
+            <img src="https://royaleapi.github.io/cr-api-assets/badges/no_clan.png" alt="Clan Badge" width="90%">
+          {{/if}}
+        </div>
+        <div class="col-9 col-sm-10 col-md-10 col-lg-11">
+          <div class="card-body">
+            <h5 class="card-title gt-leaderboard-player-name"><a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></h5>
+            {{#if clan}}
+              <h6 class="card-subtitle mb-2 gt-leaderboard-clan-name"><a href="/clans/{{removeFirstCharacter clan.tag}}" class="text-decoration-none text-muted">{{clan.name}}</a></h6>
+            {{else}}
+              <h6 class="card-subtitle font-italic mb-2">No Clan</h6>
+            {{/if}}
+            <span class="d-none gt-leaderboard-rank">{{rank}}</span>
+            <div class="row justify-content-around">
+              <div class="d-flex gt-leaderboard-icon-div text-center" style="height: 35px;">
+                <img src="/images/badges/webp/Tournament.webp" alt="Tournament Icon" height="35px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Wins">
+                <h5 class="d-inline-block align-middle ml-1 ml-sm-2 font-weight-light gt-leaderboard-wins" style="line-height: 35px;">{{wins}}</h5>
+              </div>
+              <div class="d-flex gt-leaderboard-icon-div text-center" style="height: 35px;">
+                <i class="bi bi-x-square-fill mr-1" style="font-size: 35px; line-height: 35px; color: #dc3545" data-bs-toggle="tooltip" data-bs-placement="top" title="Losses"></i>
+                <h5 class="d-inline-block align-middle ml-1 ml-sm-2 font-weight-light gt-leaderboard-losses" style="line-height: 35px;">{{losses}}</h5>
+              </div>
+              <div class="d-flex gt-leaderboard-icon-div text-center" style="height: 35px;">
+                {{#if (compare (math previousRank "-" rank) ">" 0)}}
+                  {{!-- Player went up in the rankings --}}
+                  <i class="bi bi-caret-up-fill" style="font-size: 35px; line-height: 35px; color: #28a745;" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank Change"></i>
+                  <h5 class="d-inline-block align-middle ml-1 ml-sm-2 font-weight-light" style="line-height: 35px;">{{math previousRank "-" rank}}</h5>
+                {{else if (compare (math previousRank "-" rank) "<" 0)}}
+                  {{!-- Player went down in the rankings --}}
+                  <i class="bi bi-caret-down-fill" style="font-size: 35px; line-height: 35px; color: #dc3545" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank Change"></i>
+                  <h5 class="d-inline-block align-middle ml-1 ml-sm-2 font-weight-light" style="line-height: 35px;">{{math rank "-" previousRank}}</h5>
+                {{else}}
+                  {{!-- Player stayed the same in the rankings --}}
+                  <i class="bi bi-caret-right-fill" style="font-size: 35px; line-height: 35px; color: #6c757d;" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank Change"></i>
+                  <h5 class="d-inline-block align-middle ml-1 ml-sm-2 font-weight-light" style="line-height: 35px;">0</h5>
+                {{/if}}
+                <span class="d-none gt-leaderboard-rank-change">{{math previousRank "-" rank}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>

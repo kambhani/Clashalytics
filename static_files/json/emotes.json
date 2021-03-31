@@ -1,5 +1,15 @@
 [
 	{
+		"id": 2,
+		"name": "Thumbs-Up King",
+		"contributor": "github.com/kambhani"
+	},
+	{
+		"id": 7,
+		"name": "Laughing Goblin",
+		"contributor": "github.com/kambhani"
+	},
+	{
 		"id": 18,
 		"name": "Shaking Goblin",
 		"contributor": "github.com/kambhani"
@@ -20,6 +30,21 @@
 		"contributor": "github.com/kambhani"
 	},
 	{
+		"id": 68,
+		"name": "Valkyrie Blowing Hair",
+		"contributor": "github.com/kambhani"
+	},
+	{
+		"id": 69,
+		"name": "Royale Ghost with Gem",
+		"contributor": "github.com/kambhani"
+	},
+	{
+		"id": 73,
+		"name": "Chewing Ram",
+		"contributor": "github.com/kambhani"
+	},
+	{
 		"id": 91,
 		"name": "Crying Log",
 		"contributor": "github.com/kambhani"
@@ -27,6 +52,11 @@
 	{
 		"id": 108,
 		"name": "Fighting Fish",
+		"contributor": "github.com/kambhani"
+	},
+	{
+		"id": 120,
+		"name": "Miner Blowing Candle",
 		"contributor": "github.com/kambhani"
 	},
 	{

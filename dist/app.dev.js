@@ -944,7 +944,8 @@ app.get("/clans", function (req, res) {
         res.render("clans", {
           path: path,
           locations: locations,
-          results: json
+          results: json,
+          clanBadgeJson: clanBadgeJson
         });
       })["catch"](function (err) {
         handleErrors(res, path, "Clans", {
@@ -1129,7 +1130,8 @@ app.get("/clans/:tag/all", function (req, res) {
           path: path,
           clanStats: clanInfo[0],
           currentRiverRace: clanInfo[1],
-          riverRaceLog: clanInfo[2]
+          riverRaceLog: clanInfo[2],
+          clanBadgeJson: clanBadgeJson
         });
       }
     }
@@ -1164,7 +1166,8 @@ app.get("/clans/:tag/description", function (req, res) {
     } else {
       res.render("clanInfoDescription", {
         path: path,
-        clanStats: json
+        clanStats: json,
+        clanBadgeJson: clanBadgeJson
       });
     }
   })["catch"](function (err) {
@@ -1255,7 +1258,8 @@ app.get("/clans/:tag/war/race", function (req, res) {
       res.render("clanInfoWarRace", {
         path: path,
         currentRiverRace: json,
-        tag: "#" + tag
+        tag: "#" + tag,
+        clanBadgeJson: clanBadgeJson
       });
     }
   })["catch"](function (err) {
@@ -1339,7 +1343,8 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
             tag: "#" + tag,
             index: num - 1,
             season: season,
-            week: week
+            week: week,
+            clanBadgeJson: clanBadgeJson
           });
         }
       }
@@ -1573,11 +1578,74 @@ app.post("/tournaments", function (req, res) {
     // User searched by name
     res.redirect("/tournaments?name=".concat(req.body.name));
   }
-}); // This comes before '/tournaments/:tag'
+}); // gt is the abbreviation for global tournament
+// This comes before '/tournaments/:tag'
 // Otherwise, gt would be interpreted as a tag
 
 app.get("/tournaments/gt", function (req, res) {
-  res.send("GLOBAL TOURNAMENT INFO");
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/tournaments",
+    "name": "Tournaments"
+  }, {
+    "href": "/tournaments/gt",
+    "name": "Global Tournaments"
+  }];
+  fetch(baseUrl + "v1/globaltournaments", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      handleErrors(res, path, "Global Tournaments", json);
+    } else {
+      res.render("gt", {
+        path: path,
+        gtInfo: json,
+        gameModeJson: gameModeJson
+      });
+    }
+  })["catch"](function (err) {
+    handleErrors(res, path, "Global Tournaments", {
+      reason: "Error",
+      message: err
+    });
+  });
+}); // Sends JSON object for use in gt.handlebars
+
+app.get("/tournaments/gt/:tag/leaderboard", function (req, res) {
+  var tag = req.params.tag.toUpperCase();
+  fetch("".concat(baseUrl, "v1/locations/global/rankings/tournaments/%23").concat(tag), {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    if (json.reason) {
+      res.send("Error");
+    } else if (json.items.length === 0) {
+      res.send("Empty");
+    } else {
+      res.render("gtLeaderboard", {
+        leaderboardInfo: json,
+        clanBadgeJson: clanBadgeJson,
+        layout: false
+      });
+    }
+  })["catch"](function (err) {
+    res.send("Error");
+  });
+}); // Redirect for users who try to enter this manually
+
+app.get("/tournaments/globaltournaments", function (req, res) {
+  res.redirect("/tournaments/gt");
 });
 app.get("/tournaments/:tag", function (req, res) {
   var tag = req.params.tag.toUpperCase();
@@ -1600,12 +1668,16 @@ app.get("/tournaments/:tag", function (req, res) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    res.render("tournamentInfo", {
-      path: path,
-      tournamentStats: json,
-      gameModeJson: gameModeJson,
-      clanBadgeJson: clanBadgeJson
-    });
+    if (json.reason) {
+      handleErrors(res, path, "Tournament #".concat(tag), json);
+    } else {
+      res.render("tournamentInfo", {
+        path: path,
+        tournamentStats: json,
+        gameModeJson: gameModeJson,
+        clanBadgeJson: clanBadgeJson
+      });
+    }
   })["catch"](function (err) {
     handleErrors(res, path, "Tournament #".concat(tag), {
       reason: "Error",
@@ -1654,8 +1726,9 @@ app.get("/emotes/:id", function (req, res) {
     "name": id
   }]; // The final condition is constantly changing as new emotes are added into the game
   // Update this value frequently
+  // I just lazily set the value to 400
 
-  if (isNaN(parseInt(id)) || parseInt(id) !== parseFloat(id) || id < 1 || id > 192) {
+  if (isNaN(parseInt(id)) || parseInt(id) !== parseFloat(id) || id < 1 || id > 400) {
     handleErrors(res, path, "Emote #".concat(id), {
       reason: "Error",
       message: "Requested emote ID is not valid"
@@ -1666,6 +1739,18 @@ app.get("/emotes/:id", function (req, res) {
       emoteId: id
     });
   }
+});
+app.get("/leaderboards", function (req, res) {
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/leaderboards",
+    "name": "Leaderboards"
+  }];
+  res.render("leaderboards", {
+    path: path
+  });
 }); // This is for 404 errors
 
 app.use(function (req, res) {

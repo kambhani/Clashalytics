@@ -2,12 +2,16 @@
 
 {{> _breadcrumbPath path=path rawData=""}}
 
-<h1 id="emoteTitle" class="ml-3 mt-1 text-center">{{emoteId}}</h1>
+<h1 id="emoteTitle" class=" mt-1 text-center mb-0">{{emoteId}}</h1>
 
 <p id="emoteId" class="d-none">{{emoteId}}</p>
 
-<div id="emoteDisplayDiv" class="row justify-content-center mx-0 mb-3">
-  <iframe id="emoteDisplay" class="bg-dark d-none" id="emote_iframe"></iframe>
+<div id="emoteDisplayDiv" class="row justify-content-center mx-0 my-3 d-none">
+  <iframe id="emoteDisplay" class="bg-dark" id="emote_iframe"></iframe>
+</div>
+
+<div id="emoteNotFoundAlert" class="alert alert-warning mx-4 text-center d-none mt-2">
+  This emote could not be found!
 </div>
 
 <img id="cryingKing" src="/images/emotes/Crying King.png" alt="Crying King Emote" style="width: 90%; max-width: 600px; display: block; margin-left: auto; margin-right: auto" class="mb-4 d-none">
@@ -21,16 +25,18 @@
       for (let i = 0; i < json.length; i++) {
         if (json[i].id === emoteId) {
           document.getElementById("emoteDisplay").src = `/videos/emotes/${emoteId}.mp4`;
-          $("#emoteDisplay").removeClass("d-none");
+          $("#emoteDisplayDiv").removeClass("d-none");
           $("#emoteTitle").text(json[i].name);
           document.title = `Emote #${emoteId} | ${json[i].name}`;
         }
       }
-      if ($("#emoteDisplay").hasClass("d-none")) {
+      if ($("#emoteDisplayDiv").hasClass("d-none")) {
+        $("#emoteNotFoundAlert").removeClass("d-none");
         $("#cryingKing").removeClass("d-none");
       }
     })
     .catch((err) => {
+      $("#emoteNotFoundAlert").removeClass("d-none");
       $("#cryingKing").removeClass("d-none");
     });
 </script>

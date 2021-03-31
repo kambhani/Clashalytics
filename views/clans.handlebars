@@ -94,7 +94,7 @@
           <div class="card hover-card border-primary" style="width: 22em; background-color: ghostwhite; height: 100%;">
             <div class="row no-gutters">
               <div class="col-4 d-flex align-items-center">
-                <img src="{{getClanBadge badgeId clanWarTrophies}}" class="card-img-top card-data-0" alt="Clan Badge" loading="lazy">
+                <img src="{{getClanBadge badgeId clanWarTrophies ../clanBadgeJson}}" class="card-img-top card-data-0" alt="Clan Badge" loading="lazy">
               </div>
               <div class="col-8">
                 <div class="card-body">
@@ -157,7 +157,7 @@
       <tbody>
         {{#each results.items}}
           <tr class="text-center">
-            <td class="align-middle"><img src="{{getClanBadge badgeId clanWarTrophies}}" alt="Clan Badge" style="width: 50px;" loading="lazy"></td>
+            <td class="align-middle"><img src="{{getClanBadge badgeId clanWarTrophies ../clanBadgeJson}}" alt="Clan Badge" style="width: 50px;" loading="lazy"></td>
             <td class="align-middle"><a href="/clans/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
             <td class="align-middle">{{tag}}</td>
             <td class="align-middle">{{correctCapitalization type}}</td>

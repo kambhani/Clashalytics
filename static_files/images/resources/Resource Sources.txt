@@ -1,0 +1,9 @@
+The trade tokens came from RoyaleAPI GitHub:
+ - Common: https://github.com/RoyaleAPI/cr-api-assets/blob/master/trade-tokens/tt-common.png
+ - Rare: https://github.com/RoyaleAPI/cr-api-assets/blob/master/trade-tokens/tt-rare.png
+ - Epic: https://github.com/RoyaleAPI/cr-api-assets/blob/master/trade-tokens/tt-epic.png
+ - Legendary: https://github.com/RoyaleAPI/cr-api-assets/blob/master/trade-tokens/tt-legendary.png
+
+The gold coin came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/gold-0.png
+The gem icon came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/gems-0.png
+

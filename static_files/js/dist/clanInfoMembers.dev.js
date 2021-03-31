@@ -1,8 +1,6 @@
 "use strict";
 
 $(document).ready(function () {
-  // Displays the member tab
-  $("#members").tab("show");
   var memberTable = $("#memberTable").DataTable({// Set options here if necessary
   }); // Set all toggles to "on" upon page load
 

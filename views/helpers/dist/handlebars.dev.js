@@ -1059,6 +1059,11 @@ var register = function register(Handlebars) {
     },
     // This function returns a readable date
     readableDate: function readableDate(date) {
+      // Converts the Clash Royale API date to a proper Javascript one
+      if (typeof date === "string" && date.charAt(date.length - 1) === "Z") {
+        date = new Date(Date.UTC(date.substring(0, 4), date.substring(4, 6) - 1, date.substring(6, 8), date.substring(9, 11), date.substring(11, 13), date.substring(13, 15)));
+      }
+
       return new Intl.DateTimeFormat([]).format(date);
     },
     // This function performs a single OR or AND
@@ -1079,7 +1084,7 @@ var register = function register(Handlebars) {
     // It uses the RoyaleAPI CDN
     // For future reference, the below link will save a lot of time:
     // https://github.com/RoyaleAPI/cr-api-data/blob/master/docs/json/alliance_badges.json
-    getClanBadge: function getClanBadge(id, cwTrophies) {
+    getClanBadge: function getClanBadge(id, cwTrophies, clanBadgeJson) {
       var baseUrl = "https://cdn.royaleapi.com/static/img/badge/";
 
       switch (true) {
@@ -1156,1094 +1161,14 @@ var register = function register(Handlebars) {
           }
       }
 
-      switch (id) {
-        case 16000000:
-          {
-            baseUrl += "Flame_01.png";
-            break;
-          }
-
-        case 16000001:
-          {
-            baseUrl += "Flame_02.png";
-            break;
-          }
-
-        case 16000002:
-          {
-            baseUrl += "Flame_03.png";
-            break;
-          }
-
-        case 16000003:
-          {
-            baseUrl += "Flame_04.png";
-            break;
-          }
-
-        case 16000004:
-          {
-            baseUrl += "Sword_01.png";
-            break;
-          }
-
-        case 16000005:
-          {
-            baseUrl += "Sword_02.png";
-            break;
-          }
-
-        case 16000006:
-          {
-            baseUrl += "Sword_03.png";
-            break;
-          }
-
-        case 16000007:
-          {
-            baseUrl += "Sword_04.png";
-            break;
-          }
-
-        case 16000008:
-          {
-            baseUrl += "Bolt_01.png";
-            break;
-          }
-
-        case 16000009:
-          {
-            baseUrl += "Bolt_02.png";
-            break;
-          }
-
-        case 16000010:
-          {
-            baseUrl += "Bolt_03.png";
-            break;
-          }
-
-        case 16000011:
-          {
-            baseUrl += "Bolt_04.png";
-            break;
-          }
-
-        case 16000012:
-          {
-            baseUrl += "Crown_01.png";
-            break;
-          }
-
-        case 16000013:
-          {
-            baseUrl += "Crown_02.png";
-            break;
-          }
-
-        case 16000014:
-          {
-            baseUrl += "Crown_03.png";
-            break;
-          }
-
-        case 16000015:
-          {
-            baseUrl += "Crown_04.png";
-            break;
-          }
-
-        case 16000016:
-          {
-            baseUrl += "Arrow_01.png";
-            break;
-          }
-
-        case 16000017:
-          {
-            baseUrl += "Arrow_02.png";
-            break;
-          }
-
-        case 16000018:
-          {
-            baseUrl += "Arrow_03.png";
-            break;
-          }
-
-        case 16000019:
-          {
-            baseUrl += "Arrow_04.png";
-            break;
-          }
-
-        case 16000020:
-          {
-            baseUrl += "Diamond_Star_01.png";
-            break;
-          }
-
-        case 16000021:
-          {
-            baseUrl += "Diamond_Star_02.png";
-            break;
-          }
-
-        case 16000022:
-          {
-            baseUrl += "Diamond_Star_03.png";
-            break;
-          }
-
-        case 16000023:
-          {
-            baseUrl += "Diamond_Star_04.png";
-            break;
-          }
-
-        case 16000024:
-          {
-            baseUrl += "Skull_01.png";
-            break;
-          }
-
-        case 16000025:
-          {
-            baseUrl += "Skull_02.png";
-            break;
-          }
-
-        case 16000026:
-          {
-            baseUrl += "Skull_03.png";
-            break;
-          }
-
-        case 16000027:
-          {
-            baseUrl += "Skull_04.png";
-            break;
-          }
-
-        case 16000028:
-          {
-            baseUrl += "Skull_05.png";
-            break;
-          }
-
-        case 16000029:
-          {
-            baseUrl += "Skull_06.png";
-            break;
-          }
-
-        case 16000030:
-          {
-            baseUrl += "Moon_01.png";
-            break;
-          }
-
-        case 16000031:
-          {
-            baseUrl += "Moon_02.png";
-            break;
-          }
-
-        case 16000032:
-          {
-            baseUrl += "Moon_03.png";
-            break;
-          }
-
-        case 16000033:
-          {
-            baseUrl += "Pine_01.png";
-            break;
-          }
-
-        case 16000034:
-          {
-            baseUrl += "Pine_02.png";
-            break;
-          }
-
-        case 16000035:
-          {
-            baseUrl += "Pine_03.png";
-            break;
-          }
-
-        case 16000036:
-          {
-            baseUrl += "Traditional_Star_01.png";
-            break;
-          }
-
-        case 16000037:
-          {
-            baseUrl += "Traditional_Star_02.png";
-            break;
-          }
-
-        case 16000038:
-          {
-            baseUrl += "Traditional_Star_03.png";
-            break;
-          }
-
-        case 16000039:
-          {
-            baseUrl += "Traditional_Star_04.png";
-            break;
-          }
-
-        case 16000040:
-          {
-            baseUrl += "Traditional_Star_05.png";
-            break;
-          }
-
-        case 16000041:
-          {
-            baseUrl += "Traditional_Star_06.png";
-            break;
-          }
-
-        case 16000042:
-          {
-            baseUrl += "Star_Shine_01.png";
-            break;
-          }
-
-        case 16000043:
-          {
-            baseUrl += "Star_Shine_02.png";
-            break;
-          }
-
-        case 16000044:
-          {
-            baseUrl += "Star_Shine_03.png";
-            break;
-          }
-
-        case 16000045:
-          {
-            baseUrl += "Diamond_01.png";
-            break;
-          }
-
-        case 16000046:
-          {
-            baseUrl += "Diamond_02.png";
-            break;
-          }
-
-        case 16000047:
-          {
-            baseUrl += "Diamond_03.png";
-            break;
-          }
-
-        case 16000048:
-          {
-            baseUrl += "flag_a_01.png";
-            break;
-          }
-
-        case 16000049:
-          {
-            baseUrl += "flag_a_02.png";
-            break;
-          }
-
-        case 16000050:
-          {
-            baseUrl += "flag_a_03.png";
-            break;
-          }
-
-        case 16000051:
-          {
-            baseUrl += "flag_b_01.png";
-            break;
-          }
-
-        case 16000052:
-          {
-            baseUrl += "flag_b_02.png";
-            break;
-          }
-
-        case 16000053:
-          {
-            baseUrl += "flag_b_03.png";
-            break;
-          }
-
-        case 16000054:
-          {
-            baseUrl += "flag_c_03.png";
-            break;
-          }
-
-        case 16000055:
-          {
-            baseUrl += "flag_c_04.png";
-            break;
-          }
-
-        case 16000056:
-          {
-            baseUrl += "flag_c_05.png";
-            break;
-          }
-
-        case 16000057:
-          {
-            baseUrl += "flag_c_06.png";
-            break;
-          }
-
-        case 16000058:
-          {
-            baseUrl += "flag_c_07.png";
-            break;
-          }
-
-        case 16000059:
-          {
-            baseUrl += "flag_c_08.png";
-            break;
-          }
-
-        case 16000060:
-          {
-            baseUrl += "flag_d_01.png";
-            break;
-          }
-
-        case 16000061:
-          {
-            baseUrl += "flag_d_02.png";
-            break;
-          }
-
-        case 16000062:
-          {
-            baseUrl += "flag_d_03.png";
-            break;
-          }
-
-        case 16000063:
-          {
-            baseUrl += "flag_d_04.png";
-            break;
-          }
-
-        case 16000064:
-          {
-            baseUrl += "flag_d_05.png";
-            break;
-          }
-
-        case 16000065:
-          {
-            baseUrl += "flag_d_06.png";
-            break;
-          }
-
-        case 16000066:
-          {
-            baseUrl += "flag_f_01.png";
-            break;
-          }
-
-        case 16000067:
-          {
-            baseUrl += "flag_f_02.png";
-            break;
-          }
-
-        case 16000068:
-          {
-            baseUrl += "flag_g_01.png";
-            break;
-          }
-
-        case 16000069:
-          {
-            baseUrl += "flag_g_02.png";
-            break;
-          }
-
-        case 16000070:
-          {
-            baseUrl += "flag_i_01.png";
-            break;
-          }
-
-        case 16000071:
-          {
-            baseUrl += "flag_i_02.png";
-            break;
-          }
-
-        case 16000072:
-          {
-            baseUrl += "flag_h_01.png";
-            break;
-          }
-
-        case 16000073:
-          {
-            baseUrl += "flag_h_02.png";
-            break;
-          }
-
-        case 16000074:
-          {
-            baseUrl += "flag_h_03.png";
-            break;
-          }
-
-        case 16000075:
-          {
-            baseUrl += "flag_j_01.png";
-            break;
-          }
-
-        case 16000076:
-          {
-            baseUrl += "flag_j_02.png";
-            break;
-          }
-
-        case 16000077:
-          {
-            baseUrl += "flag_j_03.png";
-            break;
-          }
-
-        case 16000078:
-          {
-            baseUrl += "flag_k_01.png";
-            break;
-          }
-
-        case 16000079:
-          {
-            baseUrl += "flag_k_02.png";
-            break;
-          }
-
-        case 16000080:
-          {
-            baseUrl += "flag_k_03.png";
-            break;
-          }
-
-        case 16000081:
-          {
-            baseUrl += "flag_k_04.png";
-            break;
-          }
-
-        case 16000082:
-          {
-            baseUrl += "flag_k_05.png";
-            break;
-          }
-
-        case 16000083:
-          {
-            baseUrl += "flag_k_06.png";
-            break;
-          }
-
-        case 16000084:
-          {
-            baseUrl += "flag_l_01.png";
-            break;
-          }
-
-        case 16000085:
-          {
-            baseUrl += "flag_l_02.png";
-            break;
-          }
-
-        case 16000086:
-          {
-            baseUrl += "flag_l_03.png";
-            break;
-          }
-
-        case 16000087:
-          {
-            baseUrl += "flag_m_01.png";
-            break;
-          }
-
-        case 16000088:
-          {
-            baseUrl += "flag_m_02.png";
-            break;
-          }
-
-        case 16000089:
-          {
-            baseUrl += "flag_m_03.png";
-            break;
-          }
-
-        case 16000090:
-          {
-            baseUrl += "flag_n_01.png";
-            break;
-          }
-
-        case 16000091:
-          {
-            baseUrl += "flag_n_01.png";
-            break;
-          }
-
-        case 16000092:
-          {
-            baseUrl += "flag_n_03.png";
-            break;
-          }
-
-        case 16000093:
-          {
-            baseUrl += "flag_n_04.png";
-            break;
-          }
-
-        case 16000094:
-          {
-            baseUrl += "flag_n_05.png";
-            break;
-          }
-
-        case 16000095:
-          {
-            baseUrl += "flag_n_06.png";
-            break;
-          }
-
-        case 16000096:
-          {
-            baseUrl += "Twin_Peaks_01.png";
-            break;
-          }
-
-        case 16000097:
-          {
-            baseUrl += "Twin_Peaks_02.png";
-            break;
-          }
-
-        case 16000098:
-          {
-            baseUrl += "Gem_01.png";
-            break;
-          }
-
-        case 16000099:
-          {
-            baseUrl += "Gem_02.png";
-            break;
-          }
-
-        case 16000100:
-          {
-            baseUrl += "Gem_03.png";
-            break;
-          }
-
-        case 16000101:
-          {
-            baseUrl += "Gem_04.png";
-            break;
-          }
-
-        case 16000102:
-          {
-            baseUrl += "Coin_01.png";
-            break;
-          }
-
-        case 16000103:
-          {
-            baseUrl += "Coin_02.png";
-            break;
-          }
-
-        case 16000104:
-          {
-            baseUrl += "Coin_03.png";
-            break;
-          }
-
-        case 16000105:
-          {
-            baseUrl += "Coin_04.png";
-            break;
-          }
-
-        case 16000106:
-          {
-            baseUrl += "Elixir_01.png";
-            break;
-          }
-
-        case 16000107:
-          {
-            baseUrl += "Elixir_02.png";
-            break;
-          }
-
-        case 16000108:
-          {
-            baseUrl += "Heart_01.png";
-            break;
-          }
-
-        case 16000109:
-          {
-            baseUrl += "Heart_02.png";
-            break;
-          }
-
-        case 16000110:
-          {
-            baseUrl += "Heart_03.png";
-            break;
-          }
-
-        case 16000111:
-          {
-            baseUrl += "Heart_04.png";
-            break;
-          }
-
-        case 16000112:
-          {
-            baseUrl += "Tower_01.png";
-            break;
-          }
-
-        case 16000113:
-          {
-            baseUrl += "Tower_02.png";
-            break;
-          }
-
-        case 16000114:
-          {
-            baseUrl += "Tower_03.png";
-            break;
-          }
-
-        case 16000115:
-          {
-            baseUrl += "Tower_04.png";
-            break;
-          }
-
-        case 16000116:
-          {
-            baseUrl += "Fan_01.png";
-            break;
-          }
-
-        case 16000117:
-          {
-            baseUrl += "Fan_02.png";
-            break;
-          }
-
-        case 16000118:
-          {
-            baseUrl += "Fan_03.png";
-            break;
-          }
-
-        case 16000119:
-          {
-            baseUrl += "Fan_04.png";
-            break;
-          }
-
-        case 16000120:
-          {
-            baseUrl += "Fugi_01.png";
-            break;
-          }
-
-        case 16000121:
-          {
-            baseUrl += "Fugi_02.png";
-            break;
-          }
-
-        case 16000122:
-          {
-            baseUrl += "Fugi_03.png";
-            break;
-          }
-
-        case 16000123:
-          {
-            baseUrl += "Fugi_04.png";
-            break;
-          }
-
-        case 16000124:
-          {
-            baseUrl += "YingYang_01.png";
-            break;
-          }
-
-        case 16000125:
-          {
-            baseUrl += "YingYang_02.png";
-            break;
-          }
-
-        case 16000126:
-          {
-            baseUrl += "flag_c_01.png";
-            break;
-          }
-
-        case 16000127:
-          {
-            baseUrl += "flag_c_02.png";
-            break;
-          }
-
-        case 16000128:
-          {
-            baseUrl += "Cherry_Blossom_01.png";
-            break;
-          }
-
-        case 16000129:
-          {
-            baseUrl += "Cherry_Blossom_02.png";
-            break;
-          }
-
-        case 16000130:
-          {
-            baseUrl += "Cherry_Blossom_03.png";
-            break;
-          }
-
-        case 16000131:
-          {
-            baseUrl += "Cherry_Blossom_04.png";
-            break;
-          }
-
-        case 16000132:
-          {
-            baseUrl += "Cherry_Blossom_06.png";
-            break;
-          }
-
-        case 16000133:
-          {
-            baseUrl += "Cherry_Blossom_05.png";
-            break;
-          }
-
-        case 16000134:
-          {
-            baseUrl += "Cherry_Blossom_07.png";
-            break;
-          }
-
-        case 16000135:
-          {
-            baseUrl += "Cherry_Blossom_08.png";
-            break;
-          }
-
-        case 16000136:
-          {
-            baseUrl += "Bamboo_01.png";
-            break;
-          }
-
-        case 16000137:
-          {
-            baseUrl += "Bamboo_02.png";
-            break;
-          }
-
-        case 16000138:
-          {
-            baseUrl += "Bamboo_03.png";
-            break;
-          }
-
-        case 16000139:
-          {
-            baseUrl += "Bamboo_04.png";
-            break;
-          }
-
-        case 16000140:
-          {
-            baseUrl += "Orange_01.png";
-            break;
-          }
-
-        case 16000141:
-          {
-            baseUrl += "Orange_02.png";
-            break;
-          }
-
-        case 16000142:
-          {
-            baseUrl += "Lotus_01.png";
-            break;
-          }
-
-        case 16000143:
-          {
-            baseUrl += "Lotus_02.png";
-            break;
-          }
-
-        case 16000144:
-          {
-            baseUrl += "A_Char_King_01.png";
-            break;
-          }
-
-        case 16000145:
-          {
-            baseUrl += "A_Char_King_02.png";
-            break;
-          }
-
-        case 16000146:
-          {
-            baseUrl += "A_Char_King_03.png";
-            break;
-          }
-
-        case 16000147:
-          {
-            baseUrl += "A_Char_King_04.png";
-            break;
-          }
-
-        case 16000148:
-          {
-            baseUrl += "A_Char_Barbarian_01.png";
-            break;
-          }
-
-        case 16000149:
-          {
-            baseUrl += "A_Char_Barbarian_02.png";
-            break;
-          }
-
-        case 16000150:
-          {
-            baseUrl += "A_Char_Prince_01.png";
-            break;
-          }
-
-        case 16000151:
-          {
-            baseUrl += "A_Char_Prince_02.png";
-            break;
-          }
-
-        case 16000152:
-          {
-            baseUrl += "A_Char_Knight_01.png";
-            break;
-          }
-
-        case 16000153:
-          {
-            baseUrl += "A_Char_Knight_02.png";
-            break;
-          }
-
-        case 16000154:
-          {
-            baseUrl += "A_Char_Goblin_01.png";
-            break;
-          }
-
-        case 16000155:
-          {
-            baseUrl += "A_Char_Goblin_02.png";
-            break;
-          }
-
-        case 16000156:
-          {
-            baseUrl += "A_Char_DarkPrince_01.png";
-            break;
-          }
-
-        case 16000157:
-          {
-            baseUrl += "A_Char_DarkPrince_02.png";
-            break;
-          }
-
-        case 16000158:
-          {
-            baseUrl += "A_Char_DarkPrince_03.png";
-            break;
-          }
-
-        case 16000159:
-          {
-            baseUrl += "A_Char_DarkPrince_04.png";
-            break;
-          }
-
-        case 16000160:
-          {
-            baseUrl += "A_Char_MiniPekka_01.png";
-            break;
-          }
-
-        case 16000161:
-          {
-            baseUrl += "A_Char_MiniPekka_02.png";
-            break;
-          }
-
-        case 16000162:
-          {
-            baseUrl += "A_Char_Pekka_01.png";
-            break;
-          }
-
-        case 16000163:
-          {
-            baseUrl += "A_Char_Pekka_02.png";
-            break;
-          }
-
-        case 16000164:
-          {
-            baseUrl += "A_Char_Hammer_01.png";
-            break;
-          }
-
-        case 16000165:
-          {
-            baseUrl += "A_Char_Hammer_02.png";
-            break;
-          }
-
-        case 16000166:
-          {
-            baseUrl += "A_Char_Rocket_01.png";
-            break;
-          }
-
-        case 16000167:
-          {
-            baseUrl += "A_Char_Rocket_02.png";
-            break;
-          }
-
-        case 16000168:
-          {
-            baseUrl += "Freeze_01.png";
-            break;
-          }
-
-        case 16000169:
-          {
-            baseUrl += "Freeze_02.png";
-            break;
-          }
-
-        case 16000170:
-          {
-            baseUrl += "Clover_01.png";
-            break;
-          }
-
-        case 16000171:
-          {
-            baseUrl += "Clover_02.png";
-            break;
-          }
-
-        case 16000172:
-          {
-            baseUrl += "flag_h_04.png";
-            break;
-          }
-
-        case 16000173:
-          {
-            baseUrl += "flag_e_02.png";
-            break;
-          }
-
-        case 16000174:
-          {
-            baseUrl += "flag_i_03.png";
-            break;
-          }
-
-        case 16000175:
-          {
-            baseUrl += "flag_e_01.png";
-            break;
-          }
-
-        case 16000176:
-          {
-            baseUrl += "A_Char_Barbarian_03.png";
-            break;
-          }
-
-        case 16000177:
-          {
-            baseUrl += "A_Char_Prince_03.png";
-            break;
-          }
-
-        case 16000178:
-          {
-            baseUrl += "A_Char_Bomb_01.png";
-            break;
-          }
-
-        case 16000179:
-          {
-            baseUrl += "A_Char_Bomb_02.png";
-            break;
-          }
-
-        default:
-          {
-            baseUrl += "no_clan.png";
-            break;
-          }
+      for (var i = 0; i < clanBadgeJson.length; i++) {
+        if (clanBadgeJson[i].id === id) {
+          baseUrl += clanBadgeJson[i].name + ".png";
+          return baseUrl;
+        }
       }
 
+      baseUrl += "no_clan.png";
       return baseUrl;
     },
     // This function returns the average elixir cost of a deck
@@ -2530,7 +1455,7 @@ var register = function register(Handlebars) {
         return "";
       }
     },
-    // This function
+    // This function returns the clan badge name from the id (function name is self-explanatory)
     getClanBadgeNameFromId: function getClanBadgeNameFromId(badgeId, clanBadgeJson) {
       for (var i = 0; i < clanBadgeJson.length; i++) {
         if (clanBadgeJson[i].id === badgeId) {
@@ -2539,6 +1464,104 @@ var register = function register(Handlebars) {
       }
 
       return "Unknown";
+    },
+    // This function returns the proper picture, given a global tournament tier object
+    getGtTierPicture: function getGtTierPicture(tierObject) {
+      switch (tierObject.type) {
+        case "tradeToken":
+          {
+            return "/images/resources/webp/trade_token_".concat(tierObject.rarity, ".webp");
+          }
+
+        case "resource":
+          {
+            if (tierObject.resource === "gold") {
+              return "/images/resources/webp/gold.webp";
+            } else if (tierObject.resource === "unknown") {
+              // For whatever reason, 'unknown' just means that the reward is in gems
+              return "/images/resources/webp/gem.webp";
+            }
+          }
+
+        case "chest":
+          {
+            switch (tierObject.chest) {
+              // All the normal chest names
+              case "Legendary":
+              case "Epic":
+              case "Giant":
+              case "Lightning":
+                {
+                  return "/images/chests/webp/".concat(tierObject.chest, " Chest.webp");
+                }
+              // Special Exceptions
+
+              case "Kings":
+                {
+                  return "/images/chests/webp/Legendary King's Chest.webp";
+                }
+
+              case "Magic":
+                {
+                  return "/images/chests/webp/Magical Chest.webp";
+                }
+            }
+          }
+
+        default:
+          {
+            return "/images/misc/svg/question_circle.svg";
+          }
+      }
+    },
+    // This function works similarly to getGtTierPicture, except that it returns the alt text
+    getGtTierPictureAltText: function getGtTierPictureAltText(tierObject) {
+      switch (tierObject.type) {
+        case "tradeToken":
+          {
+            return "".concat(tierObject.rarity, " trade token");
+          }
+
+        case "resource":
+          {
+            if (tierObject.resource === "gold") {
+              return "Gold";
+            } else if (tierObject.resource === "unknown") {
+              // For whatever reason, 'unknown' just means that the reward is in gems
+              return "Gem";
+            }
+          }
+
+        case "chest":
+          {
+            switch (tierObject.chest) {
+              // All the normal chest names
+              case "Legendary":
+              case "Epic":
+              case "Giant":
+              case "Lightning":
+                {
+                  return "".concat(tierObject.chest, " Chest");
+                }
+              // Special Exceptions
+
+              case "Kings":
+                {
+                  return "Legendary King's Chest";
+                }
+
+              case "Magic":
+                {
+                  return "Magical Chest";
+                }
+            }
+          }
+
+        default:
+          {
+            return "Unknown";
+          }
+      }
     }
   };
 

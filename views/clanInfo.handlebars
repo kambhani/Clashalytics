@@ -86,7 +86,7 @@
               <div class="container-fluid">
                 <div class="row justify-content-center">
                   {{#each standings}}
-                    {{> _riverRace clan=this.clan base=(concat "rrlog_" ../seasonId "_" (math ../sectionIndex "+" 1)) startTime=../createdDate rank=rank trophyChange=trophyChange}}
+                    {{> _riverRace clan=this.clan base=(concat "rrlog_" ../seasonId "_" (math ../sectionIndex "+" 1)) startTime=../createdDate rank=rank trophyChange=trophyChange clanBadgeJson=../../clanBadgeJson}}
                   {{/each}}
                 </div>
               </div>

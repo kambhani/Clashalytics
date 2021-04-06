@@ -2210,13 +2210,6 @@ var performAsyncTasks = function performAsyncTasks() {
                               if (!battleExists && json[i].team[0].cards.length === 8) {
                                 new Battle(toAdd).save().then(function (idea) {//console.log(idea);
                                 });
-                              } else {// Battle.deleteOne({_id: "606b2980b872742f5c85ca6e"}, function(err, result) {
-                                //   if (err) {
-                                //     console.log(err);
-                                //   } else {
-                                //     console.log(result);
-                                //   }
-                                // });
                               }
 
                             case 4:
@@ -2274,7 +2267,7 @@ var performAsyncTasks = function performAsyncTasks() {
               }
             })["catch"](function (err) {
               console.log(err);
-            }); //console.log(player);
+            });
           }); // Delete old records
 
           if (clearTime === 0) {

@@ -2223,14 +2223,6 @@ const performAsyncTasks = async function () {
                     .then(idea => {
                       //console.log(idea);
                     });
-                } else {
-                  // Battle.deleteOne({_id: "606b2980b872742f5c85ca6e"}, function(err, result) {
-                  //   if (err) {
-                  //     console.log(err);
-                  //   } else {
-                  //     console.log(result);
-                  //   }
-                  // });
                 }
               }
               addBattle();
@@ -2241,7 +2233,6 @@ const performAsyncTasks = async function () {
       .catch((err) => {
         console.log(err);
       });
-    //console.log(player);
   });
 
   // Delete old records

@@ -29,8 +29,6 @@ $(document).ready(function() {
     });
   });
 
-  console.log(weeks);
-
   // Reverse these two arrays since the data is in reverse order
   weeks.reverse();
   arr.reverse();

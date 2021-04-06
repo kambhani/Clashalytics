@@ -1,13 +1,9 @@
-<title>Clan {{tag}} | War Log | S{{season}} W{{week}}</title>
-
 <!--This script initializes the Bootstrap tooltips on the page-->
 <script defer src="/js/bootstrapTooltips.js"></script>
 <!--This script enables the hover functionality on certain cards-->
 <script defer src="/js/hoverCard.js"></script>
 <!--This script controls the sorting for the participant lists-->
 <script defer src="/js/clanWarSort.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/clans/" (removeFirstCharacter tag) "/data")}}
 
 {{> _clanInfoTabs active="war" tag=tag}}
 

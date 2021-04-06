@@ -1,5 +1,3 @@
-<title>Player Stats | {{playerStats.tag}}</title>
-
 <!--This script is for initializing Bootstrap tooltips-->
 <script defer src="/js/bootstrapTooltips.js"></script>
 <!--This script is for the JS required to format the general tab-->
@@ -11,10 +9,8 @@
 <!--This is the JS that controls the styling and sorting of the table in the analysis tab-->
 <script defer src="/js/playerInfoAnalysis.js"></script>
 
-{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter playerStats.tag) "/data")}}
-
 <!-- Tabs -->
-<ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+<ul class="nav nav-tabs nav-fill mt-3" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
     <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general"
       aria-selected="true">GENERAL</a>

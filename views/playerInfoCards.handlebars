@@ -1,9 +1,5 @@
-<title>Player {{playerStats.tag}} | Cards</title>
-
 <!--This file is for the JS that controls the sorting in the cards tab-->
 <script defer src="/js/playerInfoCards.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter playerStats.tag) "/data")}}
 
 {{>_playerInfoTabs active="cards" tag=playerStats.tag}}
 

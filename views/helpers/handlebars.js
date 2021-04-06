@@ -1168,6 +1168,29 @@ var register = function(Handlebars) {
           return "Unknown";
         }
       }
+    },
+    // This function gets the flag URL for a given country and country code
+    flagUrl(countryCode) {
+      if (typeof countryCode !== "undefined") {
+        // Clan location is a country
+        return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
+      } else {
+        // Clan location is not a country
+        return "/images/misc/webp/locations.webp";
+      }
+    },
+    // This function converts the given text to the desired case
+    // 0 is for lower case
+    // 1 is for upper case
+    convertTextToCase(text, textCase) {
+      if (typeof text === "undefined") {
+        return "Server Error";
+      }
+      switch (textCase) {
+        case 0: return text.toLowerCase();
+        case 1: return text.toUpperCase();
+        default: return text;
+      }
     }
   }
 

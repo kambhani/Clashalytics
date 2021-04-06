@@ -1,12 +1,7 @@
-<title>Clan {{tag}} | War Insights</title>
-
 <!--This script is for Apex Charts, a framework I used to draw the charts-->
 <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <!--This script is for the JS code I used to create the charts-->
 <script defer src="/js/clanWarInsights.js"></script>
-
-
-{{> _breadcrumbPath path=path rawData=(concat "/clans/" (removeFirstCharacter tag) "/data")}}
 
 {{> _clanInfoTabs active="war" tag=tag}}
 

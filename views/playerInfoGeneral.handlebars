@@ -1,11 +1,7 @@
-<title>Player {{playerStats.tag}} | General</title>
-
 <!--This script is for initializing Bootstrap tooltips-->
 <script defer src="/js/bootstrapTooltips.js"></script>
 <!--This script is for the JS required to format the general tab-->
 <script defer src="/js/playerInfoGeneral.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter playerStats.tag) "/data")}}
 
 {{>_playerInfoTabs active="general" tag=playerStats.tag}}
 

@@ -1,3 +1,130 @@
-{{> _breadcrumbPath path=path rawData=""}}
+<!--This is a script used to create the dropdowns-->
+<script defer src="/js/amagidropdown.js"></script>
 
-<p>here</p>
+<div class="container-fluid p-0 m-0">
+  <div class="row justify-content-around p-0 m-0">
+    <div class="card border-info mx-3 my-4 m-md-4" style="background-color: #fef; width: 22em;">
+      <div class="card-header" style="background-color: #eef;">
+        <h4 class="font-weight-bold text-center">Player Leaderboards</h4>
+      </div>
+      <div class="card-body text-center p-0">
+        <img class="my-3" src="/images/battles/webp/King and the Crowd Illustration.webp" alt="King and the Crowd Illustration" height="200px">
+        <div class="row no-gutters">
+          <div class="col-12 px-sm-2 my-3">
+            <label class="h5 mx-sm-2" for="regionSelectPlayers">Select Region</label>
+            <select id="regionSelectPlayers" class="px-0">
+              <option value="GLOBAL">Global</option>
+              {{#each locations.items}}
+                {{#if isCountry}}
+                  <option value="{{countryCode}}">{{name}}</option>
+                {{/if}}
+              {{/each}}
+            </select>
+          </div>
+          <div class="col-12 px-sm-2 my-3">
+            <label class="h5 mx-sm-2" for="seasonSelectPlayers">Select Season</label>
+            <select id="seasonSelectPlayers">
+              {{#each seasons.items}}
+                <option>{{id}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-info mx-3 my-0 m-md-4" style="background-color: #fef; width: 22em;">
+      <div class="card-header" style="background-color: #eef;">
+        <h4 class="font-weight-bold text-center">Clan Leaderboards</h4>
+      </div>
+      <div class="card-body text-center p-0">
+        <img class="my-3" src="/images/clans/clans.png" alt="Clans" height="200px">
+        <div class="row no-gutters">
+          <div class="col-12 px-sm-2 my-3">
+            <label class="h5 mx-sm-2" for="regionSelectClans">Select Region</label>
+            <select id="regionSelectClans">
+              <option value="GLOBAL">Global</option>
+              <option value="_INTL">International</option>
+              <option value="_AFR">Africa</option>
+              <option value="_ASIA">Asia</option>
+              <option value="_EUR">Europe</option>
+              <option value="_NA">North America</option>
+              <option value="_OCEA">Oceania</option>
+              <option value="_SA">South America</option>
+              {{#each locations.items}}
+                {{#if isCountry}}
+                  <option value="{{countryCode}}">{{name}}</option>
+                {{/if}}
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-info mx-3 my-4 m-md-4" style="background-color: #fef; width: 22em;">
+      <div class="card-header" style="background-color: #eef;">
+        <h4 class="font-weight-bold text-center">Clan War Leaderboards</h4>
+      </div>
+      <div class="card-body text-center p-0">
+        <img class="my-3" src="/images/clans/webp/War Shield.webp" alt="King and the Crowd Illustration" height="216px">
+        <div class="row no-gutters">
+          <div class="col-12 px-sm-2 my-3">
+            <label class="h5 mx-sm-2" for="regionSelectClanWars">Select Region</label>
+            <select id="regionSelectClanWars">
+              <option value="GLOBAL">Global</option>
+              <option value="_INTL">International</option>
+              <option value="_AFR">Africa</option>
+              <option value="_ASIA">Asia</option>
+              <option value="_EUR">Europe</option>
+              <option value="_NA">North America</option>
+              <option value="_OCEA">Oceania</option>
+              <option value="_SA">South America</option>
+              {{#each locations.items}}
+                {{#if isCountry}}
+                  <option value="{{countryCode}}">{{name}}</option>
+                {{/if}}
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Creates search selection for everything
+    amagiDropdown({
+      elementId: "regionSelectPlayers",
+      searchButtonInnerHtml: "Select",
+      bodyMessage: "Search via the search bar and then double-click on the desired region",
+      href: "/leaderboards/players",
+      dynamicHref: "region"
+    });
+
+    amagiDropdown({
+      elementId: "seasonSelectPlayers",
+      searchButtonInnerHtml: "Select",
+      bodyMessage: "Search via the search bar and then double-click on the desired season",
+      href: "/leaderboards/players",
+      dynamicHref: "season"
+    });
+
+    amagiDropdown({
+      elementId: "regionSelectClans",
+      searchButtonInnerHtml: "Select",
+      bodyMessage: "Search via the search bar and then double-click on the desired region",
+      href: "/leaderboards/clans",
+      dynamicHref: "region"
+    });
+
+    amagiDropdown({
+      elementId: "regionSelectClanWars",
+      searchButtonInnerHtml: "Select",
+      bodyMessage: "Search via the search bar and then double-click on the desired region",
+      href: "/leaderboards/clanwars",
+      dynamicHref: "region"
+    });
+
+  });
+</script>

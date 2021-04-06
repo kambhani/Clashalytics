@@ -7,12 +7,20 @@ $(document).ready(function() {
   // Initializaes the table
   let table = $("#table").DataTable();
 
-  // Initializes all display toggles and the view format toggle to on
+  // Initializes all display toggles to on
   // This code is necessary; otherwise, the page would break if the user refreshes
   $(".display-toggle").each(function() {
     $(this).bootstrapToggle("on");
   });
+  
+  // Default view mode is based on screen size
+  // lg and xl screens default to table; smaller sizes default to card
   $("#searchDisplayFormat").bootstrapToggle("on");
+  if (window.matchMedia("(max-width: 991.98px)").matches) {
+    $("#searchDisplayFormat").bootstrapToggle("off");
+    $("#cards").removeClass("d-none").addClass("d-block");
+    $("#tableDiv").removeClass("d-block").addClass("d-none");
+  }
 
   // Event handler for the display toggles
   $(function() {

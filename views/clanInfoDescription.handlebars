@@ -1,9 +1,5 @@
-<title>Clan {{clanStats.tag}} | Description</title>
-
 <!--This script initializes the Bootstrap tooltips on the page-->
 <script defer src="/js/bootstrapTooltips.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/clans/" (removeFirstCharacter clanStats.tag) "/data")}}
 
 {{> _clanInfoTabs active="description" tag=clanStats.tag}}
 

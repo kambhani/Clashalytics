@@ -1,9 +1,5 @@
-<title>Player {{tag}} | Analysis</title>
-
 <!--This is the JS that controls the styling and sorting of the table in the analysis tab-->
 <script defer src="/js/playerInfoAnalysis.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter tag) "/data")}}
 
 {{>_playerInfoTabs active="analysis" tag=tag}}
 

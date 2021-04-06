@@ -1,0 +1,226 @@
+<!--The next three links are for DataTables, a JQuery plug-in-->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script defer src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<!--The next two lines are for a plugin that converts checkboxes into toggles-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css">
+<script defer src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<!--This is a script used to create the two select dropdowns-->
+<script defer src="/js/amagidropdown.js"></script>
+<!--This script contains the page-specific JS needed to run the page-->
+<script defer src="/js/leaderboardPlayers.js"></script>
+<!--This script adds keyboard functionality to the 'Change Viewable Data' modal-->
+<script defer src="/js/keyboardToggle.js"></script>
+
+{{#if errors}}
+  {{#each errors}}
+    <div class="alert alert-danger mx-4 text-center">{{this}}</div>
+  {{/each}}
+  <div class="row no-gutters mt-3">
+    <div class="col-12 col-md-6 px-1 px-sm-2 mb-4">
+      <label class="h5 mx-md-2" for="regionSelect">Change Region</label>
+      <select id="regionSelect">
+        <option value="GLOBAL">Global</option>
+        {{#each locations.items}}
+          {{#if isCountry}}
+            <option value="{{countryCode}}">{{name}}</option>
+          {{/if}}
+        {{/each}}
+      </select>
+    </div>
+    <div class="col-12 col-md-6 px-1 px-sm-2 mb-4">
+      <label class="h5 mx-md-2" for="seasonSelect">Change Season</label>
+      <select id="seasonSelect">
+        {{#each seasons.items}}
+          <option>{{id}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+{{else}}
+  <div class="row no-gutters mt-3">
+    <div class="col-12 col-md-6 px-1 px-sm-2 mb-4">
+      <label class="h5 mx-md-2" for="regionSelect">Change Region</label>
+      <select id="regionSelect">
+        <option value="GLOBAL">Global</option>
+        {{#each locations.items}}
+          {{#if isCountry}}
+            <option value="{{countryCode}}">{{name}}</option>
+          {{/if}}
+        {{/each}}
+      </select>
+    </div>
+    <div class="col-12 col-md-6 px-1 px-sm-2 mb-4">
+      <label class="h5 mx-md-2" for="seasonSelect">Change Season</label>
+      <select id="seasonSelect">
+        {{#each seasons.items}}
+          <option>{{id}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="container-fluid d-flex justify-content-center mt-2">
+    <input id="leaderboardDisplayFormat" style="mx-auto" type="checkbox" data-toggle="toggle" data-onstyle="outline-info" data-offstyle="outline-dark" data-on="Table" data-off="Cards" data-size="lg">
+    <button type="button" class="btn btn-primary ml-5" data-toggle="modal" data-target="#viewSettings">
+      Change Viewable Data
+    </button>
+  </div>
+
+  <!--This is for the modal that lets the user select what info they want visible-->
+  <div class="modal fade" id="viewSettings" data-keyboard="false" tabindex="-1" aria-labelledby="viewSettingsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="viewSettingsLabel">Data View Settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-toggle-div">
+            <h5>Display Rank: </h5>
+            <div class="toggle-keyboard-div" tabindex="0">
+              <input class="display-toggle" data-column="0" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+            </div>
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Name: </h5>
+            <div class="toggle-keyboard-div" tabindex="0">
+              <input class="display-toggle" data-column="1" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+            </div>
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Trophies: </h5>
+            <div class="toggle-keyboard-div" tabindex="0">
+              <input class="display-toggle" data-column="2" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+            </div>
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Clan: </h5>
+            <div class="toggle-keyboard-div" tabindex="0">
+              <input class="display-toggle" data-column="3" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+            </div>
+          </div>
+          <div class="modal-toggle-div">
+            <h5>Display Tower Level: </h5>
+            <div class="toggle-keyboard-div" tabindex="0">
+              <input class="display-toggle" data-column="4" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+            </div>
+          </div>
+          {{#if leaderboard.items.0.previousRank}}
+            <div class="modal-toggle-div">
+              <h5>Display Rank Change </h5>
+              <div class="toggle-keyboard-div" tabindex="0">
+                <input class="display-toggle" data-column="5" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+              </div>
+            </div>
+          {{/if}}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info" data-dismiss="modal">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tableDiv" class="container-fluid mt-3 px-0 py-2 px-lg-4 mb-5 table-responsive" style="">
+    <table id="table" class="table table-bordered table-striped justify-content-center table-sm" style="width: 100%;" data-page-length="50">
+      <thead>
+        <tr class="thead-dark text-center">
+          <th class="py-3">Rank</th>
+          <th class="py-3">Name</th>
+          <th class="py-3">Trophies</th>
+          <th class="py-3">Clan</th>
+          <th class="py-3">Tower Level</th>
+          {{#if leaderboard.items.0.previousRank}}
+            <th class="py-3">Rank Change</th>
+          {{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each leaderboard.items}}
+          {{#if (compare @index "<" ../resultsDisplayed)}}
+            <tr class="text-center">
+              <td class="align-middle">{{rank}}</td>
+              <td class="align-middle"><a href="/players/{{removeFirstCharacter tag}}" class="text-decoration-none">{{name}}</a></td>
+              <td class="align-middle">{{trophies}}</td>
+              {{#if clan.badgeId}}
+                <td class="align-middle text-left pl-2 pl-md-4"><img src="https://royaleapi.github.io/cr-api-assets/badges/{{getClanBadgeNameFromId clan.badgeId ../clanBadgeJson}}.png" alt="Clan Badge" width="50px;" loading="lazy"><span class="ml-2">{{clan.name}}</span></td>
+              {{else}}
+                <td class="align-middle text-left pl-4"><img src="https://royaleapi.github.io/cr-api-assets/badges/no_clan.png" alt="Clan Badge" width="50px;" loading="lazy"><span class="ml-2 font-italic">No Clan</span></td>
+              {{/if}}
+              <td class="align-middle">{{expLevel}}</td>
+              {{#if previousRank}}
+                <td class="align-middle rank-change">{{addPlusToNumber (math rank "-" previousRank)}}</td>
+              {{/if}}
+            </tr>
+          {{/if}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="cards" class="container-fluid my-3 d-none">
+    <div class="row justify-content-center">
+      {{#each leaderboard.items}}
+        {{#if (compare @index "<" ../resultsDisplayed)}}
+        <div style="margin: 10px;">
+          <div class="card border-primary pl-1" style="width: 21em; background-color: ghostwhite; height: 100%">
+            <div class="row no-gutters">
+              <p class="font-weight-light card-data-0" style="position: absolute; right: 3px; top: 0px;">#{{rank}}</p>
+              <div class="col-3 card-data-2">
+                <img src="/images/ladder/webp/{{getLeague trophies}}.webp" class="card-img-top card-data-2 pt-4 pb-2" alt="League Badge">
+                <div class="text-center mb-1" style="height: 35px;">
+                  <img src="/images/ladder/webp/trophy.webp" height="35px;">
+                  <p class="card-text d-inline-block align-middle" style="line-height: 35px; font-size: 1.1em;">{{trophies}}</p>
+                </div>
+              </div>
+              <div class="col-9">
+                <div class="card-body row no-gutters">
+                  <a href="/players/{{removeFirstCharacter tag}}" class="card-data-1 text-decoration-none col-12">
+                    <h5 class="card-title font-weight-bold mb-1">{{name}}</h5>
+                    <h6 class="font-weight-light font-italic mb-2">{{tag}}</h6>
+                  </a>
+                  <div class="d-flex card-data-3 mb-1 col-12" style="height: 50px;">
+                    {{#if clan.badgeId}}
+                      <a class="text-decoration-none d-flex" href="/clans/{{removeFirstCharacter clan.tag}}">
+                        <img src="https://royaleapi.github.io/cr-api-assets/badges/{{getClanBadgeNameFromId clan.badgeId ../clanBadgeJson}}.png" alt="Clan Badge" height="50px;" loading="lazy">
+                        <p class="d-inline-block align-middle ml-2 font-weight-light" style="line-height: 50px;">{{clan.name}}</p>
+                      </a>
+                    {{else}}
+                      <img src="https://royaleapi.github.io/cr-api-assets/badges/no_clan.png" alt="Clan Badge" height="50px;" loading="lazy">
+                      <p class="d-inline-block align-middle ml-2 font-weight-light font-italic" style="line-height: 50px;">No Clan</p>
+                    {{/if}}
+                  </div>
+                  <div class="card-data-4 d-flex mb-1 col-6" style="height: 30px;">
+                    <img src="/images/misc/webp/exp_icon.webp" alt="Experience Icon" height="30px;">
+                    <p class="card-text d-inline-block align-middle ml-2" style="line-height: 30px;">{{expLevel}}</p>
+                  </div>
+                  {{#if previousRank}}
+                    <div class="d-flex card-data-5 text-center col-6" style="height: 35px;">
+                      {{#if (compare (math previousRank "-" rank) ">" 0)}}
+                        {{!-- Player went up in the rankings --}}
+                        <i class="bi bi-caret-up-fill" style="font-size: 35px; line-height: 35px; color: #28a745;"></i>
+                        <h5 class="d-inline-block align-middle ml-2 font-weight-light" style="line-height: 35px;">{{math previousRank "-" rank}}</h5>
+                      {{else if (compare (math previousRank "-" rank) "<" 0)}}
+                        {{!-- Player went down in the rankings --}}
+                        <i class="bi bi-caret-down-fill" style="font-size: 35px; line-height: 35px; color: #dc3545"></i>
+                        <h5 class="d-inline-block align-middle ml-2 font-weight-light" style="line-height: 35px;">{{math rank "-" previousRank}}</h5>
+                      {{else}}
+                        {{!-- Player stayed the same in the rankings --}}
+                        <i class="bi bi-caret-right-fill" style="font-size: 35px; line-height: 35px; color: #6c757d;"></i>
+                        <h5 class="d-inline-block align-middle ml-2 font-weight-light" style="line-height: 35px;">0</h5>
+                      {{/if}}
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/if}}
+      {{/each}}
+    </div>
+  </div>
+{{/if}}

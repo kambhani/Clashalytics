@@ -1,16 +1,12 @@
-<title>Tournament | {{tournamentStats.name}}</title>
-
 <!--This script contains the page-specific javascript necessary to run the page-->
 <script defer src="/js/tournamentInfo.js"></script>
 
-{{> _breadcrumbPath path=path rawData=(concat "/tournaments/" (removeFirstCharacter tournamentStats.tag) "/data")}}
-
 {{#with tournamentStats}}
-  <div class="card border-primary mx-2 mb-5" style="background-color: ghostwhite;">
+  <div class="card border-primary mx-2 mt-3 mb-5" style="background-color: ghostwhite;">
     <div class="card-header">
       <h3 class="font-weight-bold">{{name}}</h3>
     </div>
-    <div class="container-fluid p-2">
+    <div class="card-body container-fluid p-2">
       <div class="row justify-content-center">
         <div class="card border-info" style="width: 21em; margin: 10px; background-color: #fef;">
           <div class="card-header" style="background-color: #eef;">
@@ -102,7 +98,7 @@
             </div>
           </div>
         </div>
-        <div class="card border-info" style="width: 100%; margin: 10px; background-color: #fef">
+        <div class="card border-info mb-4" style="width: 95%; background-color: #fef">
           <div class="card-header" style="background-color: #eef;">
             <h5 class="text-center font-weight-bold mb-0">Participants</h5>
           </div>

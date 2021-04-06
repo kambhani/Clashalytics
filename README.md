@@ -5,3 +5,9 @@
 - This project will likely take a while since I'm only one person
 - Hopefully, I don't give up on this halfway through like my CR Parody repo
 - Idk if anyone is going to read this, but I'll just end the readme here
+- UPDATE: I think I'll take a break from this
+  - I've worked on this for months, and the final product looks nice
+  - I want to learn other programming things, and at this point, a lot of what I'm doing is repetitive
+  - I may come back to this project
+  - It's been nice working on this
+  - Have a nice day! =)

@@ -36,7 +36,8 @@ var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.d
 var cardJson;
 var gameModeJson;
 var locations;
-var clanBadgeJson; // Map global Promises
+var clanBadgeJson;
+var seasons; // Map global Promises
 
 mongoose.Promise = global.Promise; // Mongoose Connection
 
@@ -91,7 +92,9 @@ app.get("/", function (req, res) {
     "name": "Home"
   }];
   res.render("index", {
-    path: path
+    path: path,
+    title: "Home",
+    rawData: ""
   });
 }); // Players Page
 
@@ -104,7 +107,9 @@ app.get("/players", function (req, res) {
     "name": "Players"
   }];
   res.render("players", {
-    path: path
+    path: path,
+    title: "Player Search",
+    rawData: ""
   });
 });
 app.post("/players", function (req, res) {
@@ -154,6 +159,7 @@ app.get("/players/:tag/all", function (req, res) {
     "href": "/players/".concat(tag, "/all"),
     "name": "All"
   }];
+  var title = "Player #".concat(tag, " | All");
   var playerInfo = [0, 0, 0];
   var playerInfoLogicalSize = 0;
   var errors = [];
@@ -252,13 +258,13 @@ app.get("/players/:tag/all", function (req, res) {
           message += errors[i] + "\n";
         }
 
-        handleErrors(res, path, "Player #".concat(tag, " | ALL"), {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: message
         });
       } else if (playerInfo[2].reason) {
         // This area means that something is off with the JSON response
-        handleErrors(res, path, "Player #".concat(tag, " | All"), playerInfo[2]);
+        handleErrors(res, path, title, playerInfo[2]);
       } else {
         res.render("playerInfo", {
           path: path,
@@ -268,7 +274,9 @@ app.get("/players/:tag/all", function (req, res) {
           isTracked: playerIsTracked,
           trackedBattles: trackedBattles,
           gameModeJson: gameModeJson,
-          cardJson: cardJson
+          cardJson: cardJson,
+          title: title,
+          rawData: "/players/".concat(tag, "/data")
         });
       }
     }
@@ -307,6 +315,7 @@ app.get("/players/:tag/general", function (req, res) {
     "href": "/players/".concat(tag, "/general"),
     "name": "General"
   }];
+  var title = "Player #".concat(tag, " | General");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -316,15 +325,17 @@ app.get("/players/:tag/general", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Player #".concat(tag, " | General"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("playerInfoGeneral", {
         path: path,
-        playerStats: json
+        playerStats: json,
+        title: title,
+        rawData: "/players/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Player #".concat(tag, " | General"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -348,6 +359,7 @@ app.get("/players/:tag/battles", function (req, res) {
     "href": "/players/".concat(tag, "/battles"),
     "name": "Battles"
   }];
+  var title = "Player #".concat(tag, " | Battles");
   fetch(url1, {
     headers: {
       Accept: "application/json",
@@ -357,7 +369,7 @@ app.get("/players/:tag/battles", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Player #".concat(tag, " | General"), json);
+      handleErrors(res, path, title, json);
     } else if (json.length === 0) {
       // Fetching player chests since that endpoint shows whether or not the player tag exists
       fetch(url2, {
@@ -375,11 +387,13 @@ app.get("/players/:tag/battles", function (req, res) {
             tag: "#" + req.params.tag.toUpperCase(),
             playerBattles: json,
             gameModeJson: gameModeJson,
-            cardJson: cardJson
+            cardJson: cardJson,
+            title: title,
+            rawData: "/players/".concat(tag, "/data")
           });
         }
       })["catch"](function (err) {
-        handleErrors(res, path, "Player #".concat(tag, " | Battles"), {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: err
         });
@@ -390,11 +404,13 @@ app.get("/players/:tag/battles", function (req, res) {
         tag: "#" + req.params.tag.toUpperCase(),
         playerBattles: json,
         gameModeJson: gameModeJson,
-        cardJson: cardJson
+        cardJson: cardJson,
+        title: title,
+        rawData: "/players/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Player #".concat(tag, " | Battles"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -417,6 +433,7 @@ app.get("/players/:tag/cards", function (req, res) {
     "href": "/players/".concat(tag, "/cards"),
     "name": "Cards"
   }];
+  var title = "Player #".concat(tag, " | Cards");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -426,15 +443,17 @@ app.get("/players/:tag/cards", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Player #".concat(tag, " | Cards"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("playerInfoCards", {
         path: path,
-        playerStats: json
+        playerStats: json,
+        title: title,
+        rawData: "/players/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Player #".concat(tag, " | Cards"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -456,6 +475,7 @@ app.get("/players/:tag/chests", function (req, res) {
     "href": "/players/".concat(tag, "/chests"),
     "name": "Chests"
   }];
+  var title = "Player #".concat(tag, " | Chests");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -465,16 +485,18 @@ app.get("/players/:tag/chests", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Player #".concat(tag, " | Chests"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("playerInfoChests", {
         path: path,
         playerChests: json,
-        tag: "#" + tag
+        tag: "#" + tag,
+        title: title,
+        rawData: "/players/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Player #".concat(tag, " | Chests"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -496,6 +518,7 @@ app.get("/players/:tag/analysis", function (req, res) {
     "href": "/players/".concat(tag, "/analysis"),
     "name": "Analysis"
   }];
+  var title = "Player #".concat(tag, " | Analysis");
   var toSend = [0, 0, 0];
   var toSendLogicalSize = 0;
   var errors = []; // I send a request for chests just to see if the player tag is valid
@@ -570,12 +593,12 @@ app.get("/players/:tag/analysis", function (req, res) {
           message += errors[i] + "\n";
         }
 
-        handleErrors(res, path, "Player #".concat(tag, " | Analysis"), {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: message
         });
       } else if (toSend[0].reason) {
-        handleErrors(res, path, "Player #".concat(tag, " | Analysis"), toSend[0]);
+        handleErrors(res, path, title, toSend[0]);
       } else {
         res.render("playerInfoAnalysis", {
           path: path,
@@ -583,7 +606,9 @@ app.get("/players/:tag/analysis", function (req, res) {
           gameModeJson: gameModeJson,
           cardJson: cardJson,
           isTracked: toSend[1],
-          trackedBattles: toSend[2]
+          trackedBattles: toSend[2],
+          title: title,
+          rawData: "/players/".concat(tag, "/data")
         });
       }
     }
@@ -728,8 +753,13 @@ app.get("/about", function (req, res) {
     "name": "About"
   }];
   res.render("about", {
-    path: path
+    path: path,
+    title: "About",
+    rawData: ""
   });
+});
+app.get("/termsofservice", function (req, res) {
+  res.redirect("/tos");
 });
 app.get("/tos", function (req, res) {
   var path = [{
@@ -740,7 +770,9 @@ app.get("/tos", function (req, res) {
     "name": "Terms of Service"
   }];
   res.render("tos", {
-    path: path
+    path: path,
+    title: "Terms of Service",
+    rawData: ""
   });
 });
 app.get("/privacy", function (req, res) {
@@ -752,7 +784,9 @@ app.get("/privacy", function (req, res) {
     "name": "Privacy Policy"
   }];
   res.render("privacy", {
-    path: path
+    path: path,
+    title: "Privacy Policy",
+    rawData: ""
   });
 });
 app.get("/disclaimers", function (req, res) {
@@ -764,7 +798,9 @@ app.get("/disclaimers", function (req, res) {
     "name": "Disclaimers"
   }];
   res.render("disclaimers", {
-    path: path
+    path: path,
+    title: "Disclaimers",
+    rawData: ""
   });
 });
 app.get("/help", function (req, res) {
@@ -776,7 +812,9 @@ app.get("/help", function (req, res) {
     "name": "Help"
   }];
   res.render("help", {
-    path: path
+    path: path,
+    title: "Help",
+    rawData: ""
   });
 });
 app.get("/clans", function (req, res) {
@@ -787,12 +825,15 @@ app.get("/clans", function (req, res) {
     "href": "/clans",
     "name": "Clans"
   }];
+  var title = "Clans";
 
   if (Object.keys(req.query).length === 0) {
     res.render("clans", {
       path: path,
       locations: locations,
-      results: []
+      results: [],
+      title: title,
+      rawData: ""
     });
   } else {
     // Initializing relevant variables
@@ -827,10 +868,10 @@ app.get("/clans", function (req, res) {
     if (typeof locationId !== "undefined" && locationId !== "undefined") {
       var validLocation = false;
 
-      for (var i = 0; i < json.items.length; i++) {
-        if (locationId === json.items[i].name) {
+      for (var i = 0; i < locations.items.length; i++) {
+        if (locationId === locations.items[i].name) {
           validLocation = true;
-          locationId = json.items[i].id;
+          locationId = locations.items[i].id;
         }
       }
 
@@ -900,7 +941,9 @@ app.get("/clans", function (req, res) {
         path: path,
         errors: errors,
         locations: json,
-        results: []
+        results: [],
+        title: title,
+        rawData: ""
       });
     } else {
       // Encode search parameters
@@ -945,10 +988,12 @@ app.get("/clans", function (req, res) {
           path: path,
           locations: locations,
           results: json,
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: ""
         });
       })["catch"](function (err) {
-        handleErrors(res, path, "Clans", {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: err
         });
@@ -1058,6 +1103,7 @@ app.get("/clans/:tag/all", function (req, res) {
     "href": "/clans/".concat(tag, "/all"),
     "name": "All"
   }];
+  var title = "Clan #".concat(tag, " | All");
   var clanInfo = [0, 0, 0];
   var clanInfoLogicalSize = 0;
   var errors = [];
@@ -1119,19 +1165,21 @@ app.get("/clans/:tag/all", function (req, res) {
           message += errors[i] + "\n";
         }
 
-        handleErrors(res, path, "Clan #".concat(tag, " | ALL"), {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: message
         });
       } else if (clanInfo[0].reason) {
-        handleErrors(res, path, "Clan #".concat(tag, " | All"), clanInfo[0]);
+        handleErrors(res, path, title, clanInfo[0]);
       } else {
         res.render("clanInfo", {
           path: path,
           clanStats: clanInfo[0],
           currentRiverRace: clanInfo[1],
           riverRaceLog: clanInfo[2],
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: "/clans/".concat(tag, "/data")
         });
       }
     }
@@ -1153,6 +1201,7 @@ app.get("/clans/:tag/description", function (req, res) {
     "href": "/clans/".concat(tag, "/description"),
     "name": "Description"
   }];
+  var title = "Clan #".concat(tag, " | Description");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1162,16 +1211,18 @@ app.get("/clans/:tag/description", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Clan #".concat(tag, " | Description"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("clanInfoDescription", {
         path: path,
         clanStats: json,
-        clanBadgeJson: clanBadgeJson
+        clanBadgeJson: clanBadgeJson,
+        title: title,
+        rawData: "/clans/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Clan #".concat(tag, " | Description"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -1190,9 +1241,10 @@ app.get("/clans/:tag/members", function (req, res) {
     "href": "/clans/".concat(tag),
     "name": "#" + tag
   }, {
-    "href": "/clans/".concat(tag, "/description"),
+    "href": "/clans/".concat(tag, "/members"),
     "name": "Members"
   }];
+  var title = "Clan #".concat(tag, " | Members");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1202,15 +1254,17 @@ app.get("/clans/:tag/members", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Clan #".concat(tag, " | Members"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("clanInfoMembers", {
         path: path,
-        clanStats: json
+        clanStats: json,
+        title: title,
+        rawData: "/clans/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Clan #".concat(tag, " | Members"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -1244,6 +1298,7 @@ app.get("/clans/:tag/war/race", function (req, res) {
     "href": "/clans/".concat(tag, "/war/race"),
     "name": "Race"
   }];
+  var title = "Clan #".concat(tag, " | Current River Race");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1253,17 +1308,19 @@ app.get("/clans/:tag/war/race", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Clan #".concat(tag, " | Race"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("clanInfoWarRace", {
         path: path,
         currentRiverRace: json,
         tag: "#" + tag,
-        clanBadgeJson: clanBadgeJson
+        clanBadgeJson: clanBadgeJson,
+        title: title,
+        rawData: "/clans/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Clan #".concat(tag, " | Race"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -1295,6 +1352,7 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
     "href": "/clans/".concat(tag, "/war/log/").concat(req.params.num),
     "name": req.params.num
   }];
+  var title = "Clan #".concat(tag, " | War Log");
 
   if (num !== parseFloat(req.params.num.toUpperCase()) || isNaN(num)) {
     handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
@@ -1311,32 +1369,24 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
       return res.json();
     }).then(function (json) {
       if (json.reason) {
-        handleErrors(res, path, "Clan #".concat(tag, " | Log"), json);
+        handleErrors(res, path, title, json);
       } else {
         if (num <= 0 || num > json.items.length) {
           if (num === 1) {
             // Clan has no river log
-            handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+            handleErrors(res, path, title, {
               "reason": "No Log",
               "message": "The requested clan #".concat(tag, " has no log")
             });
           } else {
-            handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+            handleErrors(res, path, title, {
               "reason": "Invalid Log",
               "message": "The requested log number for clan #".concat(tag, " is invalid")
             });
           }
         } else {
-          var season, week;
-
-          for (var i = 0; i < json.items.length; i++) {
-            if (i + 1 === num) {
-              season = json.items[i].seasonId;
-              week = json.items[i].sectionIndex + 1;
-              break;
-            }
-          }
-
+          var season = json.items[num - 1].seasonId;
+          var week = json.items[num - 1].sectionIndex + 1;
           res.render("clanInfoWarLog", {
             path: path,
             riverRaceLog: json,
@@ -1344,12 +1394,14 @@ app.get("/clans/:tag/war/log/:num", function (req, res) {
             index: num - 1,
             season: season,
             week: week,
-            clanBadgeJson: clanBadgeJson
+            clanBadgeJson: clanBadgeJson,
+            title: "".concat(title, " | S").concat(season, " W").concat(week),
+            rawData: "/clans/".concat(tag, "/data")
           });
         }
       }
     })["catch"](function (err) {
-      handleErrors(res, path, "Clan #".concat(tag, " | Log"), {
+      handleErrors(res, path, title, {
         reason: "Error",
         message: err
       });
@@ -1375,6 +1427,7 @@ app.get("/clans/:tag/war/insights", function (req, res) {
     "href": "/clans/".concat(tag, "/war/insights"),
     "name": "Insights"
   }];
+  var title = "Clan #".concat(tag, " | War Insights");
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1384,16 +1437,18 @@ app.get("/clans/:tag/war/insights", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Clan #".concat(tag, " | Insights"), json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("clanInfoWarInsights", {
         path: path,
         tag: "#" + tag,
-        riverRaceLog: json
+        riverRaceLog: json,
+        title: title,
+        rawData: "/clans/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Clan #".concat(tag, " | Insights"), {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -1500,11 +1555,14 @@ app.get("/tournaments", function (req, res) {
     "href": "/tournaments",
     "name": "Tournaments"
   }];
+  var title = "Tournaments";
   var errors = [];
 
   if (Object.keys(req.query).length === 0) {
     res.render("tournaments", {
-      path: path
+      path: path,
+      title: title,
+      rawData: ""
     });
   } else {
     var name = req.query.name; // Only valid search parameter is by name
@@ -1522,7 +1580,9 @@ app.get("/tournaments", function (req, res) {
     if (errors.length > 0) {
       res.render("tournaments", {
         path: path,
-        errors: errors
+        errors: errors,
+        title: title,
+        rawData: ""
       });
     } else {
       var url = baseUrl + "v1/tournaments?name=" + name;
@@ -1537,10 +1597,12 @@ app.get("/tournaments", function (req, res) {
         res.render("tournaments", {
           path: path,
           results: json,
-          gameModeJson: gameModeJson
+          gameModeJson: gameModeJson,
+          title: title,
+          rawData: ""
         });
       })["catch"](function (err) {
-        handleErrors(res, path, "Tournaments", {
+        handleErrors(res, path, title, {
           reason: "Error",
           message: err
         });
@@ -1571,7 +1633,9 @@ app.post("/tournaments", function (req, res) {
     } else {
       res.render("tournaments", {
         path: path,
-        errors: errors
+        errors: errors,
+        title: title,
+        rawData: ""
       });
     }
   } else if ("name" in req.body) {
@@ -1593,6 +1657,7 @@ app.get("/tournaments/gt", function (req, res) {
     "href": "/tournaments/gt",
     "name": "Global Tournaments"
   }];
+  var title = "Global Tournaments";
   fetch(baseUrl + "v1/globaltournaments", {
     headers: {
       Accept: "application/json",
@@ -1602,16 +1667,18 @@ app.get("/tournaments/gt", function (req, res) {
     return res.json();
   }).then(function (json) {
     if (json.reason) {
-      handleErrors(res, path, "Global Tournaments", json);
+      handleErrors(res, path, title, json);
     } else {
       res.render("gt", {
         path: path,
         gtInfo: json,
-        gameModeJson: gameModeJson
+        gameModeJson: gameModeJson,
+        title: title,
+        rawData: "/tournaments/gt/data"
       });
     }
   })["catch"](function (err) {
-    handleErrors(res, path, "Global Tournaments", {
+    handleErrors(res, path, title, {
       reason: "Error",
       message: err
     });
@@ -1660,6 +1727,7 @@ app.get("/tournaments/:tag", function (req, res) {
     "href": "/tournaments/".concat(tag),
     "name": "#" + tag
   }];
+  var title = "Tournament #".concat(tag);
   fetch(url, {
     headers: {
       Accept: "application/json",
@@ -1675,7 +1743,9 @@ app.get("/tournaments/:tag", function (req, res) {
         path: path,
         tournamentStats: json,
         gameModeJson: gameModeJson,
-        clanBadgeJson: clanBadgeJson
+        clanBadgeJson: clanBadgeJson,
+        title: title,
+        rawData: "/tournaments/".concat(tag, "/data")
       });
     }
   })["catch"](function (err) {
@@ -1683,6 +1753,20 @@ app.get("/tournaments/:tag", function (req, res) {
       reason: "Error",
       message: err
     });
+  });
+});
+app.get("/tournaments/gt/data", function (req, res) {
+  fetch(baseUrl + "v1/globaltournaments", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  }).then(function (res) {
+    return res.json();
+  }).then(function (json) {
+    res.send(json);
+  })["catch"](function (err) {
+    res.send(err);
   });
 });
 app.get("/tournaments/:tag/data", function (req, res) {
@@ -1710,7 +1794,9 @@ app.get("/emotes", function (req, res) {
     "name": "Emotes"
   }];
   res.render("emotes", {
-    path: path
+    path: path,
+    title: "Emotes",
+    rawData: ""
   });
 });
 app.get("/emotes/:id", function (req, res) {
@@ -1736,7 +1822,9 @@ app.get("/emotes/:id", function (req, res) {
   } else {
     res.render("emoteInfo", {
       path: path,
-      emoteId: id
+      emoteId: id,
+      title: "Emote #".concat(id),
+      rawData: ""
     });
   }
 });
@@ -1749,8 +1837,225 @@ app.get("/leaderboards", function (req, res) {
     "name": "Leaderboards"
   }];
   res.render("leaderboards", {
-    path: path
+    path: path,
+    title: "Leaderboards",
+    rawData: "",
+    locations: locations,
+    seasons: seasons
   });
+}); // These three are similar, so they run under the same route handler
+// clans and clanwars do not have past history, so I just check for that
+
+app.get(["/leaderboards/players", "/leaderboards/clans", "/leaderboards/clanwars"], function (req, res) {
+  var leaderboardType = "";
+  var lbTypeName = "";
+  var renderTemplate = "";
+
+  if (req.path.includes("players")) {
+    leaderboardType = "players";
+    lbTypeName = "Players";
+    renderTemplate = "leaderboardPlayers";
+  } else if (req.path.includes("clans")) {
+    leaderboardType = "clans";
+    lbTypeName = "Clans";
+    renderTemplate = "leaderboardClans";
+  } else {
+    leaderboardType = "clanwars";
+    lbTypeName = "Clan Wars";
+    renderTemplate = "leaderboardClans";
+  }
+
+  var path = [{
+    "href": "/",
+    "name": "Home"
+  }, {
+    "href": "/leaderboards",
+    "name": "Leaderboards"
+  }, {
+    "href": "/leaderboards/".concat(leaderboardType),
+    "name": lbTypeName
+  }];
+  var title = lbTypeName + " Leaderboard"; // This sets the number of results to show
+  // Country leaderboards return 1,000 results and season leaderboards return 10,000 results
+  // Too many returned results will cause poor performance, so I set the results returned to 500
+
+  var resultsDisplayed = 500;
+  var errors = [];
+
+  if (Object.keys(req.query).length === 0) {
+    res.redirect("/leaderboards/".concat(leaderboardType, "?region=GLOBAL"));
+  } else {
+    if (Object.keys(req.query).length > 1) {
+      errors.push("Only one query parameter should be specified");
+    }
+
+    Object.keys(req.query).forEach(function (key, index) {
+      if (leaderboardType === "players") {
+        // season is a valid query
+        if (key !== "region" && key !== "season") {
+          errors.push("Invalid query parameter '".concat(key, "' \u2014 only valid parameters are region and season"));
+        }
+      } else {
+        // season is not a valid query
+        if (key !== "region") {
+          errors.push("Invalid query parameter '".concat(key, "' \u2014 only valid parameter is region"));
+        }
+      }
+    });
+    var region = req.query.region;
+    var season = req.query.season;
+
+    regionIf: if (typeof region !== "undefined" && region !== "GLOBAL") {
+      if (leaderboardType === "players") {
+        // Non-countries like International, North America, etc. are not allowed
+        for (var i = 0; i < locations.items.length; i++) {
+          if (locations.items[i].isCountry && region === locations.items[i].countryCode) {
+            region = locations.items[i].id;
+            break regionIf;
+          }
+        }
+      } else {
+        // Non-countries like Intenational, North America, etc. are allowed
+        // This switch takes care of the non-countries
+        switch (region) {
+          case "_INTL":
+            {
+              region = "International";
+              break;
+            }
+
+          case "_AFR":
+            {
+              region = "Africa";
+              break;
+            }
+
+          case "_ASIA":
+            {
+              region = "Asia";
+              break;
+            }
+
+          case "_NA":
+            {
+              region = "North America";
+              break;
+            }
+
+          case "_OCEA":
+            {
+              region = "Oceania";
+              break;
+            }
+
+          case "_SA":
+            {
+              region = "South America";
+              break;
+            }
+        }
+
+        for (var _i = 0; _i < locations.items.length; _i++) {
+          if (region === locations.items[_i].name || locations.items[_i].isCountry && region === locations.items[_i].countryCode) {
+            region = locations.items[_i].id;
+            break regionIf;
+          }
+        }
+      }
+
+      if (typeof region !== "number") {
+        // Region was invalid because otherwise, it would have become an id
+        errors.push("Region code not recognized");
+      }
+    }
+
+    seasonIf: if (typeof season !== "undefined") {
+      for (var _i2 = 0; _i2 < seasons.items.length; _i2++) {
+        if (season === seasons.items[_i2].id) {
+          break seasonIf;
+        }
+      } // Season ID was not found
+
+
+      errors.push("Season ID not recognized");
+    }
+
+    if (errors.length > 0) {
+      res.render(renderTemplate, {
+        path: path,
+        title: title,
+        errors: errors,
+        leaderboardType: leaderboardType,
+        locations: locations,
+        seasons: seasons
+      });
+    } else {
+      if (typeof region !== "undefined") {
+        // Query was region
+        endUrl = region === "GLOBAL" ? "v1/locations/global/rankings/".concat(leaderboardType) : "v1/locations/".concat(region, "/rankings/").concat(leaderboardType);
+        fetch(baseUrl + endUrl, {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (json) {
+          if (json.reason) {
+            handleErrors(res, path, title, json);
+          } else {
+            res.render(renderTemplate, {
+              path: path,
+              title: title,
+              leaderboard: json,
+              clanBadgeJson: clanBadgeJson,
+              locations: locations,
+              seasons: seasons,
+              rawData: "",
+              resultsDisplayed: resultsDisplayed,
+              leaderboardType: leaderboardType
+            });
+          }
+        })["catch"](function (err) {
+          handleErrors(res, path, title, {
+            reason: "Error",
+            message: err
+          });
+        });
+      } else {
+        // Query was season
+        fetch("".concat(baseUrl, "v1/locations/global/seasons/").concat(season, "/rankings/").concat(leaderboardType), {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        }).then(function (res) {
+          return res.json();
+        }).then(function (json) {
+          if (json.reason) {
+            handleErrors(res, path, title, json);
+          } else {
+            res.render(renderTemplate, {
+              path: path,
+              title: title,
+              leaderboard: json,
+              clanBadgeJson: clanBadgeJson,
+              locations: locations,
+              seasons: seasons,
+              rawData: "",
+              resultsDisplayed: resultsDisplayed,
+              leaderboardType: leaderboardType
+            });
+          }
+        })["catch"](function (err) {
+          handleErrors(res, path, title, {
+            reason: "Error",
+            message: err
+          });
+        });
+      }
+    }
+  }
 }); // This is for 404 errors
 
 app.use(function (req, res) {
@@ -1835,12 +2140,26 @@ var performAsyncTasks = function performAsyncTasks() {
           })["catch"](function (err) {
             // Do something better
             console.log(err);
+          }); // Update seasons
+
+          fetch(baseUrl + "v1/locations/global/seasons", {
+            headers: {
+              Accept: "application/json",
+              Authorization: auth
+            }
+          }).then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            seasons = json;
+          })["catch"](function (err) {
+            // Do something better
+            console.log(err);
           }); // Update player logs
 
-          _context6.next = 7;
+          _context6.next = 8;
           return regeneratorRuntime.awrap(Tracked_Player.find({}, "player -_id").exec());
 
-        case 7:
+        case 8:
           players = _context6.sent;
           errors = [];
           players.forEach(function (playerObject) {
@@ -1891,6 +2210,13 @@ var performAsyncTasks = function performAsyncTasks() {
                               if (!battleExists && json[i].team[0].cards.length === 8) {
                                 new Battle(toAdd).save().then(function (idea) {//console.log(idea);
                                 });
+                              } else {// Battle.deleteOne({_id: "606b2980b872742f5c85ca6e"}, function(err, result) {
+                                //   if (err) {
+                                //     console.log(err);
+                                //   } else {
+                                //     console.log(result);
+                                //   }
+                                // });
                               }
 
                             case 4:
@@ -1964,7 +2290,7 @@ var performAsyncTasks = function performAsyncTasks() {
             });
           }
 
-        case 11:
+        case 12:
         case "end":
           return _context6.stop();
       }

@@ -1,11 +1,7 @@
-<title>Player {{tag}} | Battles</title>
-
 <!--This script is for initializing Bootstrap tooltips-->
 <script defer src="/js/bootstrapTooltips.js"></script>
 <!--This script is for the JS required to format and sort the battles tab-->
 <script defer src="/js/playerInfoBattles.js"></script>
-
-{{> _breadcrumbPath path=path rawData=(concat "/players/" (removeFirstCharacter tag) "/data")}}
 
 {{>_playerInfoTabs active="battles" tag=tag}}
 

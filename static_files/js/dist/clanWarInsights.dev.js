@@ -29,8 +29,7 @@ $(document).ready(function () {
         decksUsed: parseInt($(this).find("h6").text())
       });
     });
-  });
-  console.log(weeks); // Reverse these two arrays since the data is in reverse order
+  }); // Reverse these two arrays since the data is in reverse order
 
   weeks.reverse();
   arr.reverse(); // This adds the players to the datalist (the input field)

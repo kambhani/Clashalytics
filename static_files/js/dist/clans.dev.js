@@ -9,13 +9,22 @@ $(".modal-toggle-div h5").css({
   "line-height": "30.0px"
 });
 $(document).ready(function () {
-  var table = $("#table").DataTable(); // Initializes all display toggles and the view format toggle to on
+  var table = $("#table").DataTable(); // Initializes all display toggles on
   // This code is necessary; otherwise, the page would break if the user refreshes
 
   $(".display-toggle").each(function () {
     $(this).bootstrapToggle("on");
-  });
-  $("#searchDisplayFormat").bootstrapToggle("on"); // Event handler for the display toggles
+  }); // Default view mode is based on screen size
+  // lg and xl screens default to table; smaller sizes default to card
+
+  $("#searchDisplayFormat").bootstrapToggle("on");
+
+  if (window.matchMedia("(max-width: 991.98px)").matches) {
+    $("#searchDisplayFormat").bootstrapToggle("off");
+    $("#cards").removeClass("d-none").addClass("d-block");
+    $("#tableDiv").removeClass("d-block").addClass("d-none");
+  } // Event handler for the display toggles
+
 
   $(function () {
     $(".display-toggle").change(function () {

@@ -28,6 +28,7 @@ let cardJson;
 let gameModeJson;
 let locations;
 let clanBadgeJson;
+let seasons;
 
 // Map global Promises
 mongoose.Promise = global.Promise;
@@ -92,7 +93,9 @@ app.get("/", (req, res) => {
     }
   ];
   res.render("index", {
-    path: path
+    path: path,
+    title: "Home",
+    rawData: ""
   });
 });
 
@@ -109,7 +112,9 @@ app.get("/players", (req, res) => {
     }
   ]
   res.render("players", {
-    path: path
+    path: path,
+    title: "Player Search",
+    rawData: ""
   });
 });
 
@@ -160,6 +165,8 @@ app.get("/players/:tag/all", (req, res) => {
       "name": "All"
     }
   ];
+  const title = `Player #${tag} | All`;
+
   let playerInfo = [0, 0, 0];
   let playerInfoLogicalSize = 0;
   let errors = [];
@@ -235,10 +242,10 @@ app.get("/players/:tag/all", (req, res) => {
         for (let i = 0; i < errors.length; i++) {
           message += errors[i] + "\n";
         }
-        handleErrors(res, path, `Player #${tag} | ALL`, {reason: "Error", message: message});
+        handleErrors(res, path, title, {reason: "Error", message: message});
       } else if (playerInfo[2].reason) {
         // This area means that something is off with the JSON response
-        handleErrors(res, path, `Player #${tag} | All`, playerInfo[2]);
+        handleErrors(res, path, title, playerInfo[2]);
       } else {
         res.render("playerInfo", {
           path: path,
@@ -248,7 +255,9 @@ app.get("/players/:tag/all", (req, res) => {
           isTracked: playerIsTracked,
           trackedBattles: trackedBattles,
           gameModeJson: gameModeJson,
-          cardJson: cardJson
+          cardJson: cardJson,
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     }
@@ -295,6 +304,7 @@ app.get("/players/:tag/general", (req, res) => {
       "name": "General"
     }
   ];
+  const title = `Player #${tag} | General`;
 
   fetch(url, {
     headers: {
@@ -305,16 +315,18 @@ app.get("/players/:tag/general", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Player #${tag} | General`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("playerInfoGeneral", {
           path: path,
-          playerStats: json
+          playerStats: json,
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Player #${tag} | General`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -341,6 +353,7 @@ app.get("/players/:tag/battles", (req, res) => {
       "name": "Battles"
     }
   ];
+  const title = `Player #${tag} | Battles`;
 
   fetch(url1, {
     headers: {
@@ -351,7 +364,7 @@ app.get("/players/:tag/battles", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Player #${tag} | General`, json);
+        handleErrors(res, path, title, json);
       } else if (json.length === 0) {
         // Fetching player chests since that endpoint shows whether or not the player tag exists
         fetch(url2, {
@@ -369,12 +382,14 @@ app.get("/players/:tag/battles", (req, res) => {
                 tag: "#" + req.params.tag.toUpperCase(),
                 playerBattles: json,
                 gameModeJson: gameModeJson,
-                cardJson: cardJson
+                cardJson: cardJson,
+                title: title,
+                rawData: `/players/${tag}/data`
               });
             }
           })
           .catch((err) => {
-            handleErrors(res, path, `Player #${tag} | Battles`, {reason: "Error", message: err});
+            handleErrors(res, path, title, {reason: "Error", message: err});
           });
       } else {
         res.render("playerInfoBattles", {
@@ -382,12 +397,14 @@ app.get("/players/:tag/battles", (req, res) => {
           tag: "#" + req.params.tag.toUpperCase(),
           playerBattles: json,
           gameModeJson: gameModeJson,
-          cardJson: cardJson
+          cardJson: cardJson,
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Player #${tag} | Battles`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -413,6 +430,7 @@ app.get("/players/:tag/cards", (req, res) => {
       "name": "Cards"
     }
   ];
+  const title = `Player #${tag} | Cards`;
 
   fetch(url, {
     headers: {
@@ -423,16 +441,18 @@ app.get("/players/:tag/cards", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Player #${tag} | Cards`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("playerInfoCards", {
           path: path,
-          playerStats: json
+          playerStats: json,
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Player #${tag} | Cards`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -457,6 +477,7 @@ app.get("/players/:tag/chests", (req, res) => {
       "name": "Chests"
     }
   ];
+  const title = `Player #${tag} | Chests`;
 
   fetch(url, {
     headers: {
@@ -467,17 +488,19 @@ app.get("/players/:tag/chests", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Player #${tag} | Chests`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("playerInfoChests", {
           path: path,
           playerChests: json,
-          tag: "#" + tag
+          tag: "#" + tag,
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Player #${tag} | Chests`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -502,6 +525,8 @@ app.get("/players/:tag/analysis", (req, res) => {
       "name": "Analysis"
     }
   ];
+  const title = `Player #${tag} | Analysis`;
+
   let toSend = [0, 0, 0];
   let toSendLogicalSize = 0;
   let errors = [];
@@ -545,9 +570,9 @@ app.get("/players/:tag/analysis", (req, res) => {
         for (let i = 0; i < errors.length; i++) {
           message += errors[i] + "\n";
         }
-        handleErrors(res, path, `Player #${tag} | Analysis`, {reason: "Error", message: message});
+        handleErrors(res, path, title, {reason: "Error", message: message});
       } else if (toSend[0].reason) {
-        handleErrors(res, path, `Player #${tag} | Analysis`, toSend[0]);
+        handleErrors(res, path, title, toSend[0]);
       } else {
         res.render("playerInfoAnalysis", {
           path: path,
@@ -555,7 +580,9 @@ app.get("/players/:tag/analysis", (req, res) => {
           gameModeJson: gameModeJson,
           cardJson: cardJson,
           isTracked: toSend[1],
-          trackedBattles: toSend[2]
+          trackedBattles: toSend[2],
+          title: title,
+          rawData: `/players/${tag}/data`
         });
       }
     }
@@ -677,8 +704,14 @@ app.get("/about", (req, res) => {
   ]
 
   res.render("about", {
-    path: path
+    path: path,
+    title: "About",
+    rawData: ""
   });
+});
+
+app.get("/termsofservice", (req, res) => {
+  res.redirect("/tos");
 });
 
 app.get("/tos", (req, res) => {
@@ -694,7 +727,9 @@ app.get("/tos", (req, res) => {
   ]
 
   res.render("tos", {
-    path: path
+    path: path,
+    title: "Terms of Service",
+    rawData: ""
   });
 });
 
@@ -711,7 +746,9 @@ app.get("/privacy", (req, res) => {
   ]
 
   res.render("privacy", {
-    path: path
+    path: path,
+    title: "Privacy Policy",
+    rawData: ""
   });
 });
 
@@ -728,7 +765,9 @@ app.get("/disclaimers", (req, res) => {
   ]
 
   res.render("disclaimers", {
-    path: path
+    path: path,
+    title: "Disclaimers",
+    rawData: ""
   });
 });
 
@@ -745,7 +784,9 @@ app.get("/help", (req, res) => {
   ]
 
   res.render("help", {
-    path: path
+    path: path,
+    title: "Help",
+    rawData: ""
   });
 });
 
@@ -760,12 +801,15 @@ app.get("/clans", (req, res) => {
       "name": "Clans"
     }
   ];
+  const title = "Clans";
 
   if (Object.keys(req.query).length === 0) {
     res.render("clans", {
       path: path,
       locations: locations,
-      results: []
+      results: [],
+      title: title,
+      rawData: ""
     });
   } else {
     // Initializing relevant variables
@@ -796,10 +840,10 @@ app.get("/clans", (req, res) => {
     }
     if (typeof locationId !== "undefined" && locationId !== "undefined") {
       let validLocation = false;
-      for (let i = 0; i < json.items.length; i++) {
-        if (locationId === json.items[i].name) {
+      for (let i = 0; i < locations.items.length; i++) {
+        if (locationId === locations.items[i].name) {
           validLocation = true;
-          locationId = json.items[i].id;
+          locationId = locations.items[i].id;
         }
       }
       if (!validLocation && locationId !== "") {
@@ -857,7 +901,9 @@ app.get("/clans", (req, res) => {
         path: path,
         errors: errors,
         locations: json,
-        results: []
+        results: [],
+        title: title,
+        rawData: ""
       });
     } else {
       // Encode search parameters
@@ -897,11 +943,13 @@ app.get("/clans", (req, res) => {
             path: path,
             locations: locations,
             results: json,
-            clanBadgeJson: clanBadgeJson
+            clanBadgeJson: clanBadgeJson,
+            title: title,
+            rawData: ""
           });
         })
       .catch((err) => {
-        handleErrors(res, path, `Clans`, {reason: "Error", message: err});
+        handleErrors(res, path, title, {reason: "Error", message: err});
       });
     }
   }
@@ -1008,6 +1056,8 @@ app.get("/clans/:tag/all", (req, res) => {
       "name": "All"
     }
   ];
+  const title = `Clan #${tag} | All`;
+
   let clanInfo = [0, 0, 0];
   let clanInfoLogicalSize = 0;
   let errors = [];
@@ -1073,16 +1123,18 @@ app.get("/clans/:tag/all", (req, res) => {
         for (let i = 0; i < errors.length; i++) {
           message += errors[i] + "\n";
         }
-        handleErrors(res, path, `Clan #${tag} | ALL`, {reason: "Error", message: message});
+        handleErrors(res, path, title, {reason: "Error", message: message});
       } else if (clanInfo[0].reason) {
-        handleErrors(res, path, `Clan #${tag} | All`, clanInfo[0]);
+        handleErrors(res, path, title, clanInfo[0]);
       } else {
         res.render("clanInfo", {
           path: path,
           clanStats: clanInfo[0],
           currentRiverRace: clanInfo[1],
           riverRaceLog: clanInfo[2],
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: `/clans/${tag}/data`
         });
       }
     }
@@ -1110,6 +1162,7 @@ app.get("/clans/:tag/description", (req, res) => {
       "name": "Description"
     }
   ];
+  const title = `Clan #${tag} | Description`;
 
   fetch(url, {
     headers: {
@@ -1120,17 +1173,19 @@ app.get("/clans/:tag/description", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Clan #${tag} | Description`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("clanInfoDescription", {
           path: path,
           clanStats: json,
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: `/clans/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Clan #${tag} | Description`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -1151,10 +1206,11 @@ app.get("/clans/:tag/members", (req, res) => {
       "name": "#" + tag
     },
     {
-      "href": `/clans/${tag}/description`,
+      "href": `/clans/${tag}/members`,
       "name": "Members"
     }
   ];
+  const title = `Clan #${tag} | Members`;
 
   fetch(url, {
     headers: {
@@ -1165,16 +1221,18 @@ app.get("/clans/:tag/members", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Clan #${tag} | Members`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("clanInfoMembers", {
           path: path,
-          clanStats: json
+          clanStats: json,
+          title: title,
+          rawData: `/clans/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Clan #${tag} | Members`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -1212,6 +1270,7 @@ app.get("/clans/:tag/war/race", (req, res) => {
       "name": "Race"
     }
   ];
+  const title = `Clan #${tag} | Current River Race`;
 
   fetch(url, {
     headers: {
@@ -1222,18 +1281,20 @@ app.get("/clans/:tag/war/race", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Clan #${tag} | Race`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("clanInfoWarRace", {
           path: path,
           currentRiverRace: json,
           tag: "#" + tag,
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: `/clans/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Clan #${tag} | Race`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -1271,6 +1332,7 @@ app.get("/clans/:tag/war/log/:num", (req, res) => {
       "name": req.params.num
     }
   ];
+  const title = `Clan #${tag} | War Log`;
 
   if (num !== parseFloat(req.params.num.toUpperCase()) || isNaN(num)) {
     handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "Invalid Log", "message": `The requested log number for clan #${tag} is invalid`});
@@ -1284,24 +1346,18 @@ app.get("/clans/:tag/war/log/:num", (req, res) => {
       .then(res => res.json())
       .then((json) => {
         if (json.reason) {
-          handleErrors(res, path, `Clan #${tag} | Log`, json);
+          handleErrors(res, path, title, json);
         } else {
           if (num <= 0 || num > json.items.length) {
             if (num === 1) {
               // Clan has no river log
-              handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "No Log", "message": `The requested clan #${tag} has no log`});
+              handleErrors(res, path, title, {"reason": "No Log", "message": `The requested clan #${tag} has no log`});
             } else {
-              handleErrors(res, path, `Clan #${tag} | Log`, {"reason": "Invalid Log", "message": `The requested log number for clan #${tag} is invalid`});
+              handleErrors(res, path, title, {"reason": "Invalid Log", "message": `The requested log number for clan #${tag} is invalid`});
             }
           } else {
-            let season, week;
-            for (let i = 0; i < json.items.length; i++) {
-              if (i + 1 === num) {
-                season = json.items[i].seasonId;
-                week = json.items[i].sectionIndex + 1;
-                break;
-              }
-            }
+            const season = json.items[num - 1].seasonId;
+            const week = json.items[num - 1].sectionIndex + 1;
             res.render("clanInfoWarLog", {
               path: path,
               riverRaceLog: json,
@@ -1309,13 +1365,15 @@ app.get("/clans/:tag/war/log/:num", (req, res) => {
               index: num - 1,
               season: season,
               week: week,
-              clanBadgeJson: clanBadgeJson
+              clanBadgeJson: clanBadgeJson,
+              title: `${title} | S${season} W${week}`,
+              rawData: `/clans/${tag}/data`
             });
           }
         }
       })
       .catch((err) => {
-        handleErrors(res, path, `Clan #${tag} | Log`, {reason: "Error", message: err});
+        handleErrors(res, path, title, {reason: "Error", message: err});
       });
   }
 });
@@ -1345,6 +1403,7 @@ app.get("/clans/:tag/war/insights", (req, res) => {
       "name": "Insights"
     }
   ];
+  const title = `Clan #${tag} | War Insights`;
 
   fetch(url, {
     headers: {
@@ -1355,17 +1414,19 @@ app.get("/clans/:tag/war/insights", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Clan #${tag} | Insights`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("clanInfoWarInsights", {
           path: path,
           tag: "#" + tag,
-          riverRaceLog: json
+          riverRaceLog: json,
+          title: title,
+          rawData: `/clans/${tag}/data`
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Clan #${tag} | Insights`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -1456,7 +1517,7 @@ app.get("/cards", (req, res) => {
     }
   ];
 
-  handleErrors(res, path, `Cards`, {"reason": "construction"});
+  handleErrors(res, path, "Cards", {"reason": "construction"});
 });
 
 app.get("/guides", (req, res) => {
@@ -1472,7 +1533,7 @@ app.get("/guides", (req, res) => {
     }
   ];
 
-  handleErrors(res, path, `Guides`, {"reason": "construction"});
+  handleErrors(res, path, "Guides", {"reason": "construction"});
 });
 
 app.get("/tournaments", (req, res) => {
@@ -1486,11 +1547,14 @@ app.get("/tournaments", (req, res) => {
       "name": "Tournaments"
     }
   ];
+  const title = "Tournaments";
   let errors = [];
 
   if (Object.keys(req.query).length === 0) {
     res.render("tournaments", {
-      path: path
+      path: path,
+      title: title,
+      rawData: ""
     });
   } else {
     const name = req.query.name;
@@ -1506,7 +1570,9 @@ app.get("/tournaments", (req, res) => {
     if (errors.length > 0) {
       res.render("tournaments", {
         path: path,
-        errors: errors
+        errors: errors,
+        title: title,
+        rawData: ""
       });
     } else {
       let url = baseUrl + "v1/tournaments?name=" + name;
@@ -1521,11 +1587,13 @@ app.get("/tournaments", (req, res) => {
           res.render("tournaments", {
             path: path,
             results: json,
-            gameModeJson: gameModeJson
+            gameModeJson: gameModeJson,
+            title: title,
+            rawData: ""
           });
         })
         .catch((err) => {
-          handleErrors(res, path, `Tournaments`, {reason: "Error", message: err});
+          handleErrors(res, path, title, {reason: "Error", message: err});
         });
     }
   }
@@ -1554,7 +1622,9 @@ app.post("/tournaments", (req, res) => {
     } else {
       res.render("tournaments", {
         path: path,
-        errors: errors
+        errors: errors,
+        title: title,
+        rawData: ""
       });
     }
   } else if ("name" in req.body) {
@@ -1581,6 +1651,7 @@ app.get("/tournaments/gt", (req, res) => {
       "name": "Global Tournaments"
     }
   ];
+  const title = "Global Tournaments";
 
   fetch(baseUrl + "v1/globaltournaments", {
     headers: {
@@ -1591,17 +1662,19 @@ app.get("/tournaments/gt", (req, res) => {
     .then(res => res.json())
     .then((json) => {
       if (json.reason) {
-        handleErrors(res, path, `Global Tournaments`, json);
+        handleErrors(res, path, title, json);
       } else {
         res.render("gt", {
           path: path,
           gtInfo: json,
-          gameModeJson: gameModeJson
+          gameModeJson: gameModeJson,
+          title: title,
+          rawData: "/tournaments/gt/data"
         });
       }
     })
     .catch((err) => {
-      handleErrors(res, path, `Global Tournaments`, {reason: "Error", message: err});
+      handleErrors(res, path, title, {reason: "Error", message: err});
     });
 });
 
@@ -1655,6 +1728,7 @@ app.get("/tournaments/:tag", (req, res) => {
       "name": "#" + tag
     }
   ];
+  const title = `Tournament #${tag}`;
 
   fetch(url, {
     headers: {
@@ -1671,12 +1745,30 @@ app.get("/tournaments/:tag", (req, res) => {
           path: path,
           tournamentStats: json,
           gameModeJson: gameModeJson,
-          clanBadgeJson: clanBadgeJson
+          clanBadgeJson: clanBadgeJson,
+          title: title,
+          rawData: `/tournaments/${tag}/data`
         });
       }
     })
     .catch((err) => {
       handleErrors(res, path, `Tournament #${tag}`, {reason: "Error", message: err});
+    });
+});
+
+app.get("/tournaments/gt/data", (req, res) => {
+  fetch(baseUrl + "v1/globaltournaments", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      res.send(json);
+    })
+    .catch((err) => {
+      res.send(err);
     });
 });
 
@@ -1712,7 +1804,9 @@ app.get("/emotes", (req, res) => {
   ];
 
   res.render("emotes", {
-    path: path
+    path: path,
+    title: "Emotes",
+    rawData: ""
   });
 });
 
@@ -1741,7 +1835,9 @@ app.get("/emotes/:id", (req, res) => {
   } else {
     res.render("emoteInfo", {
       path: path,
-      emoteId: id
+      emoteId: id,
+      title: `Emote #${id}`,
+      rawData: ""
     });
   }
 });
@@ -1759,9 +1855,209 @@ app.get("/leaderboards", (req, res) => {
   ];
 
   res.render("leaderboards", {
-    path: path
+    path: path,
+    title: "Leaderboards",
+    rawData: "",
+    locations: locations,
+    seasons: seasons
   });
-  
+});
+
+// These three are similar, so they run under the same route handler
+// clans and clanwars do not have past history, so I just check for that
+app.get(["/leaderboards/players", "/leaderboards/clans", "/leaderboards/clanwars"], (req, res) => {
+  let leaderboardType = "";
+  let lbTypeName = "";
+  let renderTemplate = "";
+  if (req.path.includes("players")) {
+    leaderboardType = "players";
+    lbTypeName = "Players";
+    renderTemplate = "leaderboardPlayers";
+  } else if (req.path.includes("clans")) {
+    leaderboardType = "clans";
+    lbTypeName = "Clans";
+    renderTemplate = "leaderboardClans";
+  } else {
+    leaderboardType = "clanwars";
+    lbTypeName = "Clan Wars";
+    renderTemplate = "leaderboardClans";
+  }
+  const path = [
+    {
+      "href": "/",
+      "name": "Home"
+    },
+    {
+      "href": "/leaderboards",
+      "name": "Leaderboards"
+    },
+    {
+      "href": `/leaderboards/${leaderboardType}`,
+      "name": lbTypeName
+    }
+  ];
+  const title = lbTypeName + " Leaderboard";
+  // This sets the number of results to show
+  // Country leaderboards return 1,000 results and season leaderboards return 10,000 results
+  // Too many returned results will cause poor performance, so I set the results returned to 500
+  const resultsDisplayed = 500;
+  let errors = [];
+
+  if (Object.keys(req.query).length === 0) {
+    res.redirect(`/leaderboards/${leaderboardType}?region=GLOBAL`);
+  } else {
+    if (Object.keys(req.query).length > 1) {
+      errors.push("Only one query parameter should be specified");
+    }
+    Object.keys(req.query).forEach((key, index) => {
+      if (leaderboardType === "players") {
+        // season is a valid query
+        if (key !== "region" && key !== "season") {
+          errors.push(`Invalid query parameter '${key}' — only valid parameters are region and season`);
+        }
+      } else {
+        // season is not a valid query
+        if (key !== "region") {
+          errors.push(`Invalid query parameter '${key}' — only valid parameter is region`);
+        }
+      }
+    });
+    let region = req.query.region;
+    let season = req.query.season;
+    regionIf: 
+    if (typeof region !== "undefined" && region !== "GLOBAL") {
+      if (leaderboardType === "players") {
+        // Non-countries like International, North America, etc. are not allowed
+        for (let i = 0; i < locations.items.length; i++) {
+          if (locations.items[i].isCountry && region === locations.items[i].countryCode) {
+            region = locations.items[i].id;
+            break regionIf;
+          }
+        }
+      } else {
+        // Non-countries like Intenational, North America, etc. are allowed
+        // This switch takes care of the non-countries
+        switch (region) {
+          case ("_INTL"): {
+            region = "International";
+            break;
+          }
+          case ("_AFR"): {
+            region = "Africa";
+            break;
+          }
+          case ("_ASIA"): {
+            region = "Asia";
+            break;
+          }
+          case ("_NA"): {
+            region = "North America";
+            break;
+          }
+          case ("_OCEA"): {
+            region = "Oceania";
+            break;
+          }
+          case ("_SA"): {
+            region = "South America";
+            break;
+          }
+        }
+        for (let i = 0; i < locations.items.length; i++) {
+          if (region === locations.items[i].name || (locations.items[i].isCountry && region === locations.items[i].countryCode)) {
+            region = locations.items[i].id;
+            break regionIf;
+          }
+        }
+      }
+      
+      if (typeof region !== "number") {
+        // Region was invalid because otherwise, it would have become an id
+        errors.push("Region code not recognized");
+      }
+    }
+    seasonIf:
+    if (typeof season !== "undefined") {
+      for (let i = 0; i < seasons.items.length; i++) {
+        if (season === seasons.items[i].id) {
+          break seasonIf;
+        }
+      }
+      // Season ID was not found
+      errors.push("Season ID not recognized");
+    }
+    if (errors.length > 0) {
+      res.render(renderTemplate, {
+        path: path,
+        title: title,
+        errors: errors,
+        leaderboardType: leaderboardType,
+        locations: locations,
+        seasons: seasons
+      });
+    } else {
+      if (typeof region !== "undefined") {
+        // Query was region
+        endUrl = (region === "GLOBAL") ? `v1/locations/global/rankings/${leaderboardType}` : `v1/locations/${region}/rankings/${leaderboardType}`;
+        fetch(baseUrl + endUrl, {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        })
+          .then(res => res.json())
+          .then((json) => {
+            if (json.reason) {
+              handleErrors(res, path, title, json)
+            } else {
+              res.render(renderTemplate, {
+                path: path,
+                title: title,
+                leaderboard: json,
+                clanBadgeJson: clanBadgeJson,
+                locations: locations,
+                seasons: seasons,
+                rawData: "",
+                resultsDisplayed: resultsDisplayed,
+                leaderboardType: leaderboardType
+              });
+            }
+          })
+          .catch((err) => {
+            handleErrors(res, path, title, {reason: "Error", message: err});
+          });
+      } else {
+        // Query was season
+        fetch(`${baseUrl}v1/locations/global/seasons/${season}/rankings/${leaderboardType}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: auth
+          }
+        })
+          .then(res => res.json())
+          .then((json) => {
+            if (json.reason) {
+              handleErrors(res, path, title, json)
+            } else {
+              res.render(renderTemplate, {
+                path: path,
+                title: title,
+                leaderboard: json,
+                clanBadgeJson: clanBadgeJson,
+                locations: locations,
+                seasons: seasons,
+                rawData: "",
+                resultsDisplayed: resultsDisplayed,
+                leaderboardType: leaderboardType
+              });
+            }
+          })
+          .catch((err) => {
+            handleErrors(res, path, title, {reason: "Error", message: err});
+          });
+      }
+    }
+  }
 });
 
 // This is for 404 errors
@@ -1790,7 +2086,7 @@ let clearTime = -2;
 const performAsyncTasks = async function () {
   // Update clearTime
   clearTime = (clearTime + 2) % 48;
-
+  
   // Update cardJson
   fetch("https://royaleapi.github.io/cr-api-data/json/cards.json")
     .then(res => res.json())
@@ -1834,6 +2130,22 @@ const performAsyncTasks = async function () {
     .then(res => res.json())
     .then((json) => {
       clanBadgeJson = json;
+    })
+    .catch((err) => {
+      // Do something better
+      console.log(err);
+    });
+
+  // Update seasons
+  fetch(baseUrl + "v1/locations/global/seasons", {
+    headers: {
+      Accept: "application/json",
+      Authorization: auth
+    }
+  })
+    .then(res => res.json())
+    .then((json) => {
+      seasons = json;
     })
     .catch((err) => {
       // Do something better
@@ -1911,6 +2223,14 @@ const performAsyncTasks = async function () {
                     .then(idea => {
                       //console.log(idea);
                     });
+                } else {
+                  // Battle.deleteOne({_id: "606b2980b872742f5c85ca6e"}, function(err, result) {
+                  //   if (err) {
+                  //     console.log(err);
+                  //   } else {
+                  //     console.log(result);
+                  //   }
+                  // });
                 }
               }
               addBattle();

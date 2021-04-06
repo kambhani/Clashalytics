@@ -1,18 +1,4 @@
-<title>{{title}}</title>
-
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    {{#each path}}
-      {{#unless @last}}
-        <li class="breadcrumb-item"><a href="{{href}}" style="text-decoration: none;">{{name}}</a></li>
-      {{else}}
-        <li class="breadcrumb-item active" aria-current="page">{{name}}</li>
-      {{/unless}}
-    {{/each}}
-  </ol>
-</nav>
-
-<div class="alert alert-danger mx-4 text-center pb-4" role="alert" style="white-space: pre-line;">
+<div class="alert alert-danger m-4 text-center pb-4" role="alert" style="white-space: pre-line;">
   <h1 class="my-0">Error</h1>
   {{message}}
 </div>

@@ -718,7 +718,7 @@ var register = function(Handlebars) {
           return "Tournament";
         }
         case (72000010): {
-          return (challengeTitle === "") ? "Challenge" : challengeTitle;
+          return (typeof challengeTitle === "undefined" || challengeTitle === "") ? "Challenge" : challengeTitle;
         }
         case (72000226):
         case (72000227):
@@ -1127,6 +1127,10 @@ var register = function(Handlebars) {
             }
           }
         }
+        case (null): {
+          // For whatever reason, this means that the reward is a chest key
+          return "/images/resources/webp/magic_chest_key.webp";
+        }
         default: {
           return "/images/misc/svg/question_circle.svg";
         }
@@ -1163,6 +1167,9 @@ var register = function(Handlebars) {
               return "Magical Chest";
             }
           }
+        }
+        case (null): {
+          return "Chest Key";
         }
         default: {
           return "Unknown";

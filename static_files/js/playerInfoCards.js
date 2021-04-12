@@ -18,8 +18,8 @@ const legendaries = ["Bandit", "Electro Wizard", "Fisherman", "Graveyard", "Ice 
 
 const zeroElixir = ["Mirror"];
 const oneElixir = ["Electro Spirit", "Heal Spirit", "Ice Spirit", "Skeletons"];
-const twoElixir = ["Barbarian Barrel", "Bats", "Fire Spirits", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
-const threeElixir = ["Archers", "Arrows", "Bandit", "Bomber", "Cannon", "Clone", "Dart Goblin", "Earthquake", "Elixir Golem", "Firecracker", "Fisherman", "Goblin Barrel", "Goblin Gang", "Guards", "Ice Wizard", "Knight", "Mega Minion", "Miner", "Minions", "Princess", "Royal Delivery", "Royal Ghost", "Skeleton Army", "Skeleton Barrel", "Tombstone", "Tornado"];
+const twoElixir = ["Barbarian Barrel", "Bats", "Bomber", "Fire Spirits", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
+const threeElixir = ["Archers", "Arrows", "Bandit", "Cannon", "Clone", "Dart Goblin", "Earthquake", "Elixir Golem", "Firecracker", "Fisherman", "Goblin Barrel", "Goblin Gang", "Guards", "Ice Wizard", "Knight", "Mega Minion", "Miner", "Minions", "Princess", "Royal Delivery", "Royal Ghost", "Skeleton Army", "Skeleton Barrel", "Tombstone", "Tornado"];
 const fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
 const fiveElixir = ["Balloon", "Barbarians", "Bowler", "Cannon Cart", "Electro Dragon", "Executioner", "Giant", "Goblin Hut", "Graveyard", "Inferno Tower", "Lightning", "Minion Horde", "Prince", "Ram Rider", "Rascals", "Rocket", "Royal Hogs", "Witch", "Wizard"];
 const sixElixir = ["Elite Barbarians", "Elixir Collector", "Giant Skeleton", "Goblin Giant", "Royal Giant", "Sparky", "X-Bow"];

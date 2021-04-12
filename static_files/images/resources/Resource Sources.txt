@@ -7,3 +7,5 @@ The trade tokens came from RoyaleAPI GitHub:
 The gold coin came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/gold-0.png
 The gem icon came from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/gems-0.png
 
+The Magic Chest Key is from RoyaleAPI: https://cdn.royaleapi.com/static/img/ui/magic/128x128/magic-key-fs8.png
+

@@ -301,8 +301,11 @@ var register = function register(Handlebars) {
     // Deck size checks for duels, which then shows that winner is unknown
     // This is because a game with crowns 3-0, 0-1, and 0-2 would be displayed by the API as 3-3
     // Though it seems like a draw, it actually is not and I have to check for it
+    // If the deck is exactly 18 cards in size, then a winner can be found
+    // This is because such a deck was used in a mega deck challenge
     findVictor: function findVictor(teamCrowns, opponentCrowns, deckSize) {
-      if (deckSize > 8) {
+      if (deckSize === 16 || deckSize === 24) {
+        // Duel
         return "Victor Unknown";
       }
 
@@ -1196,7 +1199,7 @@ var register = function register(Handlebars) {
       } //  Returning and adding a ".0" at the end of an integer
 
 
-      var toReturn = Math.round(sum / 8 * 10) / 10;
+      var toReturn = Math.round(sum / (end - start) * 10) / 10;
 
       if (Number.isInteger(toReturn)) {
         return toReturn + ".0";

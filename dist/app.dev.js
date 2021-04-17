@@ -82,9 +82,9 @@ app.use(express["static"]("static_files")); // Global Variables that I declared
 // However, since I deleted those tokens, they no longer work
 // The only working token is hidden since I gitignored the file with the token
 
-var auth = confidentialInfo.CR_API_TOKEN; // Records are deleted after 90 days
+var auth = confidentialInfo.CR_API_TOKEN; // Records are deleted after 60 days
 
-var daysToDeletion = 90; // Root Index
+var daysToDeletion = 60; // Root Index
 
 app.get("/", function (req, res) {
   var path = [{

@@ -81,8 +81,8 @@ app.use(express.static("static_files"));
 // The only working token is hidden since I gitignored the file with the token
 const auth = confidentialInfo.CR_API_TOKEN;
 
-// Records are deleted after 90 days
-const daysToDeletion = 90;
+// Records are deleted after 60 days
+const daysToDeletion = 60;
 
 // Root Index
 app.get("/", (req, res) => {

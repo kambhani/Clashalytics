@@ -30,7 +30,7 @@ var confidentialInfo = require("./config/confidentialInfo"); // Use RoyaleAPI pr
 // Use direct API Link in dev
 
 
-var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.dev" : "https://api.clashroyale.com/"; // Store cardJson, gameModeJson, and locations in global variables
+var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.dev/" : "https://api.clashroyale.com/"; // Store cardJson, gameModeJson, and locations in global variables
 // They are updated every two hours
 
 var cardJson;

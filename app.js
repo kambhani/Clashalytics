@@ -21,6 +21,7 @@ const confidentialInfo = require("./config/confidentialInfo");
 // Use RoyaleAPI proxy in prod
 // Use direct API Link in dev
 let baseUrl = (process.env.NODE_ENV === "production") ? "https://proxy.royaleapi.dev/" : "https://api.clashroyale.com/";
+//let baseUrl = "https://proxy.royaleapi.dev/";
 
 // Store cardJson, gameModeJson, and locations in global variables
 // They are updated every two hours
@@ -2242,7 +2243,7 @@ const performAsyncTasks = async function () {
       if (err) {
         //console.log(err);
       } else {
-        //console.log(result.deletedCount);
+        //console.log(result);
       }
     });
   }

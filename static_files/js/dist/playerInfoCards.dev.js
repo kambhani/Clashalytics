@@ -5,20 +5,20 @@ var cardJson = [];
 fetch("https://royaleapi.github.io/cr-api-data/json/cards.json").then(function (res) {
   return res.json();
 }).then(function (json) {
-  cardJson = json; //console.log(json);
+  cardJson = json;
 })["catch"](function (err) {
   console.log(err);
 }); // These arrays are simply a backup in case the fetch request for the RoyaleAPI card info fails
 
-var commons = ["Archers", "Arrows", "Barbarians", "Bats", "Bomber", "Cannon", "Electro Spirit", "Elite Barbarians", "Fire Spirits", "Firecracker", "Giant Snowball", "Goblin Gang", "Goblins", "Ice Spirit", "Knight", "Minion Horde", "Minions", "Mortar", "Rascals", "Royal Delivery", "Royal Giant", "Royal Recruits", "Skeleton Barrel", "Skeleton Dragons", "Skeletons", "Spear Goblins", "Tesla", "Zap"];
+var commons = ["Archers", "Arrows", "Barbarians", "Bats", "Bomber", "Cannon", "Electro Spirit", "Elite Barbarians", "Fire Spirit", "Firecracker", "Giant Snowball", "Goblin Gang", "Goblins", "Ice Spirit", "Knight", "Minion Horde", "Minions", "Mortar", "Rascals", "Royal Delivery", "Royal Giant", "Royal Recruits", "Skeleton Barrel", "Skeleton Dragons", "Skeletons", "Spear Goblins", "Tesla", "Zap"];
 var rares = ["Barbarian Hut", "Battle Healer", "Battle Ram", "Bomb Tower", "Dart Goblin", "Earthquake", "Elixir Collector", "Elixir Golem", "Fireball", "Flying Machine", "Furnace", "Giant", "Goblin Cage", "Goblin Hut", "Heal Spirit", "Hog Rider", "Ice Golem", "Inferno Tower", "Mega Minion", "Mini P.E.K.K.A", "Musketeer", "Rocket", "Royal Hogs", "Three Musketeers", "Tombstone", "Valkyrie", "Wizard", "Zappies"];
-var epics = ["Baby Dragon", "Balloon", "Barbarian Barrel", "Bowler", "Cannon Cart", "Clone", "Dark Prince", "Electro Dragon", "Electro Giant", "Executioner", "Freeze", "Giant Skeleton", "Goblin Barrel", "Goblin Giant", "Golem", "Guards", "Hunter", "Lightning", "Mirror", "P.E.K.K.A", "Poison", "Prince", "Rage", "Skeleton Army", "Tornado", "Wall Breakers", "Witch", "X-Bow"];
+var epics = ["Baby Dragon", "Balloon", "Barbarian Barrel", "Bowler", "Cannon Cart", "Clone", "Dark Prince", "Electro Dragon", "Electro Giant", "Executioner", "Freeze", "Giant Skeleton", "Goblin Barrel", "Goblin Drill", "Goblin Giant", "Golem", "Guards", "Hunter", "Lightning", "Mirror", "P.E.K.K.A", "Poison", "Prince", "Rage", "Skeleton Army", "Tornado", "Wall Breakers", "Witch", "X-Bow"];
 var legendaries = ["Bandit", "Electro Wizard", "Fisherman", "Graveyard", "Ice Wizard", "Inferno Dragon", "Lava Hound", "Lumberjack", "Magic Archer", "Mega Knight", "Miner", "Mother Witch", "Night Witch", "Princess", "Ram Rider", "Royal Ghost", "Sparky", "The Log"];
 var zeroElixir = ["Mirror"];
-var oneElixir = ["Electro Spirit", "Heal Spirit", "Ice Spirit", "Skeletons"];
-var twoElixir = ["Barbarian Barrel", "Bats", "Bomber", "Fire Spirits", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
+var oneElixir = ["Electro Spirit", "Fire Spirit", "Heal Spirit", "Ice Spirit", "Skeletons"];
+var twoElixir = ["Barbarian Barrel", "Bats", "Bomber", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
 var threeElixir = ["Archers", "Arrows", "Bandit", "Cannon", "Clone", "Dart Goblin", "Earthquake", "Elixir Golem", "Firecracker", "Fisherman", "Goblin Barrel", "Goblin Gang", "Guards", "Ice Wizard", "Knight", "Mega Minion", "Miner", "Minions", "Princess", "Royal Delivery", "Royal Ghost", "Skeleton Army", "Skeleton Barrel", "Tombstone", "Tornado"];
-var fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
+var fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Goblin Drill", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
 var fiveElixir = ["Balloon", "Barbarians", "Bowler", "Cannon Cart", "Electro Dragon", "Executioner", "Giant", "Goblin Hut", "Graveyard", "Inferno Tower", "Lightning", "Minion Horde", "Prince", "Ram Rider", "Rascals", "Rocket", "Royal Hogs", "Witch", "Wizard"];
 var sixElixir = ["Elite Barbarians", "Elixir Collector", "Giant Skeleton", "Goblin Giant", "Royal Giant", "Sparky", "X-Bow"];
 var sevenElixir = ["Barbarian Hut", "Lava Hound", "Mega Knight", "P.E.K.K.A", "Royal Recruits"];
@@ -226,8 +226,7 @@ $("#cardSortOrderOptions p").on("click", function (e) {
 
 function sortCards() {
   var sortType = $("#cardSortType").text();
-  var sortOrder = $("#cardSortOrder").text();
-  var upgradeOrder = [2, 4, 10, 20, 50, 100, 200, 400, 800, 1000, 2000, 5000]; // Got the general sorting code from: http://jsfiddle.net/hibbard_eu/C2heg/
+  var sortOrder = $("#cardSortOrder").text(); // Got the general sorting code from: http://jsfiddle.net/hibbard_eu/C2heg/
 
   switch (sortType) {
     case "Name":

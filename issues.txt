@@ -10,12 +10,17 @@ No guarantee that I will ever finish these things
 - Add dark mode (idk if I can ever do this)
 - Player Compare feature
 - Add [loading="lazy"] to all desired pictures
-- Continue to work on Global Tournament Endpoints
 - Add tags to emotes (like 'Magic Archer', 'BM', etc.)
   - Let user search emotes by tags on emotes.handlebars
 - Add more emotes
 - Work on leaderboards
 - Make a better footer
+- Use db to track player global tournament wins over time
+- Update website to reflect q2 changes
+  - Clan wars changes (period data, reword fame to medals)
+  - Add ability to use 'decks used' on clan wars heatmap
+  - Add Gold Crates
+  - Add new cards
 
 Useful Links
 https://nsspot.herokuapp.com/imagetowebp/

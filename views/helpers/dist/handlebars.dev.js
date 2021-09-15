@@ -6,52 +6,52 @@ var register = function register(Handlebars) {
   // I define these functions at the top since I use them in multiple places
   function getLeagueWithTrophies(trophies) {
     switch (true) {
-      case trophies < 4000:
-        {
-          return "Challenger I";
-        }
-
-      case trophies < 4300:
-        {
-          return "Challenger I";
-        }
-
-      case trophies < 4600:
-        {
-          return "Challenger II";
-        }
-
       case trophies < 5000:
         {
-          return "Challenger III";
+          return "No League";
         }
 
       case trophies < 5300:
         {
-          return "Master I";
+          return "Challenger I";
         }
 
       case trophies < 5600:
         {
-          return "Master II";
+          return "Challenger II";
         }
 
       case trophies < 6000:
         {
-          return "Master III";
+          return "Challenger III";
         }
 
       case trophies < 6300:
         {
-          return "Champion";
+          return "Master I";
         }
 
       case trophies < 6600:
         {
-          return "Grand Champion";
+          return "Master II";
         }
 
       case trophies < 7000:
+        {
+          return "Master III";
+        }
+
+      case trophies < 7300:
+        {
+          return "Champion";
+        }
+
+      case trophies < 7600:
+        {
+          return "Grand Champion";
+        }
+
+      case trophies < 8000:
         {
           return "Royal Champion";
         }
@@ -123,6 +123,16 @@ var register = function register(Handlebars) {
       case 12:
         {
           return "Spooky Town";
+        }
+
+      case 13:
+        {
+          return "Rascal's Hideout";
+        }
+
+      case 14:
+        {
+          return "Serenity Peak";
         }
 
       default:

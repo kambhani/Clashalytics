@@ -28,10 +28,10 @@ var db = require("./config/database"); // Confidential Info (MongoDB Atlas user 
 
 var confidentialInfo = require("./config/confidentialInfo"); // Use RoyaleAPI proxy in prod
 // Use direct API Link in dev
-//let baseUrl = (process.env.NODE_ENV === "production") ? "https://proxy.royaleapi.dev/" : "https://api.clashroyale.com/";
 
 
-var baseUrl = "https://proxy.royaleapi.dev/"; // Store cardJson, gameModeJson, and locations in global variables
+var baseUrl = process.env.NODE_ENV === "production" ? "https://proxy.royaleapi.dev/" : "https://api.clashroyale.com/"; //let baseUrl = "https://proxy.royaleapi.dev/";
+// Store cardJson, gameModeJson, and locations in global variables
 // They are updated every two hours
 
 var cardJson;
@@ -2188,7 +2188,7 @@ var performAsyncTasks = function performAsyncTasks() {
                   var battleTime = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
                   var timeDifference = Date.now() - battleTime.getTime();
 
-                  if (timeDifference > 720000000) {
+                  if (timeDifference > 7200000) {
                     return "break|jsonLoop";
                   }
 

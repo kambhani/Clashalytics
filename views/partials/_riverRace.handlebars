@@ -12,22 +12,6 @@
           {{#if ../rank}}
             <h6 class="font-weight-light font-italic mb-2">Rank: {{../rank}}</h6>
           {{/if}}
-          {{!--Finish time doesn't exist for season 73 and beyond--}}
-          {{!--This is marked in the API with a finish time of 12/31/1969 at 23:59--}}
-          {{#if (compare finishTime "!==" "19691231T235959.000Z")}}
-          <div class="mb-1" style="height: 30px;">
-            <img src="/images/clans/svg/finishFlag.svg" data-bs-toggle="tooltip" data-bs-placement="top" title="Finish Time" alt="Checkered Flag" height="30px;">
-            {{#if ../startTime}}
-              <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{twoDateDifference ../startTime finishTime 1}}</p>
-            {{else}}
-              {{#if finishTime}}
-                <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{dateDifference finishTime 0}} ago</p>
-              {{else}}
-                <p class="card-text d-inline-block align-middle" style="line-height: 30px;">Not Completed</p>
-              {{/if}}
-            {{/if}}
-          </div>
-          {{/if}}
           <div class="mb-1" style="height: 30px;">
             <img src="/images/clans/webp/fame.webp" data-bs-toggle="tooltip" data-bs-placement="top" title="Fame" alt="Fame" height="30px;">
             <p class="card-text d-inline-block align-middle" style="line-height: 30px;">{{fame}}</p>

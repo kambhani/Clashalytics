@@ -14,12 +14,13 @@ var commons = ["Archers", "Arrows", "Barbarians", "Bats", "Bomber", "Cannon", "E
 var rares = ["Barbarian Hut", "Battle Healer", "Battle Ram", "Bomb Tower", "Dart Goblin", "Earthquake", "Elixir Collector", "Elixir Golem", "Fireball", "Flying Machine", "Furnace", "Giant", "Goblin Cage", "Goblin Hut", "Heal Spirit", "Hog Rider", "Ice Golem", "Inferno Tower", "Mega Minion", "Mini P.E.K.K.A", "Musketeer", "Rocket", "Royal Hogs", "Three Musketeers", "Tombstone", "Valkyrie", "Wizard", "Zappies"];
 var epics = ["Baby Dragon", "Balloon", "Barbarian Barrel", "Bowler", "Cannon Cart", "Clone", "Dark Prince", "Electro Dragon", "Electro Giant", "Executioner", "Freeze", "Giant Skeleton", "Goblin Barrel", "Goblin Drill", "Goblin Giant", "Golem", "Guards", "Hunter", "Lightning", "Mirror", "P.E.K.K.A", "Poison", "Prince", "Rage", "Skeleton Army", "Tornado", "Wall Breakers", "Witch", "X-Bow"];
 var legendaries = ["Bandit", "Electro Wizard", "Fisherman", "Graveyard", "Ice Wizard", "Inferno Dragon", "Lava Hound", "Lumberjack", "Magic Archer", "Mega Knight", "Miner", "Mother Witch", "Night Witch", "Princess", "Ram Rider", "Royal Ghost", "Sparky", "The Log"];
+var champions = ["Archer Queen", "Golden Knight", "Skeleton King"];
 var zeroElixir = ["Mirror"];
 var oneElixir = ["Electro Spirit", "Fire Spirit", "Heal Spirit", "Ice Spirit", "Skeletons"];
 var twoElixir = ["Barbarian Barrel", "Bats", "Bomber", "Giant Snowball", "Goblins", "Ice Golem", "Rage", "Spear Goblins", "The Log", "Wall Breakers", "Zap"];
 var threeElixir = ["Archers", "Arrows", "Bandit", "Cannon", "Clone", "Dart Goblin", "Earthquake", "Elixir Golem", "Firecracker", "Fisherman", "Goblin Barrel", "Goblin Gang", "Guards", "Ice Wizard", "Knight", "Mega Minion", "Miner", "Minions", "Princess", "Royal Delivery", "Royal Ghost", "Skeleton Army", "Skeleton Barrel", "Tombstone", "Tornado"];
-var fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Goblin Drill", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Tesla", "Valkyrie", "Zappies"];
-var fiveElixir = ["Balloon", "Barbarians", "Bowler", "Cannon Cart", "Electro Dragon", "Executioner", "Giant", "Goblin Hut", "Graveyard", "Inferno Tower", "Lightning", "Minion Horde", "Prince", "Ram Rider", "Rascals", "Rocket", "Royal Hogs", "Witch", "Wizard"];
+var fourElixir = ["Baby Dragon", "Battle Healer", "Battle Ram", "Bomb Tower", "Dark Prince", "Electro Wizard", "Fireball", "Flying Machine", "Freeze", "Furnace", "Goblin Cage", "Goblin Drill", "Golden Knight", "Hog Rider", "Hunter", "Inferno Dragon", "Lumberjack", "Magic Archer", "Mini P.E.K.K.A", "Mortar", "Mother Witch", "Musketeer", "Night Witch", "Poison", "Skeleton Dragons", "Skeleton King", "Tesla", "Valkyrie", "Zappies"];
+var fiveElixir = ["Archer Queen", "Balloon", "Barbarians", "Bowler", "Cannon Cart", "Electro Dragon", "Executioner", "Giant", "Goblin Hut", "Graveyard", "Inferno Tower", "Lightning", "Minion Horde", "Prince", "Ram Rider", "Rascals", "Rocket", "Royal Hogs", "Witch", "Wizard"];
 var sixElixir = ["Elite Barbarians", "Elixir Collector", "Giant Skeleton", "Goblin Giant", "Royal Giant", "Sparky", "X-Bow"];
 var sevenElixir = ["Barbarian Hut", "Lava Hound", "Mega Knight", "P.E.K.K.A", "Royal Recruits"];
 var eightElixir = ["Electro Giant", "Golem"];
@@ -121,6 +122,12 @@ function sortTable(n) {
               break;
             }
 
+          case "Champion":
+            {
+              toAdd = 5;
+              break;
+            }
+
           default:
             {
               toAdd = 0;
@@ -171,6 +178,12 @@ function sortTable(n) {
             case "Legendary":
               {
                 toCheck = 4;
+                break;
+              }
+
+            case "Champion":
+              {
+                toCheck = 5;
                 break;
               }
 
@@ -507,10 +520,15 @@ function getRarity(cardName) {
               return 4;
             }
 
+          case "Champion":
+            {
+              return 5;
+            }
+
           default:
             {
               // This should not happen
-              return 5;
+              return 0;
             }
         }
       }
@@ -537,6 +555,11 @@ function getRarity(cardName) {
     case $.inArray(cardName, legendaries) > -1:
       {
         return 4;
+      }
+
+    case $.inArray(cardName, champions) > -1:
+      {
+        return 5;
       }
   }
 }

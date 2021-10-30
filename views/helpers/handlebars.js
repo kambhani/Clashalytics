@@ -5,8 +5,47 @@ var register = function(Handlebars) {
   // I define these functions at the top since I use them in multiple places
   function getLeagueWithTrophies (trophies) {
     switch (true) {
+      case (trophies < 300): {
+        return ("Goblin Stadium");
+      }
+      case (trophies < 600): {
+        return ("Bone Pit");
+      }
+      case (trophies < 1000): {
+        return ("Barbarian Bowl");
+      }
+      case (trophies < 1300): {
+        return ("P.E.K.K.A's Playhouse");
+      }
+      case (trophies < 1600): {
+        return ("Spell Valley");
+      }
+      case (trophies < 2000): {
+        return ("Builder's Workshop");
+      }
+      case (trophies < 2300): {
+        return ("Royal Arena");
+      }
+      case (trophies < 2600): {
+        return ("Frozen Peak");
+      }
+      case (trophies < 3000): {
+        return ("Jungle Arena");
+      }
+      case (trophies < 3400): {
+        return ("Hog Mountain");
+      }
+      case (trophies < 3800): {
+        return ("Electro Valley");
+      }
+      case (trophies < 4200): {
+        return ("Spooky Town");
+      }
+      case (trophies < 4600): {
+        return ("Rascal's Hideout");
+      }
       case (trophies < 5000): {
-        return ("No League");
+        return ("Serenity Peak")
       }
       case (trophies < 5300): {
         return ("Challenger I");
@@ -141,7 +180,7 @@ var register = function(Handlebars) {
   var helpers = {
     // Calculates the acutal card level (since the API uses outdated ones)
     calculateCardLevel (oldLevel, oldMaxLevel) {
-      return (13 - oldMaxLevel + oldLevel);
+      return (14 - oldMaxLevel + oldLevel);
     },
     // Finds the difference between when a date and the current time
     dateDifference (pastDate, isLargeScreen) {
@@ -246,11 +285,33 @@ var register = function(Handlebars) {
     },
     // Find the number of cards needed to upgrade to the next level
     findCardsNeeded (oldLevel, oldMaxLevel) {
-      const cardOrder = [2, 4, 10, 20, 50, 100, 200, 400, 800, 1000, 2000, 5000];
+      //const cardOrder = [2, 4, 10, 20, 50, 100, 200, 400, 800, 1000, 2000, 5000];
+      const commonCardOrder = [2, 4, 10, 20, 50, 100, 200, 400, 800, 1000, 1500, 3000, 5000];
+      const rareCardOrder = [2, 4, 10, 20, 50, 100, 200, 400, 500, 750, 1250];
+      const epicCardOrder = [2, 4, 10, 20, 40, 50, 100, 200];
+      const legendaryCardOrder = [2, 4, 6, 10, 20];
+      const championCardOrder = [2, 8, 20];
+
       if (oldLevel === oldMaxLevel) {
         return ("MAX");
       }
-      return cardOrder[oldLevel - 1];
+      switch (oldMaxLevel) {
+        case (14): {
+          return commonCardOrder[oldLevel - 1];
+        }
+        case (12): {
+          return rareCardOrder[oldLevel - 1];
+        }
+        case (9): {
+          return epicCardOrder[oldLevel - 1];
+        }
+        case (6): {
+          return legendaryCardOrder[oldLevel - 1];
+        }
+        case(4): {
+          return championCardOrder[oldLevel - 1];
+        }
+      }
     },
     // Loop over specified html a specified number of times
     loopHTML (numTimes, html) {
@@ -721,7 +782,10 @@ var register = function(Handlebars) {
     // This can be found at: https://raw.githubusercontent.com/RoyaleAPI/cr-api-data/master/docs/json/game_modes.json
     // The json object is not perfect, so I deal with exceptional cases myself
     gameModeName(id, json, challengeTitle) {
-      // The switch statement is for the exceptional cases
+      // These statements are for the exceptional cases
+      if (challengeTitle) {
+        return challengeTitle;
+      }
       switch (id) {
         case (72000009): {
           return "Tournament";
@@ -1000,60 +1064,6 @@ var register = function(Handlebars) {
         return num;
       } else {
         return "+" + num;
-      }
-    },
-    // This function returns the time between two dates
-    // dateDifference only allows the difference from the current date
-    twoDateDifference(pastDate, futureDate, specialCode) {
-      // Special processing for specialCode === 1
-      if (specialCode === 1 && typeof futureDate === "undefined" && typeof pastDate !== "undefined") {
-        return "Not Completed";
-      }
-
-      //General check to prevent substring errors later on
-      if (typeof pastDate === "undefined" || typeof futureDate === "undefined") {
-        return "Server Error";
-      }
-      
-      // Wrote this here just in case
-      // Won't likely use it since I could just use dateDifference instead
-      if (futureDate === "now") {
-        // Rewriting the current date in the Clash Royale API form
-        let tmp = new Date();
-        futureDate = tmp.getUTCFullYear() + tmp.getUTCMonth() + tmp.getUTCDate() + "T" + tmp.getUTCHours() + tmp.getUTCMinutes() + tmp.getUTCSeconds() + ".000Z";
-      }
-
-      // Date is processed like it is given in the Clash Royale API
-      // The format is: YYYYMMDDTHHMMSS.000Z
-      let oldDate = new Date(Date.UTC(pastDate.substring(0, 4), pastDate.substring(4, 6) - 1, pastDate.substring(6, 8), pastDate.substring(9, 11), pastDate.substring(11, 13), pastDate.substring(13, 15)));
-      let newDate = new Date(Date.UTC(futureDate.substring(0, 4), futureDate.substring(4, 6) - 1, futureDate.substring(6, 8), futureDate.substring(9, 11), futureDate.substring(11, 13), futureDate.substring(13, 15)));
-      // Special codes let me do special rendering to specific time requests
-      switch (specialCode) {
-        case (1): {
-          // In clanInfo.hbs, deals with inaccurate createdDate in riverRaceLog
-          oldDate = new Date(oldDate.getTime() - (7 * 24 * 3600 * 1000));
-        }
-      }
-      let timeDiffSec = Math.round((newDate.getTime() - oldDate.getTime()) / 1000);
-      let seconds = timeDiffSec % 60;
-      let minutes = Math.floor(timeDiffSec / 60);
-      let hours = Math.floor(minutes / 60);
-      minutes = minutes % 60;
-      let days = Math.floor(hours / 24);
-      hours = hours % 24;
-
-      if (days === 0) {
-        if (hours === 0) {
-          if (minutes === 0) {
-            return (`${seconds}s`);
-          } else {
-            return (`${minutes}m ${seconds}s`);
-          }
-        } else {
-          return (`${hours}h ${minutes}m ${seconds}s`);
-        }
-      } else {
-        return (`${days}d ${hours}h ${minutes}m ${seconds}s`);
       }
     },
     // This function returns the total number of boat attacks, given the participant list

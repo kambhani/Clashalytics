@@ -19,10 +19,10 @@ No guarantee that I will ever finish these things
 - Update website to reflect q2 changes
   - Clan wars changes (period data, reword fame to medals)
   - Add ability to use 'decks used' on clan wars heatmap
-  - Add Gold Crates
-  - Add new cards
+- Make a better /players route
 
 Useful Links
+https://resizeimage.net/
 https://nsspot.herokuapp.com/imagetowebp/
 https://gist.github.com/mozeago/8c6bfbfda8a5931ce97e48beb081ee6b
 

@@ -178,8 +178,8 @@ function filterLeaderboard(callerId) {
   if (sortBy.includes("Filter By")) {
     return;
   }
-  $("#gtLeaderboard div").addClass("d-none");
-  $("#gtLeaderboard div").each(function(index) {
+  $("#gtLeaderboard > div").addClass("d-none");
+  $("#gtLeaderboard > div").each(function(index) {
     switch (sortBy) {
       case "All": {
         let str = $(this).find(".gt-leaderboard-player-name").text().toUpperCase() + " " + $(this).find(".gt-leaderboard-clan-name").text().toUpperCase() + " " + $(this).find(".gt-leaderboard-rank").text().toUpperCase() + " " + $(this).find(".gt-leaderboard-wins").text().toUpperCase(); + $(this).find(".gt-leaderboard-losses").text().toUpperCase() + " " + $(this).find(".gt-leaderboard-rank-change").text().toUpperCase();

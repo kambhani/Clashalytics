@@ -393,6 +393,9 @@ var register = function(Handlebars) {
         case "Played5Years": {
           return "/images/badges/webp/5 Year Badge.webp";
         }
+        case "Crl20Wins2021": {
+          return "/images/badges/CRL Logo.png";
+        }
         default: {
           return "/images/badges/webp/Crying King Emote.webp";
         }
@@ -454,6 +457,9 @@ var register = function(Handlebars) {
         }
         case "Played5Years": {
           return "Played for 5 Years";
+        }
+        case "Crl20Wins2021": {
+          return "Clash Royale League 2021"
         }
         default: {
           return apiName;
@@ -527,6 +533,9 @@ var register = function(Handlebars) {
         }
         case "Played5Years": {
           return "";
+        }
+        case "Crl20Wins2021": {
+          return (value);
         }
         default: {
           return "";

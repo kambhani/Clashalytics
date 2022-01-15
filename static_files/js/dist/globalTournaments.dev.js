@@ -204,8 +204,8 @@ function filterLeaderboard(callerId) {
     return;
   }
 
-  $("#gtLeaderboard div").addClass("d-none");
-  $("#gtLeaderboard div").each(function (index) {
+  $("#gtLeaderboard > div").addClass("d-none");
+  $("#gtLeaderboard > div").each(function (index) {
     switch (sortBy) {
       case "All":
         {
